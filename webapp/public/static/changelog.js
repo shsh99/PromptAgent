@@ -9,36 +9,36 @@ const CHANGELOG_ITEMS = [
     date: '26.03.30',
     version: 'v2.3',
     items: [
-      { tag: 'refactor', text: '파일이 길어져 기능별로 모듈 분리를 적용했습니다 (changelog / library / history / improve / prompt / technique / guide).' },
-      { tag: 'improve',  text: '커밋·푸시 이후 Cloudflare Pages 자동 배포 흐름을 정립했습니다.' },
+      { tag: 'improve',  text: '화면 구성을 더 보기 쉽게 정리했습니다.' },
+      { tag: 'improve',  text: '업데이트 로그를 짧은 요약형으로 바꿨습니다.' },
     ],
   },
   {
     date: '26.03.30',
     version: 'v2.2',
     items: [
-      { tag: 'fix',     text: '업데이트 로그가 다른 서비스 내용으로 표시되던 오류를 수정했습니다.' },
-      { tag: 'improve', text: '업데이트 모달에 버전 태그·카테고리 뱃지·NEW 표시를 추가했습니다.' },
-      { tag: 'improve', text: '읽지 않은 업데이트가 있을 경우 버튼에 NEW 뱃지를 표시합니다.' },
+      { tag: 'fix',     text: '업데이트 로그가 잘못된 내용으로 표시되던 문제를 수정했습니다.' },
+      { tag: 'improve', text: '업데이트 모달 가독성을 개선했습니다.' },
+      { tag: 'improve', text: '새 변경사항이 있으면 업데이트 버튼에 표시가 나타나도록 했습니다.' },
     ],
   },
   {
     date: '26.03.28',
     version: 'v2.1',
     items: [
-      { tag: 'new',     text: '프롬프트 라이브러리 기능을 추가했습니다. 생성한 프롬프트를 즐겨찾기로 저장하고 재사용할 수 있습니다.' },
-      { tag: 'new',     text: '프롬프트 개선기(Improve) 기능을 추가했습니다. 기존 프롬프트를 붙여넣어 품질을 높일 수 있습니다.' },
-      { tag: 'improve', text: '하네스 엔지니어링·컨텍스트 엔지니어링 필드를 대폭 확장했습니다.' },
+      { tag: 'new',     text: '프롬프트 라이브러리 기능을 추가했습니다.' },
+      { tag: 'new',     text: '프롬프트 개선 기능을 추가했습니다.' },
+      { tag: 'improve', text: '입력 옵션을 보강해 더 세밀하게 설정할 수 있게 했습니다.' },
     ],
   },
   {
     date: '26.03.20',
     version: 'v2.0',
     items: [
-      { tag: 'new',     text: '컨텍스트 엔지니어링 기법을 추가했습니다. 프로젝트 전체 맥락 문서를 자동 생성합니다.' },
-      { tag: 'new',     text: '하네스 엔지니어링 기법을 추가했습니다. AI 에이전트 운용 실행 매뉴얼을 생성합니다.' },
-      { tag: 'new',     text: 'context.md 파일 다운로드 기능을 추가했습니다.' },
-      { tag: 'improve', text: '프롬프트 체이닝에서 단계별 개별 복사·전체 다운로드를 지원합니다.' },
+      { tag: 'new',     text: '컨텍스트 문서 생성 기능을 추가했습니다.' },
+      { tag: 'new',     text: 'AI 실행용 가이드 생성 기능을 추가했습니다.' },
+      { tag: 'new',     text: 'context.md 다운로드 기능을 추가했습니다.' },
+      { tag: 'improve', text: '체인 프롬프트 사용성을 개선했습니다.' },
     ],
   },
   {
@@ -46,17 +46,17 @@ const CHANGELOG_ITEMS = [
     version: 'v1.5',
     items: [
       { tag: 'new',     text: '목적별 기법 자동 추천 기능을 추가했습니다.' },
-      { tag: 'new',     text: '추천 기법 선택 시 입력 필드가 자동으로 채워지는 Auto-fill 기능을 추가했습니다.' },
-      { tag: 'improve', text: '품질 리포트에 등급(S~D)과 7가지 체크리스트를 추가했습니다.' },
+      { tag: 'new',     text: '입력 필드 자동 채우기 기능을 추가했습니다.' },
+      { tag: 'improve', text: '품질 점검 항목을 보강했습니다.' },
     ],
   },
   {
     date: '26.03.01',
     version: 'v1.0',
     items: [
-      { tag: 'new', text: 'PromptBuilder 최초 출시. 제로샷·퓨샷·CoT·ToT·역할·체이닝·메타 프롬프팅 등 8가지 기법을 지원합니다.' },
-      { tag: 'new', text: '생성 히스토리 로컬 저장 기능을 추가했습니다.' },
-      { tag: 'new', text: '프롬프트 복사·다운로드 기능을 추가했습니다.' },
+      { tag: 'new', text: 'PromptBuilder 초기 버전을 출시했습니다.' },
+      { tag: 'new', text: '생성 기록 저장 기능을 추가했습니다.' },
+      { tag: 'new', text: '프롬프트 복사 및 다운로드 기능을 추가했습니다.' },
     ],
   },
 ];
