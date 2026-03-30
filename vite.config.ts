@@ -7,6 +7,10 @@ export default defineConfig(({ command }) => {
   if (command === 'serve') {
     return {
       publicDir: './webapp/public',
+      esbuild: {
+        jsx: 'automatic',
+        jsxImportSource: 'hono/jsx',
+      },
       plugins: [
         devServer({
           entry: './webapp/src/index.tsx',
@@ -18,6 +22,10 @@ export default defineConfig(({ command }) => {
 
   return {
     publicDir: './webapp/public',
+    esbuild: {
+      jsx: 'automatic',
+      jsxImportSource: 'hono/jsx',
+    },
     plugins: [
       build({
         entry: './webapp/src/index.tsx',
