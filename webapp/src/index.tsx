@@ -95,6 +95,59 @@ const FIELD_DEFINITIONS: Record<string, any> = {
 };
 
 // ===== 사용 목적 + 자동 추천 매핑 =====
+TECHNIQUES['context-engineering'] = {
+  ...TECHNIQUES['context-engineering'],
+  name: '컨텍스트 엔지니어링',
+  nameEn: 'Context Engineering',
+  difficulty: '고급',
+  description: '프로젝트 전체 맥락을 구조화하는 운영 문서입니다. 목표, 구조, 규칙, 리뷰 기준, 테스트 전략까지 포함해 AI가 팀의 기준을 이해하도록 만듭니다.',
+  fields: ['project_name', 'project_goal', 'non_goal', 'target_user', 'tech_stack', 'project_structure', 'existing_assets', 'core_features', 'data_model', 'workflow_steps', 'code_conventions', 'branch_strategy', 'code_review_rules', 'testing_rules', 'deployment_rules', 'risks', 'appendix_docs', 'constraints', 'tone'],
+}
+
+TECHNIQUES['harness'] = {
+  ...TECHNIQUES['harness'],
+  name: '하네스 엔지니어링',
+  nameEn: 'Harness Engineering',
+  difficulty: '고급',
+  description: 'AI 에이전트를 안전하고 예측 가능하게 운용하는 제어 구조입니다. 가드레일, 데이터 거버넌스, 모니터링과 피드백 루프까지 포함한 실행 매뉴얼을 만듭니다.',
+  fields: ['role', 'context', 'task', 'goal', 'non_goal', 'must_have', 'should_have', 'nice_to_have', 'project_structure', 'code_conventions', 'branch_strategy', 'code_review_rules', 'input_guardrails', 'output_guardrails', 'data_governance', 'access_policy', 'monitoring_rules', 'feedback_loop', 'failure_response', 'human_in_the_loop', 'audit_log_rules', 'compliance_rules', 'rollback_plan', 'appendix_docs', 'output_format', 'tone', 'constraints', 'example'],
+}
+
+Object.assign(FIELD_DEFINITIONS, {
+  project_name: { label: '프로젝트 이름', placeholder: '예: PromptBuilder, TaskFlow, CodeBuddy', type: 'text', required: true },
+  project_goal: { label: '프로젝트 목표', placeholder: '예: 팀이 일관된 기준으로 프롬프트와 운영 문서를 생성할 수 있는 웹앱 구축', type: 'textarea', required: true },
+  non_goal: { label: '비목표', placeholder: '예: 이번 작업에서 인증 구조 전면 개편은 제외', type: 'textarea', required: false },
+  target_user: { label: '대상 사용자', placeholder: '예: PM, 디자이너, 개발자, 운영 담당자', type: 'text', required: true },
+  tech_stack: { label: '기술 스택', placeholder: '예: Hono, TypeScript, Vite, Cloudflare Pages', type: 'text', required: false },
+  project_structure: { label: '프로젝트 구조', placeholder: '예: webapp/src, webapp/public, docs, tests, scripts', type: 'textarea', required: false },
+  existing_assets: { label: '기존 자산 및 재사용 대상', placeholder: '예: 공통 버튼 컴포넌트, 기존 API, 기존 운영 문서, 재사용 가능한 규칙 파일', type: 'textarea', required: false },
+  core_features: { label: '핵심 기능', placeholder: '예: 기법 추천\n운영 문서 생성\n품질 점검\n다운로드\n히스토리 저장', type: 'textarea', required: true },
+  data_model: { label: '주요 데이터 모델', placeholder: '예: PromptTemplate, Technique, GuideSection, ReviewChecklist', type: 'textarea', required: false },
+  workflow_steps: { label: '워크플로우 단계', placeholder: '예: 컨텍스트 확보\n요구사항 정의\nUX 설계\n의존성 분석\n구현 계획\n리스크 분석\n테스트', type: 'textarea', required: false },
+  code_conventions: { label: '코드 컨벤션', placeholder: '예: 함수명 camelCase, 컴포넌트 PascalCase, 중복 로직은 helper로 분리', type: 'textarea', required: false },
+  branch_strategy: { label: '브랜치 규칙', placeholder: '예: main 보호, feature/* 브랜치 사용, squash merge', type: 'textarea', required: false },
+  code_review_rules: { label: '코드 리뷰 규칙', placeholder: '예: 리뷰어 1명 이상 승인, 동작 변경은 근거와 테스트 결과 포함', type: 'textarea', required: false },
+  testing_rules: { label: '테스트 규칙', placeholder: '예: 핵심 시나리오 수동 검증, 신규 API는 최소 1개 테스트 추가', type: 'textarea', required: false },
+  deployment_rules: { label: '배포 규칙', placeholder: '예: main 기준 배포, 배포 전 빌드 확인, 실패 시 즉시 롤백', type: 'textarea', required: false },
+  risks: { label: '리스크 및 제약', placeholder: '예: 외부 API rate limit, 민감정보 처리, UI 깨짐 가능성, 일정 제약', type: 'textarea', required: false },
+  appendix_docs: { label: 'Appendix / 참고 문서', placeholder: '예: API 명세, 디자인 링크, PRD, 외부 아티클, 운영 가이드 URL', type: 'textarea', required: false },
+  goal: { label: '핵심 목표', placeholder: '예: 안전하고 예측 가능하게 AI 작업을 수행하도록 실행 규칙 정의', type: 'textarea', required: true },
+  must_have: { label: 'Must-have', placeholder: '반드시 지켜야 할 요구사항을 줄바꿈으로 작성', type: 'textarea', required: false },
+  should_have: { label: 'Should-have', placeholder: '가능하면 포함할 요구사항을 줄바꿈으로 작성', type: 'textarea', required: false },
+  nice_to_have: { label: 'Nice-to-have', placeholder: '있으면 좋은 선택 요소를 줄바꿈으로 작성', type: 'textarea', required: false },
+  input_guardrails: { label: '입력 가드레일', placeholder: '예: 기밀정보 입력 차단, 프롬프트 인젝션 탐지, 범위 밖 요청 거부', type: 'textarea', required: false },
+  output_guardrails: { label: '출력 가드레일', placeholder: '예: 환각 검출, 유해 표현 차단, 근거 없는 확정 표현 금지', type: 'textarea', required: false },
+  data_governance: { label: '데이터 거버넌스', placeholder: '예: 민감정보 마스킹, 로그 보관 정책, 데이터 분류 기준', type: 'textarea', required: false },
+  access_policy: { label: '접근 권한 정책', placeholder: '예: 관리자만 배포 가능, 고객 데이터는 승인된 사용자만 조회 가능', type: 'textarea', required: false },
+  monitoring_rules: { label: '모니터링 규칙', placeholder: '예: 실패율, 응답 시간, 이상 출력 사례를 기록하고 추적', type: 'textarea', required: false },
+  feedback_loop: { label: '피드백 루프', placeholder: '예: 실패 사례를 문서에 반영하고 다음 작업 가이드를 갱신', type: 'textarea', required: false },
+  failure_response: { label: '실패 대응 방식', placeholder: '예: 오류 발생 시 작업 중단, 원인 요약, 복구 절차 제시', type: 'textarea', required: false },
+  human_in_the_loop: { label: '사람 승인 지점', placeholder: '예: 배포 전 승인, DB 변경 전 승인, 정책 변경 전 승인', type: 'textarea', required: false },
+  audit_log_rules: { label: '감사 로그 규칙', placeholder: '예: 누가 어떤 변경을 했는지 PR과 로그에 남김', type: 'textarea', required: false },
+  compliance_rules: { label: '컴플라이언스 규칙', placeholder: '예: 개인정보 최소 수집, 외부 전송 금지, 사내 정책 준수', type: 'textarea', required: false },
+  rollback_plan: { label: '롤백 계획', placeholder: '예: 실패 시 이전 배포 복구, 기능 플래그 비활성화, 데이터 복원 절차', type: 'textarea', required: false },
+})
+
 const PURPOSE_PRESETS = [
   { id: 'web-app', label: '웹 애플리케이션', icon: 'fa-globe', keywords: '웹앱, SPA, 프론트엔드, 백엔드, API' },
   { id: 'mobile-app', label: '모바일 앱', icon: 'fa-mobile-screen', keywords: '모바일, iOS, Android, Flutter' },
@@ -633,7 +686,48 @@ app.post('/api/auto-fill', async (c) => {
   return c.json({ fields: autoFields });
 });
 
-// ===== API 엔드포인트: 프롬프트 생성 =====
+// ===== API 엔드포인트: 프롬프트 개선 =====
+app.post('/api/improve', async (c) => {
+  const { prompt, goal } = await c.req.json();
+  if (!prompt || !String(prompt).trim()) {
+    return c.json({ error: '개선할 프롬프트가 필요합니다.' }, 400);
+  }
+
+  const lines = String(prompt).trim().split('\n').map((line: string) => line.trim()).filter(Boolean);
+  const inferredGoal = goal?.trim() || '더 명확한 지시와 출력 형식을 갖춘 프롬프트로 개선';
+  const improvedPrompt = [
+    '## 역할',
+    '당신은 주어진 목표를 가장 효율적으로 달성하는 전문 AI 어시스턴트입니다.',
+    '',
+    '## 작업 목표',
+    inferredGoal,
+    '',
+    '## 원본 요청 요약',
+    ...lines.slice(0, 6).map((line: string) => `- ${line}`),
+    '',
+    '## 수행 지침',
+    '- 요청 의도를 먼저 요약한 뒤 작업을 수행합니다.',
+    '- 모호한 표현은 더 구체적인 언어로 바꿉니다.',
+    '- 필요한 경우 단계별 절차와 체크리스트를 포함합니다.',
+    '- 답변은 실행 가능한 형태로 정리합니다.',
+    '',
+    '## 출력 형식',
+    '- 핵심 결과',
+    '- 세부 단계',
+    '- 주의사항 또는 제약 조건',
+    '',
+    '## 제약 조건',
+    '- 근거 없는 내용은 단정하지 않습니다.',
+    '- 누락된 정보가 있으면 필요한 가정을 명시합니다.',
+    '- 불필요한 장황함 없이 명확하게 작성합니다.',
+    '',
+    '## 원본 프롬프트',
+    String(prompt).trim(),
+  ].join('\n');
+
+  return c.json({ improvedPrompt });
+});
+
 app.post('/api/generate', async (c) => {
   const body = await c.req.json();
   const { techniqueId, fields, purpose, keyword } = body;
@@ -923,7 +1017,7 @@ app.get('/', (c) => {
                 <i class="fas fa-wand-magic-sparkles text-white text-sm"></i>
               </div>
               <div>
-                <h1 class="text-lg font-bold text-white leading-tight">PromptForge</h1>
+                <h1 class="text-lg font-bold text-white leading-tight">PromptBuilder</h1>
                 <p class="text-[10px] text-gray-500 -mt-0.5">AI 프롬프트 생성기</p>
               </div>
             </div>
@@ -1111,6 +1205,14 @@ app.get('/', (c) => {
         </section>
       </main>
 
+      <button
+        onclick="showUpdates()"
+        class="fixed bottom-5 right-5 z-[90] flex items-center gap-2 rounded-full border border-brand-400/30 bg-gray-900/90 px-4 py-3 text-xs font-semibold text-brand-300 shadow-lg shadow-brand-900/30 backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-brand-300/60 hover:text-white"
+      >
+        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+        <span>업데이트</span>
+      </button>
+
       {/* 가이드 모달 */}
       <div id="guide-modal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeGuide()"></div>
@@ -1135,6 +1237,19 @@ app.get('/', (c) => {
             </div>
           </div>
           <div class="p-6" id="history-content"></div>
+        </div>
+      </div>
+
+      <div id="updates-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeUpdates()"></div>
+        <div class="relative max-w-3xl mx-auto mt-20 bg-gray-900 border border-gray-800 rounded-2xl max-h-[80vh] overflow-y-auto m-4">
+          <div class="sticky top-0 bg-gray-900 border-b border-gray-800 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fas fa-bullhorn text-brand-400"></i>최근 업데이트
+            </h3>
+            <button onclick="closeUpdates()" class="text-gray-400 hover:text-white"><i class="fas fa-xmark text-lg"></i></button>
+          </div>
+          <div class="p-6" id="updates-content"></div>
         </div>
       </div>
     </div>

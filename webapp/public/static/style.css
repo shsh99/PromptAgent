@@ -76,11 +76,13 @@ textarea:focus-visible {
 
 /* Modal backdrop */
 #guide-modal > div:first-child,
-#history-modal > div:first-child {
+#history-modal > div:first-child,
+#updates-modal > div:first-child {
   animation: fadeIn 0.2s ease-out;
 }
 #guide-modal > div:last-child,
-#history-modal > div:last-child {
+#history-modal > div:last-child,
+#updates-modal > div:last-child {
   animation: slideUp 0.25s ease-out;
 }
 
@@ -106,4 +108,8 @@ textarea:focus-visible {
 @keyframes gradeReveal {
   from { transform: scale(0.5); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+#updates-modal .fa-sparkles {
+  animation: subtle-pulse 2.6s ease-in-out infinite;
 }
