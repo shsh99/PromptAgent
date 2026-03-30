@@ -46,6 +46,14 @@ export const renderer = jsxRenderer(({ children }) => {
       </head>
       <body class="bg-gray-950 text-gray-100 font-sans min-h-screen">
         {children}
+        <script src="/static/utils.js"></script>
+        <script src="/static/changelog.js"></script>
+        <script src="/static/history.js"></script>
+        <script src="/static/library.js"></script>
+        <script src="/static/improve.js"></script>
+        <script src="/static/prompt.js"></script>
+        <script src="/static/technique.js"></script>
+        <script src="/static/guide.js"></script>
         <script src="/static/app.js"></script>
       </body>
     </html>
