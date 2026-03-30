@@ -1,6 +1,5 @@
-// ===== library.js — 프롬프트 라이브러리 =====
+// ===== library.js - 프롬프트 라이브러리 =====
 
-// ── 모달 주입 ──────────────────────────────────────────────────────
 function injectNavLibraryButton() {
   const target = document.querySelector('nav .flex.items-center.gap-3:last-child');
   if (!target || document.getElementById('library-nav-btn')) return;
@@ -43,7 +42,6 @@ function injectLibraryModal() {
   wrapper.querySelector('#library-search').addEventListener('input', renderLibrary);
 }
 
-// ── 저장 / 조회 ────────────────────────────────────────────────────
 function saveToLibrary() {
   const prompt = document.getElementById('result-prompt').textContent?.trim();
   if (!prompt) return;
@@ -64,6 +62,12 @@ function saveToLibrary() {
     const prev = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-check"></i> 저장됨';
     setTimeout(() => { btn.innerHTML = prev; }, 1500);
+  }
+  if (typeof recordActivity === 'function') {
+    recordActivity('LIBRARY_SAVE', {
+      techniqueId: state.techniqueId,
+      keyword: state.keyword,
+    });
   }
 }
 
@@ -126,6 +130,9 @@ function deleteLibraryItem(id) {
   state.library = state.library.filter(item => item.id !== id);
   localStorage.setItem('pf_library', JSON.stringify(state.library));
   renderLibrary();
+  if (typeof recordActivity === 'function') {
+    recordActivity('LIBRARY_DELETE', { itemId: id });
+  }
 }
 
 function loadLibraryItem(id) {
@@ -135,5 +142,10 @@ function loadLibraryItem(id) {
   document.getElementById('result-section').classList.remove('hidden');
   document.getElementById('result-prompt').textContent = item.prompt;
   document.getElementById('result-technique-name').textContent = item.technique || '저장된 프롬프트';
+  if (typeof recordActivity === 'function') {
+    recordActivity('LIBRARY_LOAD', {
+      itemId: id,
+    });
+  }
   setTimeout(() => document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
 }

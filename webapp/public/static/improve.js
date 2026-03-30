@@ -1,6 +1,5 @@
-// ===== improve.js — 프롬프트 개선기 =====
+// ===== improve.js - 프롬프트 개선기 =====
 
-// ── 모달 주입 ──────────────────────────────────────────────────────
 function injectResultActionButtons() {
   const actionRow = document.querySelector('#result-section .flex.items-center.gap-2');
   if (!actionRow) return;
@@ -49,7 +48,7 @@ function injectImproveModal() {
           <label class="mb-2 mt-4 block text-sm font-medium text-gray-300">개선 목표</label>
           <input id="improve-goal" type="text"
             class="w-full rounded-xl border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-            placeholder="예: 더 명확한 지시, 결과 형식 강화, 코드 생성 품질 향상" />
+            placeholder="더 명확한 지시, 결과 형식 강화, 제약 조건 반영" />
           <button id="improve-submit-btn"
             class="mt-4 w-full rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 px-5 py-3 text-sm font-semibold text-white transition-all hover:from-brand-500 hover:to-brand-400">
             개선하기
@@ -78,12 +77,11 @@ function injectImproveModal() {
   wrapper.querySelector('#improve-save-btn').onclick = saveImprovedPromptToLibrary;
 }
 
-// ── 개선 로직 ──────────────────────────────────────────────────────
 function openImproveFromResult() {
   const current = document.getElementById('result-prompt')?.textContent?.trim() || '';
   document.getElementById('improve-input').value = current;
   document.getElementById('improve-output').textContent = '';
-  document.getElementById('improve-goal').value = '더 명확한 지시와 출력 형식, 제약 조건을 반영한 개선';
+  document.getElementById('improve-goal').value = '더 명확한 지시, 결과 형식 강화, 제약 조건 반영';
   document.getElementById('improve-modal').classList.remove('hidden');
 }
 
@@ -109,6 +107,12 @@ async function improvePrompt() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     output.textContent = data.improvedPrompt || '';
+    if (typeof recordActivity === 'function') {
+      recordActivity('PROMPT_IMPROVE', {
+        techniqueId: state.techniqueId,
+        keyword: state.keyword,
+      });
+    }
   } catch (error) {
     output.textContent = `오류: ${error.message}`;
   } finally {
@@ -121,6 +125,12 @@ function copyImprovedPrompt() {
   const text = document.getElementById('improve-output').textContent?.trim();
   if (!text) return;
   navigator.clipboard.writeText(text);
+  if (typeof recordActivity === 'function') {
+    recordActivity('PROMPT_IMPROVED_COPY', {
+      techniqueId: state.techniqueId,
+      keyword: state.keyword,
+    });
+  }
 }
 
 function saveImprovedPromptToLibrary() {
@@ -137,4 +147,10 @@ function saveImprovedPromptToLibrary() {
   });
   localStorage.setItem('pf_library', JSON.stringify(state.library));
   renderLibrary();
+  if (typeof recordActivity === 'function') {
+    recordActivity('PROMPT_IMPROVED_SAVE', {
+      techniqueId: state.techniqueId,
+      keyword: state.keyword,
+    });
+  }
 }

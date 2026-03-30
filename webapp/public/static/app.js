@@ -18,7 +18,9 @@ let state = {
   techniqueId: null,
   techniqueData: null,
   fields: {},
-  history: JSON.parse(localStorage.getItem('pf_history') || '[]'),
+  visitorId: localStorage.getItem('pf_visitor_id') || null,
+  history: [],
+  activityLogs: [],
   library: JSON.parse(localStorage.getItem('pf_library') || '[]'),
   recommendation: null,
   chainData: null,
@@ -26,6 +28,14 @@ let state = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (typeof ensureVisitorId === 'function') ensureVisitorId();
+  if (typeof recordActivity === 'function') {
+    recordActivity('PAGE_VIEW', {
+      path: location.pathname,
+      title: document.title,
+      referrer: document.referrer || '',
+    });
+  }
   await loadPurposes();   // technique.js
   await loadTechniques(); // technique.js
   // 동적 주입 (library.js, improve.js)

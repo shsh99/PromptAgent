@@ -1,6 +1,5 @@
-// ===== prompt.js — 프롬프트 생성 / 결과 표시 / 복사·다운로드 =====
+// ===== prompt.js - 프롬프트 생성 / 결과 표시 / 복사·다운로드 =====
 
-// ── 생성 ───────────────────────────────────────────────────────────
 async function generatePrompt() {
   const btn = document.getElementById('generate-btn');
   btn.disabled = true;
@@ -19,11 +18,22 @@ async function generatePrompt() {
       }),
     });
     const data = await res.json();
-    if (data.error) { alert(data.error); return; }
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
     state.chainData = data.chainData;
     state.contextDocMeta = data.contextDocMeta;
     displayResult(data);
     saveToHistory(data);
+    if (typeof recordActivity === 'function') {
+      recordActivity('PROMPT_GENERATE', {
+        techniqueId: state.techniqueId,
+        purpose: state.purpose,
+        keyword,
+        score: data.qualityReport?.percentage,
+      });
+    }
   } catch (e) {
     console.error(e);
     alert('프롬프트 생성 중 오류가 발생했습니다.');
@@ -33,14 +43,12 @@ async function generatePrompt() {
   }
 }
 
-// ── 결과 표시 ──────────────────────────────────────────────────────
 function displayResult(data) {
   const section = document.getElementById('result-section');
   section.classList.remove('hidden');
   document.getElementById('result-prompt').textContent = data.prompt;
   document.getElementById('result-technique-name').textContent = `${data.technique.name} (${data.technique.nameEn})`;
 
-  // 품질 리포트
   const qr = data.qualityReport;
   const gradeEl = document.getElementById('quality-grade');
   const gc = {
@@ -53,14 +61,14 @@ function displayResult(data) {
   gradeEl.className = `w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-black ${gc[qr.grade] || gc.C}`;
   gradeEl.textContent = qr.grade;
   document.getElementById('quality-score').textContent = qr.percentage;
-  const labels = { S: '완벽한 프롬프트!', A: '매우 좋은 프롬프트', B: '양호한 프롬프트', C: '개선 필요', D: '많은 개선 필요' };
+  const labels = { S: '최상급 프롬프트!', A: '매우 좋은 프롬프트', B: '보통 이상의 프롬프트', C: '개선 필요', D: '많은 개선 필요' };
   document.getElementById('quality-label').textContent = labels[qr.grade] || '';
   document.getElementById('quality-checks').innerHTML = qr.checks.map(c => `
     <div class="flex items-start gap-2 text-xs">
       <div class="mt-0.5 flex-shrink-0">${c.passed ? '<i class="fas fa-circle-check text-green-400"></i>' : '<i class="fas fa-circle-xmark text-gray-600"></i>'}</div>
       <div>
         <span class="${c.passed ? 'text-gray-300' : 'text-gray-500'}">${c.label}</span>
-        <span class="text-gray-600 ml-1">— ${c.tip}</span>
+        <span class="text-gray-600 ml-1">- ${c.tip}</span>
       </div>
     </div>`).join('');
   document.getElementById('tips-list').innerHTML = data.tips.map(t => `
@@ -68,7 +76,6 @@ function displayResult(data) {
       <i class="fas fa-angle-right text-brand-500 mt-0.5 flex-shrink-0"></i><span>${t}</span>
     </li>`).join('');
 
-  // 체이닝 단계별 표시
   const chainSection = document.getElementById('chain-section');
   if (data.chainData && data.chainData.length > 0) {
     chainSection.classList.remove('hidden');
@@ -95,7 +102,6 @@ function displayResult(data) {
     chainSection.classList.add('hidden');
   }
 
-  // 컨텍스트 문서 메타 표시
   const ctxSection = document.getElementById('context-doc-section');
   if (data.contextDocMeta) {
     ctxSection.classList.remove('hidden');
@@ -124,19 +130,23 @@ function displayResult(data) {
     ctxSection.classList.add('hidden');
   }
 
-  // 결과 섹션에 액션 버튼 주입 (improve.js 의존)
   injectResultActionButtons();
 
   setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
-// ── 복사 & 다운로드 ────────────────────────────────────────────────
 function copyPrompt() {
   const text = document.getElementById('result-prompt').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copy-btn');
-    btn.innerHTML = '<i class="fas fa-check"></i> 복사됨!';
+    btn.innerHTML = '<i class="fas fa-check"></i> 복사됨';
     setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> 복사'; }, 2000);
+    if (typeof recordActivity === 'function') {
+      recordActivity('PROMPT_COPY', {
+        techniqueId: state.techniqueId,
+        keyword: state.keyword,
+      });
+    }
   });
 }
 
@@ -151,6 +161,12 @@ function downloadPrompt() {
     : `prompt-${state.techniqueId}-${Date.now()}.txt`;
   a.click();
   URL.revokeObjectURL(url);
+  if (typeof recordActivity === 'function') {
+    recordActivity('PROMPT_DOWNLOAD', {
+      techniqueId: state.techniqueId,
+      keyword: state.keyword,
+    });
+  }
 }
 
 function downloadContextDoc() {
@@ -163,9 +179,15 @@ function downloadContextDoc() {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+  if (typeof recordActivity === 'function') {
+    recordActivity('CONTEXT_DOC_DOWNLOAD', {
+      techniqueId: state.techniqueId,
+      keyword: state.keyword,
+      filename,
+    });
+  }
 }
 
-// ── 체인 유틸 ──────────────────────────────────────────────────────
 function toggleChainStep(el) {
   const body = el.nextElementSibling;
   const chevron = el.querySelector('.chain-chevron');
@@ -180,8 +202,15 @@ function copyChainStep(index) {
     const btn = cards[index]?.querySelector('button');
     if (btn) {
       const orig = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check"></i>복사됨!';
+      btn.innerHTML = '<i class="fas fa-check"></i>복사됨';
       setTimeout(() => { btn.innerHTML = orig; }, 1500);
+    }
+    if (typeof recordActivity === 'function') {
+      recordActivity('CHAIN_STEP_COPY', {
+        techniqueId: state.techniqueId,
+        keyword: state.keyword,
+        step: state.chainData[index].step,
+      });
     }
   });
 }
@@ -198,4 +227,10 @@ function downloadAllChainSteps() {
   a.download = `prompt-chain-${state.keyword || 'project'}-${Date.now()}.txt`;
   a.click();
   URL.revokeObjectURL(url);
+  if (typeof recordActivity === 'function') {
+    recordActivity('CHAIN_DOWNLOAD', {
+      techniqueId: state.techniqueId,
+      keyword: state.keyword,
+    });
+  }
 }

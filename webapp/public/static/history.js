@@ -1,67 +1,248 @@
-// ===== history.js — 생성 히스토리 =====
+// ===== history.js - 관리자 전용 서버 로그 =====
+
+const VISITOR_ID_KEY = 'pf_visitor_id';
+const ADMIN_TOKEN_KEY = 'pf_admin_token';
+
+function safeJsonParse(value, fallback) {
+  try {
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function createVisitorId() {
+  if (window.crypto?.randomUUID) return `v_${crypto.randomUUID()}`;
+  return `v_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function ensureVisitorId() {
+  let visitorId = localStorage.getItem(VISITOR_ID_KEY);
+  if (!visitorId) {
+    visitorId = createVisitorId();
+    localStorage.setItem(VISITOR_ID_KEY, visitorId);
+  }
+  if (window.state) state.visitorId = visitorId;
+  return visitorId;
+}
+
+function getAdminToken() {
+  return sessionStorage.getItem(ADMIN_TOKEN_KEY) || '';
+}
+
+function setAdminToken(token) {
+  if (token) sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+}
+
+function clearAdminToken() {
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+}
+
+function sendLogEvent(kind, payload) {
+  const body = JSON.stringify({
+    kind,
+    visitorId: ensureVisitorId(),
+    ...payload,
+  });
+  const url = '/api/logs';
+  if (navigator.sendBeacon) {
+    try {
+      const blob = new Blob([body], { type: 'application/json' });
+      navigator.sendBeacon(url, blob);
+      return;
+    } catch {
+      // sendBeacon 실패 시 fetch로 폴백
+    }
+  }
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body,
+    keepalive: true,
+  }).catch(() => {});
+}
+
+function loadPromptLogs() {
+  return [];
+}
+
+function loadActivityLogs() {
+  return [];
+}
+
+function recordActivity(actionType, meta = {}) {
+  const entry = {
+    actionType,
+    meta,
+    createdAt: new Date().toISOString(),
+  };
+  sendLogEvent('activity', {
+    actionType,
+    meta,
+    createdAt: entry.createdAt,
+  });
+  return entry;
+}
 
 function saveToHistory(data) {
-  state.history.unshift({
-    id: Date.now(),
-    technique: data.technique.name,
+  const entry = {
+    promptId: data.id || Date.now(),
+    visitorId: ensureVisitorId(),
+    actionType: 'RUN',
+    techniqueId: data.techniqueId || state.techniqueId || '',
+    technique: data.technique?.name || state.techniqueData?.name || state.techniqueId || '',
     prompt: data.prompt,
-    grade: data.qualityReport.grade,
-    score: data.qualityReport.percentage,
-    timestamp: new Date().toLocaleString('ko-KR'),
-    purpose: state.purpose,
-    keyword: state.keyword,
-  });
-  if (state.history.length > 20) state.history = state.history.slice(0, 20);
-  localStorage.setItem('pf_history', JSON.stringify(state.history));
+    grade: data.qualityReport?.grade || 'C',
+    score: data.qualityReport?.percentage || 0,
+    purpose: data.purpose || state.purpose || '',
+    keyword: data.keyword || state.keyword || '',
+    model: data.model || data.technique?.nameEn || '',
+    createdAt: new Date().toISOString(),
+  };
+
+  sendLogEvent('prompt', entry);
+  return entry;
 }
 
-function showHistory() {
-  document.getElementById('history-modal').classList.remove('hidden');
+function formatTime(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString('ko-KR');
+}
+
+async function fetchAdminLogs() {
+  const token = getAdminToken();
+  if (!token) return { ok: false, unauthorized: true };
+  const res = await fetch('/api/admin/logs', {
+    headers: { 'X-Admin-Token': token },
+  });
+  if (res.status === 401) return { ok: false, unauthorized: true };
+  if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+  return res.json();
+}
+
+function renderAdminPanel(data) {
+  const promptLogs = data?.promptLogs || [];
+  const activityLogs = data?.activityLogs || [];
+  const stats = data?.stats || {};
+  const tokenState = getAdminToken() ? '연결됨' : '없음';
+
+  const promptCards = promptLogs.length
+    ? promptLogs.slice(0, 50).map((entry) => `
+      <div class="border border-gray-800 rounded-xl p-4 mb-3 hover:border-gray-700 transition-colors">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-orange-500/20 text-orange-400">${escapeHtml(entry.grade || 'C')}</span>
+            <span class="text-sm font-medium text-white">${escapeHtml(entry.technique || entry.techniqueId || 'Prompt')}</span>
+            <span class="text-[10px] rounded-full bg-gray-800 px-2 py-0.5 text-gray-400">${escapeHtml(entry.actionType || 'RUN')}</span>
+          </div>
+          <span class="text-[10px] text-gray-600">${formatTime(entry.createdAt)}</span>
+        </div>
+        <div class="text-[11px] text-gray-500 mb-2">
+          ${entry.visitorId ? `<span class="mr-3">visitor: ${escapeHtml(entry.visitorId)}</span>` : ''}
+          ${entry.keyword ? `<span class="mr-3">keyword: ${escapeHtml(entry.keyword)}</span>` : ''}
+          ${entry.score !== undefined ? `<span>score: ${entry.score}%</span>` : ''}
+        </div>
+        <pre class="text-xs text-gray-400 whitespace-pre-wrap line-clamp-3 font-mono">${escapeHtml(entry.prompt || '')}</pre>
+      </div>
+    `).join('')
+    : '<div class="text-center py-8 text-gray-600 text-sm">저장된 프롬프트 로그가 없습니다.</div>';
+
+  const activityCards = activityLogs.length
+    ? activityLogs.slice(0, 50).map((entry) => `
+      <div class="flex items-start justify-between gap-3 border-b border-gray-800 py-3 last:border-b-0">
+        <div>
+          <div class="text-sm text-white">${escapeHtml(entry.actionType || 'UNKNOWN')}</div>
+          <div class="text-[11px] text-gray-500">
+            ${entry.visitorId ? escapeHtml(entry.visitorId) : 'anonymous'}
+            ${entry.techniqueId ? ` · ${escapeHtml(entry.techniqueId)}` : ''}
+          </div>
+        </div>
+        <div class="text-[10px] text-gray-600">${formatTime(entry.createdAt)}</div>
+      </div>
+    `).join('')
+    : '<div class="text-center py-8 text-gray-600 text-sm">활동 로그가 없습니다.</div>';
+
+  return `
+    <div class="grid grid-cols-2 gap-3 mb-5 sm:grid-cols-4">
+      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
+        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Prompt Logs</div>
+        <div class="mt-2 text-2xl font-bold text-white">${stats.promptCount || 0}</div>
+      </div>
+      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
+        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Activity Logs</div>
+        <div class="mt-2 text-2xl font-bold text-white">${stats.activityCount || 0}</div>
+      </div>
+      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
+        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Visitors</div>
+        <div class="mt-2 text-2xl font-bold text-white">${stats.visitorCount || 0}</div>
+      </div>
+      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
+        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Token</div>
+        <div class="mt-2 text-sm font-semibold text-white">${tokenState}</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 gap-4">
+      <section class="rounded-2xl border border-gray-800 bg-gray-950/60 p-4">
+        <div class="mb-3 flex items-center justify-between">
+          <h4 class="text-sm font-semibold text-white">관리자 프롬프트 로그</h4>
+          <span class="text-[10px] text-gray-500">${promptLogs.length} entries</span>
+        </div>
+        ${promptCards}
+      </section>
+      <section class="rounded-2xl border border-gray-800 bg-gray-950/60 p-4">
+        <div class="mb-3 flex items-center justify-between">
+          <h4 class="text-sm font-semibold text-white">관리자 활동 로그</h4>
+          <span class="text-[10px] text-gray-500">${activityLogs.length} events</span>
+        </div>
+        ${activityCards}
+      </section>
+    </div>
+  `;
+}
+
+async function showHistory() {
+  const token = getAdminToken() || prompt('관리자 토큰을 입력하세요') || '';
+  if (!token) return;
+  setAdminToken(token);
+
+  const modal = document.getElementById('history-modal');
   const content = document.getElementById('history-content');
-  if (!state.history.length) {
-    content.innerHTML = '<div class="text-center py-12 text-gray-500"><i class="fas fa-inbox text-3xl mb-3"></i><p class="text-sm">아직 생성된 프롬프트가 없습니다.</p></div>';
+  modal.classList.remove('hidden');
+  content.innerHTML = '<div class="py-10 text-center text-gray-500">관리자 로그를 불러오는 중...</div>';
+
+  const data = await fetchAdminLogs();
+  if (data?.unauthorized) {
+    clearAdminToken();
+    content.innerHTML = '<div class="py-10 text-center text-red-400">관리자 토큰이 유효하지 않습니다.</div>';
     return;
   }
-  const gc = {
-    S: 'bg-yellow-500/20 text-yellow-400',
-    A: 'bg-green-500/20 text-green-400',
-    B: 'bg-blue-500/20 text-blue-400',
-    C: 'bg-orange-500/20 text-orange-400',
-    D: 'bg-red-500/20 text-red-400',
-  };
-  content.innerHTML = state.history.map(h => `
-    <div class="border border-gray-800 rounded-xl p-4 mb-3 hover:border-gray-700 transition-colors">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-2">
-          <span class="text-xs px-2 py-0.5 rounded-full font-bold ${gc[h.grade] || ''}">${h.grade}</span>
-          <span class="text-sm font-medium text-white">${escapeHtml(h.technique)}</span>
-        </div>
-        <span class="text-[10px] text-gray-600">${h.timestamp}</span>
-      </div>
-      ${h.keyword ? `<div class="text-[10px] text-gray-500 mb-2"><i class="fas fa-tag mr-1"></i>${escapeHtml(h.keyword)}</div>` : ''}
-      <pre class="text-xs text-gray-400 whitespace-pre-wrap line-clamp-3 font-mono">${escapeHtml(h.prompt)}</pre>
-      <button onclick="loadFromHistory(${h.id})" class="mt-2 text-[10px] text-brand-400 hover:text-brand-300">
-        <i class="fas fa-arrow-up-right-from-square mr-1"></i>이 프롬프트 사용하기
-      </button>
-    </div>`).join('');
-}
-
-function loadFromHistory(id) {
-  const entry = state.history.find(h => h.id === id);
-  if (!entry) return;
-  closeHistory();
-  document.getElementById('result-section').classList.remove('hidden');
-  document.getElementById('result-prompt').textContent = entry.prompt;
-  document.getElementById('result-technique-name').textContent = entry.technique;
-  setTimeout(() => document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+  if (data?.error) {
+    content.innerHTML = `<div class="py-10 text-center text-red-400">${escapeHtml(data.error)}</div>`;
+    return;
+  }
+  content.innerHTML = renderAdminPanel(data);
 }
 
 function clearHistory() {
-  if (confirm('모든 히스토리를 삭제하시겠습니까?')) {
-    state.history = [];
-    localStorage.removeItem('pf_history');
-    showHistory();
-  }
+  const token = getAdminToken();
+  if (!token) return;
+  fetch('/api/admin/logs', {
+    method: 'DELETE',
+    headers: { 'X-Admin-Token': token },
+  }).then(async (res) => {
+    if (res.status === 401) {
+      clearAdminToken();
+      alert('관리자 토큰이 유효하지 않습니다.');
+      return;
+    }
+    if (!res.ok) {
+      alert('로그 초기화에 실패했습니다.');
+      return;
+    }
+    await showHistory();
+  });
 }
 
 function closeHistory() {

@@ -11,6 +11,103 @@ import {
 
 export const apiRouter = new Hono()
 
+type LogStore = {
+  promptLogs: any[]
+  activityLogs: any[]
+}
+
+const MAX_PROMPT_LOGS = 1000
+const MAX_ACTIVITY_LOGS = 2000
+const ADMIN_TOKEN_FALLBACK = 'promptbuilder-admin'
+
+function getLogStore(): LogStore {
+  const g = globalThis as any
+  if (!g.__promptAgentLogStore) {
+    g.__promptAgentLogStore = { promptLogs: [], activityLogs: [] }
+  }
+  return g.__promptAgentLogStore as LogStore
+}
+
+function getExpectedAdminToken(c: any): string {
+  return c.env?.ADMIN_TOKEN || ADMIN_TOKEN_FALLBACK
+}
+
+function isAdminRequest(c: any): boolean {
+  const token = c.req.header('x-admin-token') || ''
+  return token.length > 0 && token === getExpectedAdminToken(c)
+}
+
+function trimStore(store: LogStore) {
+  store.promptLogs = store.promptLogs.slice(0, MAX_PROMPT_LOGS)
+  store.activityLogs = store.activityLogs.slice(0, MAX_ACTIVITY_LOGS)
+}
+
+function buildStats(store: LogStore) {
+  const visitors = new Set([
+    ...store.promptLogs.map((log: any) => log.visitorId).filter(Boolean),
+    ...store.activityLogs.map((log: any) => log.visitorId).filter(Boolean),
+  ])
+  return {
+    promptCount: store.promptLogs.length,
+    activityCount: store.activityLogs.length,
+    visitorCount: visitors.size,
+  }
+}
+
+apiRouter.post('/logs', async (c) => {
+  try {
+    const payload = await c.req.json()
+    const store = getLogStore()
+    const entry = {
+      id: payload.id || Date.now(),
+      logId: payload.logId || `${Date.now()}-${Math.random()}`,
+      visitorId: payload.visitorId || 'anonymous',
+      actionType: payload.actionType || payload.kind?.toUpperCase() || 'UNKNOWN',
+      promptId: payload.promptId || null,
+      techniqueId: payload.techniqueId || '',
+      technique: payload.technique || '',
+      prompt: payload.prompt || '',
+      grade: payload.grade || 'C',
+      score: Number(payload.score || 0),
+      purpose: payload.purpose || '',
+      keyword: payload.keyword || '',
+      model: payload.model || '',
+      meta: payload.meta || {},
+      createdAt: payload.createdAt || new Date().toISOString(),
+    }
+
+    if (payload.kind === 'activity') {
+      store.activityLogs.unshift(entry)
+      trimStore(store)
+      return c.json({ ok: true })
+    }
+
+    store.promptLogs.unshift(entry)
+    trimStore(store)
+    return c.json({ ok: true })
+  } catch {
+    return c.json({ error: '로그 저장에 실패했습니다.' }, 400)
+  }
+})
+
+apiRouter.get('/admin/logs', (c) => {
+  if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
+  const store = getLogStore()
+  return c.json({
+    promptLogs: store.promptLogs,
+    activityLogs: store.activityLogs,
+    stats: buildStats(store),
+  })
+})
+
+apiRouter.delete('/admin/logs', (c) => {
+  if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
+  const store = getLogStore()
+  store.promptLogs = []
+  store.activityLogs = []
+  return c.json({ ok: true })
+})
+
 // ── GET /api/techniques ────────────────────────────────────────────
 apiRouter.get('/techniques', (c) => {
   const list = Object.values(TECHNIQUES).map((t: any) => ({
