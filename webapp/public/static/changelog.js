@@ -10,8 +10,8 @@ const CHANGELOG_ITEMS = [
     version: 'v2.3',
     items: [
       { tag: 'new',      text: '관리자 전용 로그 조회 기능 추가.' },
-      { tag: 'improve',  text: '업데이트 로그를 사용자용 요약 형식으로 정리.' },
-      { tag: 'fix',      text: '화면 문구와 표시 정리.' },
+      { tag: 'improve',  text: '최근 업데이트 화면을 더 짧고 읽기 쉽게 정리.' },
+      { tag: 'fix',      text: '화면 문구와 표시 위치를 수정.' },
     ],
   },
   {
@@ -19,8 +19,8 @@ const CHANGELOG_ITEMS = [
     version: 'v2.2',
     items: [
       { tag: 'new',     text: '기록 확인 및 관리 기능 추가.' },
-      { tag: 'improve', text: '사용 흐름 단순화.' },
-      { tag: 'fix',     text: '표시 오류 수정.' },
+      { tag: 'improve', text: '사용 흐름을 더 단순하게 정리.' },
+      { tag: 'fix',     text: '표시 오류를 수정.' },
     ],
   },
   {
@@ -29,7 +29,7 @@ const CHANGELOG_ITEMS = [
     items: [
       { tag: 'new',     text: '프롬프트 저장 및 재사용 기능 추가.' },
       { tag: 'new',     text: '프롬프트 개선 기능 추가.' },
-      { tag: 'improve', text: '입력 옵션 세분화.' },
+      { tag: 'improve', text: '입력 옵션을 더 세밀하게 조정 가능.' },
     ],
   },
   {
@@ -39,7 +39,7 @@ const CHANGELOG_ITEMS = [
       { tag: 'new',     text: '컨텍스트 문서 생성 기능 추가.' },
       { tag: 'new',     text: '단계별 프롬프트 생성 기능 추가.' },
       { tag: 'new',     text: 'context.md 다운로드 기능 추가.' },
-      { tag: 'improve', text: '생성 결과 활용성 개선.' },
+      { tag: 'improve', text: '생성 결과 활용성과 다운로드 경험 개선.' },
     ],
   },
   {
@@ -48,7 +48,7 @@ const CHANGELOG_ITEMS = [
     items: [
       { tag: 'new',     text: '목적별 기법 자동 추천 기능 추가.' },
       { tag: 'new',     text: '입력 필드 자동 채우기 기능 추가.' },
-      { tag: 'improve', text: '품질 점검 항목 보강.' },
+      { tag: 'improve', text: '품질 점검 항목을 보강.' },
     ],
   },
   {
