@@ -21,7 +21,7 @@ export default defineConfig(({ command }) => {
   }
 
   return {
-    publicDir: false,
+    publicDir: './webapp/public',
     esbuild: {
       jsx: 'automatic',
       jsxImportSource: 'hono/jsx',
