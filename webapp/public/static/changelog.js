@@ -9,26 +9,27 @@ const CHANGELOG_ITEMS = [
     date: '26.03.30',
     version: 'v2.3',
     items: [
-      { tag: 'improve',  text: '화면 구성을 더 보기 쉽게 정리했습니다.' },
-      { tag: 'improve',  text: '업데이트 로그를 짧은 요약형으로 바꿨습니다.' },
+      { tag: 'new',      text: '관리자 전용 로그 조회 기능을 추가했습니다.' },
+      { tag: 'improve',  text: '업데이트 로그를 사용자용 요약 형태로 정리했습니다.' },
+      { tag: 'fix',      text: '화면과 문구를 더 보기 쉽게 다듬었습니다.' },
     ],
   },
   {
     date: '26.03.30',
     version: 'v2.2',
     items: [
-      { tag: 'fix',     text: '업데이트 로그가 잘못된 내용으로 표시되던 문제를 수정했습니다.' },
-      { tag: 'improve', text: '업데이트 모달 가독성을 개선했습니다.' },
-      { tag: 'improve', text: '새 변경사항이 있으면 업데이트 버튼에 표시가 나타나도록 했습니다.' },
+      { tag: 'new',     text: '기록 확인과 관리용 기능을 추가했습니다.' },
+      { tag: 'improve', text: '사용 흐름을 더 단순하게 정리했습니다.' },
+      { tag: 'fix',     text: '보이는 문구와 표시 오류를 수정했습니다.' },
     ],
   },
   {
     date: '26.03.28',
     version: 'v2.1',
     items: [
-      { tag: 'new',     text: '프롬프트 라이브러리 기능을 추가했습니다.' },
+      { tag: 'new',     text: '프롬프트 저장 및 재사용 기능을 추가했습니다.' },
       { tag: 'new',     text: '프롬프트 개선 기능을 추가했습니다.' },
-      { tag: 'improve', text: '입력 옵션을 보강해 더 세밀하게 설정할 수 있게 했습니다.' },
+      { tag: 'improve', text: '입력 옵션을 더 세밀하게 조정할 수 있게 했습니다.' },
     ],
   },
   {
@@ -36,9 +37,9 @@ const CHANGELOG_ITEMS = [
     version: 'v2.0',
     items: [
       { tag: 'new',     text: '컨텍스트 문서 생성 기능을 추가했습니다.' },
-      { tag: 'new',     text: 'AI 실행용 가이드 생성 기능을 추가했습니다.' },
+      { tag: 'new',     text: '단계별 프롬프트 생성 기능을 추가했습니다.' },
       { tag: 'new',     text: 'context.md 다운로드 기능을 추가했습니다.' },
-      { tag: 'improve', text: '체인 프롬프트 사용성을 개선했습니다.' },
+      { tag: 'improve', text: '생성 결과를 더 편하게 활용할 수 있게 했습니다.' },
     ],
   },
   {
@@ -55,7 +56,7 @@ const CHANGELOG_ITEMS = [
     version: 'v1.0',
     items: [
       { tag: 'new', text: 'PromptBuilder 초기 버전을 출시했습니다.' },
-      { tag: 'new', text: '생성 기록 저장 기능을 추가했습니다.' },
+      { tag: 'new', text: '프롬프트 생성 기록 저장 기능을 추가했습니다.' },
       { tag: 'new', text: '프롬프트 복사 및 다운로드 기능을 추가했습니다.' },
     ],
   },
