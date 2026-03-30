@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import build from '@hono/vite-build/cloudflare-pages'
+import build from '@hono/vite-build/cloudflare-workers'
 import devServer from '@hono/vite-dev-server'
 import cloudflare from '@hono/vite-dev-server/cloudflare'
 
@@ -21,7 +21,7 @@ export default defineConfig(({ command }) => {
   }
 
   return {
-    publicDir: './webapp/public',
+    publicDir: false,
     esbuild: {
       jsx: 'automatic',
       jsxImportSource: 'hono/jsx',
