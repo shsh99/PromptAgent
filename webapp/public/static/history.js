@@ -5,9 +5,12 @@ const SESSION_ID_KEY = 'pf_session_id';
 const ADMIN_TOKEN_KEY = 'pf_admin_token';
 const USER_HISTORY_KEY = 'pf_user_history';
 const USER_ACTIVITY_KEY = 'pf_user_activity';
+const USER_SUGGESTION_KEY = 'pf_user_suggestions';
+const USER_SUGGESTION_DRAFT_KEY = 'pf_suggestion_draft';
 const ACTIVE_PROMPT_HISTORY_KEY = 'pf_active_prompt_history_id';
 const MAX_LOCAL_HISTORY = 120;
 const MAX_LOCAL_ACTIVITY = 300;
+const MAX_LOCAL_SUGGESTIONS = 60;
 
 function safeJsonParse(value, fallback) {
   try {
@@ -70,6 +73,23 @@ function loadLocalActivities() {
 
 function saveLocalActivities(items) {
   saveLocalJson(USER_ACTIVITY_KEY, (Array.isArray(items) ? items : []).slice(0, MAX_LOCAL_ACTIVITY));
+}
+
+function loadLocalSuggestions() {
+  const items = loadLocalJson(USER_SUGGESTION_KEY, []);
+  return Array.isArray(items) ? items : [];
+}
+
+function saveLocalSuggestions(items) {
+  saveLocalJson(USER_SUGGESTION_KEY, (Array.isArray(items) ? items : []).slice(0, MAX_LOCAL_SUGGESTIONS));
+}
+
+function getSuggestionDraft() {
+  return safeJsonParse(localStorage.getItem(USER_SUGGESTION_DRAFT_KEY), { title: '', text: '' }) || { title: '', text: '' };
+}
+
+function setSuggestionDraft(value) {
+  localStorage.setItem(USER_SUGGESTION_DRAFT_KEY, JSON.stringify(value || { title: '', text: '' }));
 }
 
 function getCurrentHistoryThreadId() {
@@ -168,6 +188,24 @@ function appendLocalActivity(actionType, meta = {}) {
   const items = loadLocalActivities();
   items.unshift(entry);
   saveLocalActivities(items);
+  return entry;
+}
+
+function saveSuggestionItem(text, title = '') {
+  const content = String(text || '').trim();
+  if (!content) return null;
+  const entry = {
+    id: createLocalRecordId('s'),
+    title: String(title || '건의사항').trim(),
+    text: content,
+    visitorId: ensureVisitorId(),
+    sessionId: ensureSessionId(),
+    createdAt: new Date().toISOString(),
+    status: '접수됨',
+  };
+  const items = loadLocalSuggestions();
+  items.unshift(entry);
+  saveLocalSuggestions(items);
   return entry;
 }
 
@@ -384,6 +422,67 @@ function renderLocalHistoryPanel(items, query = '') {
   `;
 }
 
+function renderSuggestionBoardContent() {
+  const items = loadLocalSuggestions();
+  const draft = getSuggestionDraft();
+  return `
+    <div class="mx-auto grid h-full max-w-7xl gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+      <section class="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-slate-400">건의 작성</div>
+            <h2 class="mt-1 text-xl font-bold text-white">자유롭게 수정 요청을 남겨주세요</h2>
+            <p class="mt-1 text-sm leading-6 text-slate-300">버그, 개선, 기능 제안, 문구 수정 요청까지 모두 받을 수 있습니다.</p>
+          </div>
+          <span class="rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold text-emerald-200">무료 게시판</span>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">건의 제목</label>
+            <input id="suggestion-title" type="text" value="${escapeHtml(draft.title || '')}" placeholder="예: 결과 버튼 대비 개선 요청"
+              class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/10" />
+          </div>
+          <div>
+            <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">건의 내용</label>
+            <textarea id="suggestion-text" rows="10" placeholder="어떤 부분이 불편했는지, 무엇을 바꾸면 좋은지 편하게 적어주세요."
+              class="w-full rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-sm leading-7 text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/10">${escapeHtml(draft.text || '')}</textarea>
+          </div>
+          <div class="flex flex-col gap-2 sm:flex-row">
+            <button onclick="submitSuggestion()" class="flex-1 rounded-2xl bg-brand-600 px-5 py-3 font-semibold text-white hover:bg-brand-500">건의 제출</button>
+            <button onclick="clearSuggestionDraft()" class="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-semibold text-slate-200 hover:bg-white/10">초안 지우기</button>
+          </div>
+          <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm leading-7 text-slate-400">
+            제출된 건의는 로컬에 저장되고, 관리자 대시보드에도 표시됩니다.
+          </div>
+        </div>
+      </section>
+      <section class="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">
+        <div class="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-slate-400">최근 건의</div>
+            <h3 class="mt-1 text-lg font-bold text-white">내가 남긴 건의 목록</h3>
+          </div>
+          <span class="text-xs text-slate-400">${items.length}개</span>
+        </div>
+        <div class="space-y-3">
+          ${items.length ? items.slice(0, 12).map((item) => `
+            <article class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold text-white">${escapeHtml(item.title || '건의사항')}</div>
+                  <div class="mt-1 text-[11px] text-slate-500">${escapeHtml(formatTime(item.createdAt))} · ${escapeHtml(item.status || '접수됨')}</div>
+                </div>
+                <button onclick="copySuggestionText('${escapeHtml(item.id)}')" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">복사</button>
+              </div>
+              <p class="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">${escapeHtml(item.text || '')}</p>
+            </article>
+          `).join('') : '<div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm leading-7 text-slate-400">아직 건의가 없습니다. 왼쪽에서 첫 건의를 남겨보세요.</div>'}
+        </div>
+      </section>
+    </div>
+  `;
+}
+
 function renderAdminPanel(data) {
   const promptLogs = data?.promptLogs || [];
   const activityLogs = data?.activityLogs || [];
@@ -527,6 +626,72 @@ async function promptAdminToken() {
   await showAdminDashboard();
 }
 
+function openSuggestionBoard() {
+  const board = document.getElementById('suggestion-board');
+  if (!board) return;
+  board.classList.remove('hidden');
+  const content = document.getElementById('suggestion-board-content');
+  if (content) {
+    content.innerHTML = renderSuggestionBoardContent();
+    const titleEl = document.getElementById('suggestion-title');
+    const textEl = document.getElementById('suggestion-text');
+    const persistDraft = () => setSuggestionDraft({
+      title: titleEl?.value || '',
+      text: textEl?.value || '',
+    });
+    if (titleEl) titleEl.oninput = persistDraft;
+    if (textEl) textEl.oninput = persistDraft;
+  }
+}
+
+function showSuggestionBoard() {
+  openSuggestionBoard();
+}
+
+function closeSuggestionBoard() {
+  const board = document.getElementById('suggestion-board');
+  if (board) board.classList.add('hidden');
+}
+
+function clearSuggestionDraft() {
+  localStorage.removeItem(USER_SUGGESTION_DRAFT_KEY);
+  const titleEl = document.getElementById('suggestion-title');
+  const textEl = document.getElementById('suggestion-text');
+  if (titleEl) titleEl.value = '';
+  if (textEl) textEl.value = '';
+}
+
+function copySuggestionText(id) {
+  const item = loadLocalSuggestions().find((entry) => entry.id === id);
+  if (!item) return;
+  navigator.clipboard.writeText(`${item.title ? `[${item.title}] ` : ''}${item.text || ''}`);
+}
+
+function submitSuggestion() {
+  const titleEl = document.getElementById('suggestion-title');
+  const textEl = document.getElementById('suggestion-text');
+  const title = titleEl?.value?.trim() || '';
+  const text = textEl?.value?.trim() || '';
+  if (!text) {
+    alert('건의 내용을 입력하세요.');
+    return;
+  }
+  const entry = saveSuggestionItem(text, title || '건의사항');
+  if (!entry) return;
+  if (typeof recordActivity === 'function') {
+    recordActivity('SUGGESTION_SUBMIT', {
+      suggestionId: entry.id,
+      title: entry.title,
+      text: entry.text,
+    });
+  }
+  if (titleEl) titleEl.value = '';
+  if (textEl) textEl.value = '';
+  setSuggestionDraft({ title: '', text: '' });
+  openSuggestionBoard();
+  alert('건의가 접수되었습니다. 관리자 대시보드에서도 확인할 수 있습니다.');
+}
+
 function copyHistoryItem(threadId) {
   const item = loadHistoryThread(threadId);
   if (!item) return;
@@ -622,6 +787,42 @@ function renderAdminDashboardShell(contentHtml) {
   `;
 }
 
+function renderSuggestionAdminSection(activityLogs) {
+  const suggestionLogs = (activityLogs || []).filter((entry) => String(entry.actionType || '').toUpperCase() === 'SUGGESTION_SUBMIT');
+  const cards = suggestionLogs.length
+    ? suggestionLogs.slice(0, 20).map((entry) => `
+      <div class="rounded-2xl border border-emerald-500/15 bg-emerald-500/5 p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-white">${escapeHtml(entry.meta?.title || '건의사항')}</div>
+            <div class="mt-1 text-[11px] text-slate-500">
+              ${entry.visitorId ? `visitor: ${escapeHtml(entry.visitorId)}` : 'anonymous'}
+              ${entry.sessionId ? ` · session: ${escapeHtml(entry.sessionId)}` : ''}
+            </div>
+          </div>
+          <span class="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">${escapeHtml(formatTime(entry.createdAt))}</span>
+        </div>
+        <p class="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">${escapeHtml(entry.meta?.text || '')}</p>
+      </div>
+    `).join('')
+    : '<div class="rounded-2xl border border-dashed border-emerald-500/20 bg-emerald-500/5 p-5 text-center text-sm leading-7 text-slate-400">아직 접수된 건의가 없습니다.</div>';
+
+  return `
+    <section class="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">
+      <div class="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.2em] text-slate-400">건의사항</div>
+          <h3 class="mt-1 text-lg font-bold text-white">접수된 건의사항</h3>
+        </div>
+        <span class="text-xs text-slate-400">${suggestionLogs.length} items</span>
+      </div>
+      <div class="space-y-3">
+        ${cards}
+      </div>
+    </section>
+  `;
+}
+
 async function showAdminDashboard() {
   const dashboard = document.getElementById('admin-dashboard');
   const content = document.getElementById('admin-dashboard-content');
@@ -643,7 +844,12 @@ async function showAdminDashboard() {
     content.innerHTML = `<div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-sm text-red-200">${escapeHtml(data.error)}</div>`;
     return;
   }
-  content.innerHTML = renderAdminDashboardShell(renderAdminPanel(data));
+  content.innerHTML = renderAdminDashboardShell(`
+    <div class="grid gap-4">
+      ${renderAdminPanel(data)}
+      ${renderSuggestionAdminSection(data.activityLogs || [])}
+    </div>
+  `);
 }
 
 async function reloadAdminDashboard() {

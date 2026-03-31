@@ -79,6 +79,7 @@ function buildStats(store: LogStore) {
     pageViewCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PAGE_VIEW').length,
     promptGenerateCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PROMPT_GENERATE').length,
     optimizeRunCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'OPTIMIZE_RUN').length,
+    suggestionCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'SUGGESTION_SUBMIT').length,
     copyCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase().includes('COPY')).length,
     downloadCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase().includes('DOWNLOAD')).length,
     topActivityTypes: activityByType.slice(0, 5),

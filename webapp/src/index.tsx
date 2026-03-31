@@ -49,6 +49,9 @@ app.get('/', (c) => {
               <button onclick="showHistory()" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">
                 히스토리
               </button>
+              <button onclick="showSuggestionBoard()" class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/15">
+                건의
+              </button>
               <button onclick="promptAdminToken()" class="rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/15">
                 관리자
               </button>
@@ -78,6 +81,9 @@ app.get('/', (c) => {
             </button>
             <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
               최적화 모드
+            </button>
+            <button onclick="showSuggestionBoard()" class="w-full rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-left text-sm font-semibold text-emerald-200 hover:bg-emerald-500/15">
+              건의 게시판
             </button>
           </div>
           <div class="mt-4 border-t border-white/10 pt-4">
@@ -113,10 +119,13 @@ app.get('/', (c) => {
                 <button onclick="switchMode('builder')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
                   빌더 모드
                 </button>
-                <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-                  최적화 모드
-                </button>
-              </div>
+              <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                최적화 모드
+              </button>
+              <button onclick="showSuggestionBoard()" class="w-full rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-left text-sm font-semibold text-emerald-200 hover:bg-emerald-500/15">
+                건의 게시판
+              </button>
+            </div>
               <div class="mt-4 border-t border-white/10 pt-4">
                 <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">작업 상태</div>
                 <div class="mt-2 grid gap-2">
@@ -499,6 +508,22 @@ app.get('/', (c) => {
             </div>
           </div>
           <div id="admin-dashboard-content" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6"></div>
+        </div>
+      </div>
+
+      <div id="suggestion-board" class="fixed inset-0 z-[105] hidden bg-slate-950/96">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.14),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(92,124,250,0.12),transparent_30%)]"></div>
+        <div class="relative flex h-full flex-col">
+          <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">자유 건의 게시판</div>
+              <div class="mt-1 text-sm text-slate-300">사용자 제안과 수정 요청을 남기면 관리자가 보고 반영합니다.</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="closeSuggestionBoard()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">닫기</button>
+            </div>
+          </div>
+          <div id="suggestion-board-content" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6"></div>
         </div>
       </div>
     </div>
