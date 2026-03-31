@@ -7,6 +7,15 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v2.9',
+    items: [
+      { tag: 'improve', text: '선택 입력이 한 번에 펼쳐지지 않고 하나씩 추가되도록 바꿨다.' },
+      { tag: 'improve', text: '사무직 사용자가 고급 입력에 압도되지 않도록 기본 화면을 더 단순하게 정리했다.' },
+      { tag: 'fix', text: '선택 입력이 덩어리로 보이던 흐름을 단계형 추가 방식으로 바꿨다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v2.8',
     items: [
       { tag: 'improve', text: '퀵 모드에서 사무직과 개발자 진입점이 더 명확하게 보이도록 카드형 시작 흐름을 정리했다.' },

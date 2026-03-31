@@ -315,6 +315,49 @@ function renderFields(data) {
       ` : ''}
     </div>
   `;
+
+  const advancedWrapper = container.querySelector('details .mt-4.space-y-5');
+  if (advancedWrapper) {
+    const cards = Array.from(advancedWrapper.children);
+    cards.forEach((card, index) => {
+      if (index > 0) card.classList.add('hidden');
+      card.dataset.advancedIndex = String(index);
+    });
+
+    const existingButton = container.querySelector('#add-advanced-field-btn');
+    if (!existingButton) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.id = 'add-advanced-field-btn';
+      button.className = 'mt-4 rounded-xl bg-brand-600 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-500';
+      button.textContent = cards.length > 1 ? `입력 추가 (${cards.length - 1}개 남음)` : '입력 추가';
+      button.onclick = () => {
+        addNextAdvancedField();
+      };
+      container.appendChild(button);
+    }
+  }
+}
+
+function addNextAdvancedField() {
+  const hiddenCard = document.querySelector('.mt-4.space-y-5 > div.hidden');
+  if (!hiddenCard) {
+    const btn = document.getElementById('add-advanced-field-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '모든 선택 입력이 표시됨';
+    }
+    return;
+  }
+
+  hiddenCard.classList.remove('hidden');
+
+  const remaining = document.querySelectorAll('.mt-4.space-y-5 > div.hidden').length;
+  const btn = document.getElementById('add-advanced-field-btn');
+  if (btn) {
+    btn.textContent = remaining > 0 ? `입력 추가 (${remaining}개 남음)` : '모든 선택 입력이 표시됨';
+    if (remaining === 0) btn.disabled = true;
+  }
 }
 
 function updateField(id, value) {
