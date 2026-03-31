@@ -7,6 +7,15 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v3.7',
+    items: [
+      { tag: 'improve', text: '로그인 없이도 프롬프트 히스토리와 버전이 브라우저에 저장되도록 무료 로컬 저장 구조를 추가했습니다.' },
+      { tag: 'improve', text: '개선과 최적화 결과도 같은 히스토리 스레드에 버전으로 쌓이도록 연결했습니다.' },
+      { tag: 'fix', text: 'GitHub Actions 자동 배포 트리거를 제거하고 수동 실행 전용으로 바꿨습니다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v3.6',
     items: [
       { tag: 'improve', text: '작업 상태 선택을 추가해 새로 시작, 진행 중, 완료 보고, 막힘 / 수정 요청을 구분할 수 있게 했습니다.' },
