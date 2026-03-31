@@ -9,7 +9,7 @@
 
 ## 최신 배포
 
-- [https://fe55eded.promptbuilder-df6.pages.dev](https://fe55eded.promptbuilder-df6.pages.dev)
+- promptbuilder-df6.pages.dev
 
 ## 프로젝트 개요
 
