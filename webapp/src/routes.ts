@@ -638,8 +638,8 @@ async function readPublicStats(c: any) {
       await ensureEventLogSchema(c)
       await ensureAppDataSchema(c)
       const [generatedPromptCountResult, activityCountResult, visitorCountResult, pageViewCountResult] = await Promise.all([
-        db.prepare('SELECT COUNT(*) AS count FROM prompt_versions WHERE kind = ?').bind('generate').all(),
-        db.prepare('SELECT COUNT(*) AS count FROM event_logs WHERE kind = ?').bind('activity').all(),
+        db.prepare("SELECT COUNT(*) AS count FROM event_logs WHERE kind = ? AND action_type = ?").bind('prompt', 'RUN').all(),
+        db.prepare("SELECT COUNT(*) AS count FROM event_logs WHERE kind = ? AND action_type != ?").bind('activity', 'PAGE_VIEW').all(),
         db.prepare(`
           SELECT COUNT(DISTINCT visitor_id) AS count FROM (
             SELECT visitor_id FROM event_logs WHERE visitor_id IS NOT NULL AND visitor_id != ''
@@ -676,7 +676,7 @@ async function readPublicStats(c: any) {
   ])
   return {
     generatedPromptCount: store.promptLogs.filter((log: any) => String(log.kind || log.actionType || '').toUpperCase() === 'RUN').length,
-    activityCount: store.activityLogs.length,
+    activityCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() !== 'PAGE_VIEW').length,
     visitorCount: visitors.size,
     pageViewCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PAGE_VIEW').length,
     updatedAt: new Date().toISOString(),

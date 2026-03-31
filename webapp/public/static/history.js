@@ -438,6 +438,9 @@ function saveToHistory(data) {
   sendPersistJson('/api/training-samples', {
     sample: samplePayload,
   });
+  if (typeof loadPublicStats === 'function') {
+    setTimeout(() => loadPublicStats(), 400);
+  }
   return entry;
 }
 

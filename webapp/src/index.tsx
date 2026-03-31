@@ -196,7 +196,7 @@ app.get('/', (c) => {
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 활동 로그</div>
                   <div class="mt-2 text-3xl font-black text-white"><span id="site-activity-count">0</span></div>
-                  <div class="mt-1 text-xs leading-5 text-slate-400">생성, 복사, 다운로드를 포함한 전체 활동 수</div>
+                  <div class="mt-1 text-xs leading-5 text-slate-400">페이지뷰를 제외한 생성, 복사, 다운로드 활동 수</div>
                 </div>
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 방문자 수</div>

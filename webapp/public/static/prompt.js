@@ -33,6 +33,9 @@ async function generatePrompt() {
     state.selectedGeneratedVariantIndex = 0;
     displayResult(data);
     saveToHistory(data);
+    if (typeof loadPublicStats === 'function') {
+      setTimeout(() => loadPublicStats(), 400);
+    }
     if (typeof recordActivity === 'function') {
       recordActivity('PROMPT_GENERATE', {
         techniqueId: state.techniqueId,
