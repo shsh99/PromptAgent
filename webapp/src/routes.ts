@@ -637,14 +637,30 @@ async function readPublicStats(c: any) {
     try {
       await ensureEventLogSchema(c)
       await ensureAppDataSchema(c)
-      const [generatedPromptCountResult, pageViewCountResult] = await Promise.all([
+      const [generatedPromptCountResult, activityCountResult, visitorCountResult, pageViewCountResult] = await Promise.all([
         db.prepare('SELECT COUNT(*) AS count FROM prompt_versions WHERE kind = ?').bind('generate').all(),
+        db.prepare('SELECT COUNT(*) AS count FROM event_logs WHERE kind = ?').bind('activity').all(),
+        db.prepare(`
+          SELECT COUNT(DISTINCT visitor_id) AS count FROM (
+            SELECT visitor_id FROM event_logs WHERE visitor_id IS NOT NULL AND visitor_id != ''
+            UNION
+            SELECT visitor_id FROM prompt_threads WHERE visitor_id IS NOT NULL AND visitor_id != ''
+            UNION
+            SELECT visitor_id FROM suggestions WHERE visitor_id IS NOT NULL AND visitor_id != ''
+            UNION
+            SELECT visitor_id FROM prompt_training_samples WHERE visitor_id IS NOT NULL AND visitor_id != ''
+          )
+        `).all(),
         db.prepare("SELECT COUNT(*) AS count FROM event_logs WHERE kind = ? AND action_type = ?").bind('activity', 'PAGE_VIEW').all(),
       ])
       const generatedPromptCount = Number((generatedPromptCountResult?.results?.[0] as any)?.count || 0)
+      const activityCount = Number((activityCountResult?.results?.[0] as any)?.count || 0)
+      const visitorCount = Number((visitorCountResult?.results?.[0] as any)?.count || 0)
       const pageViewCount = Number((pageViewCountResult?.results?.[0] as any)?.count || 0)
       return {
         generatedPromptCount,
+        activityCount,
+        visitorCount,
         pageViewCount,
         updatedAt: new Date().toISOString(),
       }
@@ -654,8 +670,14 @@ async function readPublicStats(c: any) {
   }
 
   const store = getLogStore()
+  const visitors = new Set([
+    ...store.promptLogs.map((log: any) => log.visitorId).filter(Boolean),
+    ...store.activityLogs.map((log: any) => log.visitorId).filter(Boolean),
+  ])
   return {
     generatedPromptCount: store.promptLogs.filter((log: any) => String(log.kind || log.actionType || '').toUpperCase() === 'RUN').length,
+    activityCount: store.activityLogs.length,
+    visitorCount: visitors.size,
     pageViewCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PAGE_VIEW').length,
     updatedAt: new Date().toISOString(),
   }

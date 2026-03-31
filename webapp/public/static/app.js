@@ -22,6 +22,8 @@ let state = {
   selectedGeneratedVariantIndex: 0,
   publicStats: {
     generatedPromptCount: 0,
+    activityCount: 0,
+    visitorCount: 0,
     pageViewCount: 0,
   },
 };
@@ -123,10 +125,13 @@ async function loadPublicStats() {
     const data = await res.json();
     state.publicStats = {
       generatedPromptCount: data.generatedPromptCount || 0,
+      activityCount: data.activityCount || 0,
+      visitorCount: data.visitorCount || 0,
       pageViewCount: data.pageViewCount || 0,
     };
     setPublicStatValue('site-prompt-count', state.publicStats.generatedPromptCount);
-    setPublicStatValue('site-visit-count', state.publicStats.pageViewCount);
+    setPublicStatValue('site-activity-count', state.publicStats.activityCount);
+    setPublicStatValue('site-visitor-count', state.publicStats.visitorCount);
   } catch {
     // keep defaults
   }

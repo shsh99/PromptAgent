@@ -7,6 +7,15 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.04.01',
+    version: 'v4.2',
+    items: [
+      { tag: 'improve', text: '메인 화면을 단순화하고 전체 생성 수, 활동 로그 수, 방문자 수를 신뢰 지표로 전면에 배치했습니다.' },
+      { tag: 'improve', text: '메인 타이틀 줄바꿈을 정리해 한 줄씩 어긋나 보이던 문제를 줄였습니다.' },
+      { tag: 'improve', text: '공용 통계 API를 추가해 서버 기준 사용량을 메인에서 바로 읽을 수 있게 했습니다.' },
+    ],
+  },
+  {
+    date: '26.04.01',
     version: 'v4.1',
     items: [
       { tag: 'new', text: '프롬프트 생성 결과를 3개 변형으로 보여주고 바로 선택할 수 있게 했습니다.' },

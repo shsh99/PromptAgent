@@ -187,16 +187,21 @@ app.get('/', (c) => {
                   최적화 열기
                 </button>
               </div>
-              <div class="grid gap-3 sm:grid-cols-2">
+              <div class="grid gap-3 lg:grid-cols-3">
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 생성 프롬프트</div>
                   <div class="mt-2 text-3xl font-black text-white"><span id="site-prompt-count">0</span></div>
                   <div class="mt-1 text-xs leading-5 text-slate-400">지금까지 생성된 프롬프트 누적 수</div>
                 </div>
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 사이트 방문수</div>
-                  <div class="mt-2 text-3xl font-black text-white"><span id="site-visit-count">0</span></div>
-                  <div class="mt-1 text-xs leading-5 text-slate-400">지금까지 사이트에 들어온 누적 방문 수</div>
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 활동 로그</div>
+                  <div class="mt-2 text-3xl font-black text-white"><span id="site-activity-count">0</span></div>
+                  <div class="mt-1 text-xs leading-5 text-slate-400">생성, 복사, 다운로드를 포함한 전체 활동 수</div>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 방문자 수</div>
+                  <div class="mt-2 text-3xl font-black text-white"><span id="site-visitor-count">0</span></div>
+                  <div class="mt-1 text-xs leading-5 text-slate-400">고유 사용자를 기준으로 집계한 방문자 수</div>
                 </div>
               </div>
             </div>

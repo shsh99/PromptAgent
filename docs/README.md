@@ -46,6 +46,7 @@ It already has:
 - harness-style prompt construction
 - generated result variants
 - one-click Optimize entry
+- public usage counters on the home screen
 - result-driven prompt optimization
 - quality scoring
 - history and library storage
