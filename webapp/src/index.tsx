@@ -14,45 +14,45 @@ app.get('/', (c) => {
   return c.render(
     <div id="app-root">
       <nav class="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between gap-4">
+        <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex cursor-pointer items-center gap-3" onclick="location.reload()">
-              <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-indigo-600 shadow-lg shadow-brand-500/20">
+              <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-indigo-600 shadow-lg shadow-brand-500/20">
                 <i class="fas fa-wand-magic-sparkles text-sm text-white"></i>
               </div>
-              <div>
-                <h1 class="text-lg font-bold tracking-tight text-white">프롬프트빌더</h1>
-                <p class="text-[11px] text-slate-400">프롬프트를 몰라도 AI를 잘 쓰게 만드는 플랫폼</p>
+              <div class="min-w-0">
+                <h1 class="text-base font-bold tracking-tight text-white sm:text-lg">프롬프트빌더</h1>
+                <p class="hidden text-[11px] text-slate-400 sm:block">프롬프트를 몰라도 AI를 잘 쓰게 만드는 플랫폼</p>
               </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2 sm:justify-end">
               <button onclick="toggleMobileSidebar()" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 xl:hidden">
                 <i class="fas fa-bars mr-1"></i>
                 메뉴
               </button>
-              <button onclick="setTheme('light')" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">
+              <button onclick="setTheme('light')" class="hidden rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 sm:inline-flex">
                 라이트
               </button>
-              <button onclick="setTheme('dark')" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">
+              <button onclick="setTheme('dark')" class="hidden rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 sm:inline-flex">
                 다크
               </button>
-              <button data-prompt-lang="ko" onclick="setPromptLanguage('ko')" class="rounded-full border border-white/10 bg-brand-600 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-500">
+              <button data-prompt-lang="ko" onclick="setPromptLanguage('ko')" class="hidden rounded-full border border-white/10 bg-brand-600 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-500 sm:inline-flex">
                 한국어
               </button>
-              <button data-prompt-lang="en" onclick="setPromptLanguage('en')" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">
+              <button data-prompt-lang="en" onclick="setPromptLanguage('en')" class="hidden rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 sm:inline-flex">
                 English
               </button>
-              <button onclick="showGuide()" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">
+              <button onclick="showGuide()" class="hidden rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 md:inline-flex">
                 가이드
               </button>
-              <button onclick="showHistory()" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">
+              <button onclick="showHistory()" class="hidden rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 md:inline-flex">
                 히스토리
               </button>
-              <button onclick="showSuggestionBoard()" class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/15">
+              <button onclick="showSuggestionBoard()" class="hidden rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/15 md:inline-flex">
                 건의
               </button>
-              <button onclick="promptAdminToken()" class="rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/15">
+              <button onclick="promptAdminToken()" class="hidden rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/15 md:inline-flex">
                 관리자
               </button>
             </div>
@@ -73,6 +73,18 @@ app.get('/', (c) => {
             </button>
           </div>
           <div class="space-y-2">
+            <button onclick="setTheme('light')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              라이트 모드
+            </button>
+            <button onclick="setTheme('dark')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              다크 모드
+            </button>
+            <button onclick="setPromptLanguage('ko')" class="w-full rounded-2xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-brand-100 hover:bg-brand-500/15">
+              한국어
+            </button>
+            <button onclick="setPromptLanguage('en')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              English
+            </button>
             <button onclick="switchMode('template')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
               템플릿 모드
             </button>
@@ -93,6 +105,15 @@ app.get('/', (c) => {
               <button data-workflow-state="in-progress" onclick="setWorkflowState('in-progress')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">진행 중</button>
               <button data-workflow-state="done" onclick="setWorkflowState('done')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">완료 보고</button>
               <button data-workflow-state="blocked" onclick="setWorkflowState('blocked')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">막힘 / 수정 요청</button>
+            </div>
+          </div>
+          <div class="mt-4 border-t border-white/10 pt-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">도구</div>
+            <div class="mt-2 grid gap-2">
+              <button onclick="showGuide()" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">가이드</button>
+              <button onclick="showHistory()" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">히스토리</button>
+              <button onclick="showSuggestionBoard()" class="w-full rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-left text-xs font-semibold text-emerald-200 hover:bg-emerald-500/15">건의 게시판</button>
+              <button onclick="promptAdminToken()" class="w-full rounded-2xl border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-left text-xs font-semibold text-brand-100 hover:bg-brand-500/15">관리자</button>
             </div>
           </div>
           <div class="mt-4 rounded-2xl border border-brand-500/20 bg-brand-500/10 p-3 text-xs leading-6 text-slate-200">
@@ -192,7 +213,7 @@ app.get('/', (c) => {
               </div>
               <div class="text-xs text-slate-400">한 번만 고르면 됩니다</div>
             </div>
-            <div class="grid gap-3 md:grid-cols-3">
+            <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
               <button onclick="switchMode('template')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
                 <div class="flex items-center justify-between">
                   <div class="text-sm font-semibold text-white">템플릿 모드</div>
@@ -226,7 +247,7 @@ app.get('/', (c) => {
             </div>
           <div class="text-xs text-slate-300">기본은 GPT 스타일</div>
           </div>
-          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <div class="grid gap-3 grid-cols-2 sm:grid-cols-2 xl:grid-cols-5">
             <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="rounded-2xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
               GPT
               <div class="mt-1 text-[11px] font-normal text-brand-100/80">구조적이고 간결한 스타일</div>

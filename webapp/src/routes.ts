@@ -106,6 +106,30 @@ CREATE TABLE IF NOT EXISTS suggestions (
 );
 `
 
+const PROMPT_TRAINING_SAMPLES_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS prompt_training_samples (
+  id TEXT PRIMARY KEY,
+  visitor_id TEXT NOT NULL,
+  session_id TEXT,
+  source TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  thread_id TEXT,
+  version_id TEXT,
+  technique_id TEXT,
+  technique_name TEXT,
+  purpose TEXT,
+  keyword TEXT,
+  workflow_state TEXT,
+  input_raw TEXT,
+  generated_prompt TEXT NOT NULL,
+  output_text TEXT,
+  intent_json TEXT,
+  quality_json TEXT,
+  metadata_json TEXT,
+  created_at TEXT NOT NULL
+);
+`
+
 function getLogStore(): LogStore {
   const g = globalThis as any
   if (!g.__promptAgentLogStore) {
@@ -148,9 +172,12 @@ async function ensureAppDataSchema(c: any) {
       db.prepare(PROMPT_THREADS_SCHEMA_SQL).run(),
       db.prepare(PROMPT_VERSIONS_SCHEMA_SQL).run(),
       db.prepare(SUGGESTIONS_SCHEMA_SQL).run(),
+      db.prepare(PROMPT_TRAINING_SAMPLES_SCHEMA_SQL).run(),
       db.prepare('CREATE INDEX IF NOT EXISTS idx_prompt_threads_updated_at ON prompt_threads(updated_at DESC)').run(),
       db.prepare('CREATE INDEX IF NOT EXISTS idx_prompt_versions_thread_id ON prompt_versions(thread_id, version_number DESC)').run(),
       db.prepare('CREATE INDEX IF NOT EXISTS idx_suggestions_created_at ON suggestions(created_at DESC)').run(),
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_prompt_training_samples_created_at ON prompt_training_samples(created_at DESC)').run(),
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_prompt_training_samples_kind_created_at ON prompt_training_samples(kind, created_at DESC)').run(),
     ]).catch((error) => {
       g.__promptAgentAppSchemaPromise = null
       throw error
@@ -414,6 +441,62 @@ async function persistSuggestion(c: any, suggestion: any) {
   }
 }
 
+async function persistTrainingSample(c: any, sample: any) {
+  const db = getPersistentDb(c)
+  if (!db || typeof db.prepare !== 'function') return
+  try {
+    await ensureAppDataSchema(c)
+    await db.prepare(`
+      INSERT INTO prompt_training_samples (
+        id, visitor_id, session_id, source, kind, thread_id, version_id, technique_id,
+        technique_name, purpose, keyword, workflow_state, input_raw, generated_prompt,
+        output_text, intent_json, quality_json, metadata_json, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        visitor_id = excluded.visitor_id,
+        session_id = excluded.session_id,
+        source = excluded.source,
+        kind = excluded.kind,
+        thread_id = excluded.thread_id,
+        version_id = excluded.version_id,
+        technique_id = excluded.technique_id,
+        technique_name = excluded.technique_name,
+        purpose = excluded.purpose,
+        keyword = excluded.keyword,
+        workflow_state = excluded.workflow_state,
+        input_raw = excluded.input_raw,
+        generated_prompt = excluded.generated_prompt,
+        output_text = excluded.output_text,
+        intent_json = excluded.intent_json,
+        quality_json = excluded.quality_json,
+        metadata_json = excluded.metadata_json,
+        created_at = excluded.created_at
+    `).bind(
+      String(sample.id),
+      String(sample.visitorId || 'anonymous'),
+      String(sample.sessionId || ''),
+      String(sample.source || 'client'),
+      String(sample.kind || 'generate'),
+      sample.threadId ? String(sample.threadId) : null,
+      sample.versionId ? String(sample.versionId) : null,
+      String(sample.techniqueId || ''),
+      String(sample.techniqueName || ''),
+      String(sample.purpose || ''),
+      String(sample.keyword || ''),
+      String(sample.workflowState || ''),
+      String(sample.inputRaw || ''),
+      String(sample.generatedPrompt || ''),
+      sample.outputText ? String(sample.outputText) : null,
+      JSON.stringify(sample.intent || null),
+      JSON.stringify(sample.quality || null),
+      JSON.stringify(sample.meta || {}),
+      String(sample.createdAt || new Date().toISOString()),
+    ).run()
+  } catch {
+    // fallback is client-side/local history only
+  }
+}
+
 async function readPromptThreads(c: any, limit: number) {
   const db = getPersistentDb(c)
   if (db && typeof db.prepare === 'function') {
@@ -498,6 +581,43 @@ async function readSuggestions(c: any, limit: number) {
         title: row.title || '',
         text: row.text || '',
         status: row.status || 'submitted',
+        createdAt: row.created_at,
+      }))
+    } catch {
+      return []
+    }
+  }
+  return []
+}
+
+async function readTrainingSamples(c: any, limit: number) {
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureAppDataSchema(c)
+      const result = await db.prepare(
+        'SELECT * FROM prompt_training_samples ORDER BY created_at DESC LIMIT ?'
+      ).bind(limit).all()
+      const rows = Array.isArray(result?.results) ? result.results : []
+      return rows.map((row: any) => ({
+        id: row.id,
+        visitorId: row.visitor_id || 'anonymous',
+        sessionId: row.session_id || '',
+        source: row.source || 'client',
+        kind: row.kind || 'generate',
+        threadId: row.thread_id || '',
+        versionId: row.version_id || '',
+        techniqueId: row.technique_id || '',
+        techniqueName: row.technique_name || '',
+        purpose: row.purpose || '',
+        keyword: row.keyword || '',
+        workflowState: row.workflow_state || '',
+        inputRaw: row.input_raw || '',
+        generatedPrompt: row.generated_prompt || '',
+        outputText: row.output_text || '',
+        intent: (() => { try { return row.intent_json ? JSON.parse(row.intent_json) : null; } catch { return null; } })(),
+        quality: (() => { try { return row.quality_json ? JSON.parse(row.quality_json) : null; } catch { return null; } })(),
+        meta: (() => { try { return row.metadata_json ? JSON.parse(row.metadata_json) : {}; } catch { return {}; } })(),
         createdAt: row.created_at,
       }))
     } catch {
@@ -729,11 +849,12 @@ apiRouter.post('/logs', async (c) => {
 
 apiRouter.get('/admin/logs', async (c) => {
   if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
-  const [promptLogs, activityLogs, promptThreads, suggestionItems] = await Promise.all([
+  const [promptLogs, activityLogs, promptThreads, suggestionItems, trainingSamples] = await Promise.all([
     readEventLogs(c, 'prompt', MAX_PROMPT_LOGS),
     readEventLogs(c, 'activity', MAX_ACTIVITY_LOGS),
     readPromptThreads(c, 80),
     readSuggestions(c, 80),
+    readTrainingSamples(c, 80),
   ])
   const store = { promptLogs, activityLogs }
   const stats = buildStats(store)
@@ -742,10 +863,12 @@ apiRouter.get('/admin/logs', async (c) => {
     activityLogs: store.activityLogs,
     promptThreads,
     suggestions: suggestionItems,
+    trainingSamples: trainingSamples,
     stats: {
       ...stats,
       promptThreadCount: promptThreads.length,
       suggestionStoreCount: suggestionItems.length,
+      trainingSampleCount: trainingSamples.length,
     },
   })
 })
@@ -753,6 +876,18 @@ apiRouter.get('/admin/logs', async (c) => {
 apiRouter.delete('/admin/logs', async (c) => {
   if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
   await clearEventLogs(c)
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureAppDataSchema(c)
+      await db.prepare('DELETE FROM prompt_threads').run()
+      await db.prepare('DELETE FROM prompt_versions').run()
+      await db.prepare('DELETE FROM suggestions').run()
+      await db.prepare('DELETE FROM prompt_training_samples').run()
+    } catch {
+      // ignore delete failures
+    }
+  }
   return c.json({ ok: true })
 })
 
@@ -768,6 +903,20 @@ apiRouter.post('/history/persist', async (c) => {
     return c.json({ ok: true })
   } catch {
     return c.json({ error: '히스토리 저장에 실패했습니다.' }, 400)
+  }
+})
+
+apiRouter.post('/training-samples', async (c) => {
+  try {
+    const payload = await c.req.json()
+    const sample = payload.sample || payload
+    if (!sample.id || !sample.generatedPrompt) {
+      return c.json({ error: 'generatedPrompt가 필요합니다.' }, 400)
+    }
+    await persistTrainingSample(c, sample)
+    return c.json({ ok: true })
+  } catch {
+    return c.json({ error: '학습 샘플 저장에 실패했습니다.' }, 400)
   }
 })
 

@@ -28,6 +28,7 @@
 
 - 사용자 측 히스토리와 건의사항은 브라우저에 남습니다.
 - 서버 로그와 관리자 통계는 D1이 있으면 D1에 저장됩니다.
+- 생성된 프롬프트, 개선본, 최적화본은 학습 샘플로도 별도 저장됩니다.
 
 ### D1 연결 순서
 
@@ -51,6 +52,7 @@ wrangler d1 migrations apply DB --remote --config wrangler.toml
 
 - `migrations/0001_event_logs.sql`
 - `migrations/0002_prompt_history_and_suggestions.sql`
+- `migrations/0003_prompt_training_samples.sql`
 
 ## 실행
 
@@ -74,4 +76,3 @@ npm run deploy
 ## 업데이트 로그
 
 최근 변경 내용은 `webapp/public/static/changelog.js`에서 확인할 수 있습니다.
-

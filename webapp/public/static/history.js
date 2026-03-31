@@ -321,6 +321,36 @@ function recordActivity(actionType, meta = {}) {
 }
 
 function saveToHistory(data) {
+  const samplePayload = {
+    id: data.versionId || createLocalRecordId('ts'),
+    visitorId: ensureVisitorId(),
+    sessionId: ensureSessionId(),
+    source: 'generate',
+    kind: data.kind || 'generate',
+    threadId: data.threadId || getCurrentHistoryThreadId(),
+    versionId: data.versionId || '',
+    techniqueId: data.techniqueId || state.techniqueId || '',
+    techniqueName: data.technique?.name || state.techniqueData?.name || state.techniqueId || '',
+    purpose: data.purpose || state.purpose || '',
+    keyword: data.keyword || state.keyword || '',
+    workflowState: data.workflowState || state.workflowState || 'new',
+    inputRaw: data.inputRaw || '',
+    generatedPrompt: data.prompt || '',
+    outputText: data.outputText || '',
+    intent: data.intent || null,
+    quality: {
+      percentage: data.qualityReport?.percentage || 0,
+      grade: data.qualityReport?.grade || 'C',
+      summary: data.qualityReport?.summary || '',
+      checks: data.qualityReport?.checks || [],
+      suggestions: data.qualityReport?.suggestions || [],
+    },
+    meta: {
+      fields: data.fields || state.fields || {},
+      resultMode: data.resultMode || '',
+    },
+    createdAt: new Date().toISOString(),
+  };
   const entry = upsertPromptHistoryVersion({
     threadId: data.threadId || getCurrentHistoryThreadId(),
     versionId: data.versionId,
@@ -397,6 +427,9 @@ function saveToHistory(data) {
       fields: data.fields || state.fields || {},
       createdAt: new Date().toISOString(),
     },
+  });
+  sendPersistJson('/api/training-samples', {
+    sample: samplePayload,
   });
   return entry;
 }
@@ -968,6 +1001,7 @@ function renderAdminPanelV2(data) {
   const activityLogs = data?.activityLogs || [];
   const promptThreads = data?.promptThreads || [];
   const suggestions = data?.suggestions || [];
+  const trainingSamples = data?.trainingSamples || [];
   const stats = data?.stats || {};
   const tokenState = getAdminToken() ? '연결됨' : '없음';
 
@@ -1044,6 +1078,24 @@ function renderAdminPanelV2(data) {
     `).join('')
     : '<div class="text-center py-8 text-gray-600 text-sm">저장된 건의사항이 없습니다.</div>');
 
+  const renderTrainingCards = () => (trainingSamples.length
+    ? trainingSamples.slice(0, 12).map((entry) => `
+      <div class="rounded-xl border border-cyan-500/15 bg-cyan-500/5 p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-white">${escapeHtml(entry.kind || 'generate')}</div>
+            <div class="mt-1 text-[11px] text-gray-500">
+              ${entry.visitorId ? `visitor: ${escapeHtml(entry.visitorId)}` : 'anonymous'}
+              ${entry.techniqueName ? ` · ${escapeHtml(entry.techniqueName)}` : ''}
+            </div>
+          </div>
+          <span class="text-[10px] text-gray-600">${formatTime(entry.createdAt)}</span>
+        </div>
+        <p class="mt-3 line-clamp-2 text-xs leading-6 text-gray-400">${escapeHtml(entry.generatedPrompt || '')}</p>
+      </div>
+    `).join('')
+    : '<div class="text-center py-8 text-gray-600 text-sm">저장된 학습 샘플이 없습니다.</div>');
+
   const topTechniques = (stats.topPromptTechniques || []).slice(0, 5);
   const topPurposes = (stats.topPromptPurposes || []).slice(0, 5);
   const topActivityTypes = (stats.topActivityTypes || []).slice(0, 5);
@@ -1077,6 +1129,7 @@ function renderAdminPanelV2(data) {
       ${renderStatCard('복사 수', stats.copyCount || 0)}
       ${renderStatCard('다운로드 수', stats.downloadCount || 0)}
       ${renderStatCard('생성 이벤트', stats.promptGenerateCount || 0)}
+      ${renderStatCard('학습 샘플', stats.trainingSampleCount || trainingSamples.length || 0)}
     </div>
 
     <div class="grid grid-cols-1 gap-4">
@@ -1107,6 +1160,13 @@ function renderAdminPanelV2(data) {
           <span class="text-[10px] text-gray-500">${suggestions.length} items</span>
         </div>
         <div class="space-y-3">${renderSuggestionCards()}</div>
+      </section>
+      <section class="rounded-2xl border border-gray-800 bg-gray-950/60 p-4">
+        <div class="mb-3 flex items-center justify-between">
+          <h4 class="text-sm font-semibold text-white">학습 샘플</h4>
+          <span class="text-[10px] text-gray-500">${trainingSamples.length} items</span>
+        </div>
+        <div class="space-y-3">${renderTrainingCards()}</div>
       </section>
     </div>
   `;

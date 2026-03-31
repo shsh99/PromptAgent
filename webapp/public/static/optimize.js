@@ -718,6 +718,31 @@ function saveOptimizeVersion() {
       score: entry.score || 0,
     });
   }
+  if (typeof sendPersistJson === 'function') {
+    sendPersistJson('/api/training-samples', {
+      sample: {
+        id: `ts_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        visitorId: typeof ensureVisitorId === 'function' ? ensureVisitorId() : 'anonymous',
+        sessionId: typeof ensureSessionId === 'function' ? ensureSessionId() : '',
+        source: 'optimize',
+        kind: 'optimize',
+        threadId: state?.activePromptHistoryId || '',
+        versionId: '',
+        techniqueId: state?.techniqueId || '',
+        techniqueName: state?.techniqueData?.name || state?.techniqueId || 'Prompt',
+        purpose: state?.purpose || '',
+        keyword: state?.keyword || '',
+        workflowState: state?.workflowState || 'new',
+        inputRaw: session.prompt || '',
+        generatedPrompt: entry.improvedPrompt || entry.prompt || '',
+        outputText: session.output || '',
+        intent: null,
+        quality: { percentage: entry.score || 0, issues: entry.issues || [] },
+        meta: { goal: session.goal || '' },
+        createdAt: new Date().toISOString(),
+      },
+    });
+  }
   renderOptimizeHistory();
   setCurrentCompareId(entry.id);
   renderOptimizeDiff(entry);

@@ -122,6 +122,31 @@ async function improvePrompt() {
         score: 0,
       });
     }
+    if (typeof sendPersistJson === 'function') {
+      sendPersistJson('/api/training-samples', {
+        sample: {
+          id: `ts_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          visitorId: typeof ensureVisitorId === 'function' ? ensureVisitorId() : 'anonymous',
+          sessionId: typeof ensureSessionId === 'function' ? ensureSessionId() : '',
+          source: 'improve',
+          kind: 'improve',
+          threadId: state.activePromptHistoryId || '',
+          versionId: '',
+          techniqueId: state.techniqueId || '',
+          techniqueName: state.techniqueData?.name || state.techniqueId || 'Prompt',
+          purpose: state.purpose || '',
+          keyword: state.keyword || '',
+          workflowState: state.workflowState || 'new',
+          inputRaw: input,
+          generatedPrompt: data.improvedPrompt || input,
+          outputText: '',
+          intent: null,
+          quality: { percentage: 0, grade: 'C' },
+          meta: { goal },
+          createdAt: new Date().toISOString(),
+        },
+      });
+    }
     if (typeof recordActivity === 'function') {
       recordActivity('PROMPT_IMPROVE', {
         techniqueId: state.techniqueId,
