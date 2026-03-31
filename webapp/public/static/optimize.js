@@ -295,12 +295,12 @@ function injectOptimizeUI() {
     <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-6">
       <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">퀵 모드</div>
+          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">템플릿 모드</div>
           <h3 class="mt-2 text-2xl font-bold">자주 쓰는 업무를 바로 시작하세요</h3>
           <p class="mt-2 text-sm leading-6 text-gray-600">카드를 누르면 목적, 키워드, 구조가 자동으로 들어갑니다. 빈칸이 있어도 생성되도록 기본값을 채워 둡니다.</p>
         </div>
         <button onclick="switchMode('builder')" class="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-500">
-          <i class="fas fa-code"></i> 고급자 모드 열기
+          <i class="fas fa-code"></i> 빌더 모드 열기
         </button>
       </div>
 
@@ -318,7 +318,7 @@ function injectOptimizeUI() {
                     <i class="fas ${item.icon} text-brand-600"></i>
                     <span class="font-semibold text-gray-900">${escapeHtml(item.title)}</span>
                   </div>
-                  <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-700">퀵</span>
+                  <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-700">템플릿</span>
                 </div>
                 <div class="mt-2 text-xs leading-5 text-gray-600">${escapeHtml(item.description)}</div>
                 <div class="mt-3 text-[11px] font-medium text-brand-600">누르면 바로 채워집니다</div>

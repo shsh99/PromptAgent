@@ -145,7 +145,7 @@ app.get('/', (c) => {
               </p>
               <div class="flex flex-wrap gap-3">
                 <button onclick="switchMode('template')" class="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10 hover:bg-slate-100">
-                  퀵 모드로 시작
+                  템플릿 모드로 시작
                 </button>
                 <button onclick="switchMode('builder')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
                   고급자 모드
@@ -166,17 +166,17 @@ app.get('/', (c) => {
             <div class="grid gap-3 md:grid-cols-3">
               <button onclick="switchMode('template')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
                 <div class="flex items-center justify-between">
-                  <div class="text-sm font-semibold text-white">퀵 모드</div>
+                  <div class="text-sm font-semibold text-white">템플릿 모드</div>
                   <span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-200">사무직</span>
                 </div>
-                <div class="mt-2 text-xs leading-5 text-slate-400">이메일, 보고서, 회의록처럼 자주 쓰는 일을 빠르게 시작합니다.</div>
+                <div class="mt-2 text-xs leading-5 text-slate-300">이메일, 보고서, 회의록처럼 자주 쓰는 일을 빠르게 시작합니다.</div>
               </button>
               <button onclick="switchMode('builder')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
                 <div class="flex items-center justify-between">
-                  <div class="text-sm font-semibold text-white">고급자 모드</div>
+                  <div class="text-sm font-semibold text-white">빌더 모드</div>
                   <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200">개발자</span>
                 </div>
-                <div class="mt-2 text-xs leading-5 text-slate-400">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
+                <div class="mt-2 text-xs leading-5 text-slate-300">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
               </button>
               <button onclick="switchMode('optimize')" class="rounded-3xl border border-brand-400/20 bg-brand-500/10 px-4 py-4 text-left transition hover:bg-brand-500/15">
                 <div class="flex items-center justify-between">
@@ -195,7 +195,7 @@ app.get('/', (c) => {
               <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">AI 스타일</div>
               <h3 class="mt-2 text-lg font-semibold text-white">어떤 AI 말투로 맞출지 고르세요</h3>
             </div>
-            <div class="text-xs text-slate-400">기본은 GPT 스타일</div>
+          <div class="text-xs text-slate-300">기본은 GPT 스타일</div>
           </div>
           <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="rounded-2xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
