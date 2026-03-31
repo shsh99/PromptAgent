@@ -7,6 +7,15 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v3.1',
+    items: [
+      { tag: 'improve', text: 'GPT, Claude, Gemini, Genspark 스타일 프리셋을 선택할 수 있게 했다.' },
+      { tag: 'improve', text: '선택한 스타일이 생성 프롬프트에 반영되도록 연결했다.' },
+      { tag: 'improve', text: '기본은 GPT 스타일로 두고, 필요하면 다른 스타일로 전환할 수 있게 했다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v3.0',
     items: [
       { tag: 'improve', text: '선택 입력을 원하는 항목만 골라 추가하는 방식으로 바꿨다.' },

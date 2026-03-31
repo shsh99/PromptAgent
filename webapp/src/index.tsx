@@ -110,6 +110,38 @@ app.get('/', (c) => {
           </div>
         </section>
 
+        <div class="mb-10 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">AI 스타일</div>
+              <h3 class="mt-2 text-lg font-semibold text-white">어떤 AI 말투로 맞출지 고르세요</h3>
+            </div>
+            <div class="text-xs text-slate-400">기본은 GPT 스타일</div>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="rounded-2xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
+              GPT
+              <div class="mt-1 text-[11px] font-normal text-brand-100/80">구조적이고 간결한 스타일</div>
+            </button>
+            <button data-prompt-style="claude" onclick="setPromptStyle('claude')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              Claude
+              <div class="mt-1 text-[11px] font-normal text-slate-300">맥락이 풍부한 스타일</div>
+            </button>
+            <button data-prompt-style="gemini" onclick="setPromptStyle('gemini')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              Gemini
+              <div class="mt-1 text-[11px] font-normal text-slate-300">짧고 직접적인 스타일</div>
+            </button>
+            <button data-prompt-style="genspark" onclick="setPromptStyle('genspark')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              Genspark
+              <div class="mt-1 text-[11px] font-normal text-slate-300">실행 순서가 분명한 스타일</div>
+            </button>
+            <button data-prompt-style="custom" onclick="setPromptStyle('custom')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              직접 지정
+              <div class="mt-1 text-[11px] font-normal text-slate-300">기본 구조 유지, 수동 조정</div>
+            </button>
+          </div>
+        </div>
+
         <section id="step-purpose" class="mb-6">
           <div class="mb-4 flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">1</div>

@@ -4,6 +4,7 @@ let state = {
   mode: localStorage.getItem('pf_mode') || 'template',
   theme: localStorage.getItem('pf_theme') || 'light',
   promptLanguage: localStorage.getItem('pf_prompt_lang') || 'ko',
+  promptStyle: localStorage.getItem('pf_prompt_style') || 'gpt',
   purpose: null,
   keyword: '',
   techniqueId: null,
@@ -42,6 +43,19 @@ function setPromptLanguage(language) {
   });
 }
 
+function setPromptStyle(style) {
+  const nextStyle = ['gpt', 'claude', 'gemini', 'genspark', 'custom'].includes(style) ? style : 'gpt';
+  state.promptStyle = nextStyle;
+  localStorage.setItem('pf_prompt_style', nextStyle);
+  document.querySelectorAll('[data-prompt-style]').forEach((button) => {
+    const active = button.dataset.promptStyle === nextStyle;
+    button.classList.toggle('bg-brand-600', active);
+    button.classList.toggle('text-white', active);
+    button.classList.toggle('bg-white/5', !active);
+    button.classList.toggle('text-slate-200', !active);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof ensureVisitorId === 'function') ensureVisitorId();
   if (typeof recordActivity === 'function') {
@@ -54,6 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setTheme(state.theme);
   setPromptLanguage(state.promptLanguage);
+  setPromptStyle(state.promptStyle);
   await loadPurposes();
   await loadTechniques();
 
@@ -72,3 +87,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 window.setTheme = setTheme;
 window.setPromptLanguage = setPromptLanguage;
+window.setPromptStyle = setPromptStyle;

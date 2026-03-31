@@ -9,7 +9,7 @@
 
 ## 배포 URL
 
-- 최신 배포: https://64e6ef02.promptbuilder-df6.pages.dev
+- 최신 배포: https://b5aec0b6.promptbuilder-df6.pages.dev
 
 ## 이 프로젝트의 핵심
 
@@ -182,7 +182,7 @@ It is not an automatic prompt generator. It is a structure-first prompt platform
 
 ### Latest Deployment
 
-- https://64e6ef02.promptbuilder-df6.pages.dev
+- https://b5aec0b6.promptbuilder-df6.pages.dev
 
 ### What It Does
 

@@ -611,7 +611,7 @@ async function runOptimize() {
     const res = await fetch('/api/optimize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, output, goal, language: state?.promptLanguage || 'ko' }),
+      body: JSON.stringify({ prompt, output, goal, language: state?.promptLanguage || 'ko', modelTarget: state?.promptStyle || 'gpt' }),
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
@@ -622,6 +622,7 @@ async function runOptimize() {
       goal,
       result: data,
       language: state?.promptLanguage || 'ko',
+      modelTarget: state?.promptStyle || 'gpt',
       createdAt: new Date().toISOString(),
     };
     setOptimizeSession(session);

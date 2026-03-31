@@ -89,6 +89,48 @@ function applyPromptLanguage(text: string, language: string): string {
     .replace(/수정한 프롬프트를 한 번 더 실행하고 결과를 비교하세요\./g, 'Run the revised prompt once more and compare the output.')
 }
 
+function getPromptStyleProfile(modelTarget: string, language: string) {
+  const normalized = (modelTarget || 'gpt').toLowerCase()
+  const english = language === 'en'
+  const profiles: Record<string, { labelKo: string; labelEn: string; linesKo: string[]; linesEn: string[] }> = {
+    gpt: {
+      labelKo: 'GPT 스타일',
+      labelEn: 'GPT style',
+      linesKo: ['- 구조를 분명하게 나누세요.', '- bullet, step, checklist를 우선 사용하세요.', '- 제약 조건과 출력 형식을 먼저 적으세요.'],
+      linesEn: ['- Keep the structure clear.', '- Prefer bullets, steps, and checklists.', '- State constraints and output format first.'],
+    },
+    claude: {
+      labelKo: 'Claude 스타일',
+      labelEn: 'Claude style',
+      linesKo: ['- 맥락을 충분히 설명하세요.', '- 예외, 전제, 배경을 자세히 포함하세요.', '- 답변은 친절하지만 길고 정돈되게 작성하세요.'],
+      linesEn: ['- Provide enough context.', '- Include assumptions, exceptions, and background.', '- Keep the response thoughtful, detailed, and well organized.'],
+    },
+    gemini: {
+      labelKo: 'Gemini 스타일',
+      labelEn: 'Gemini style',
+      linesKo: ['- 지시문을 짧고 명확하게 작성하세요.', '- 하나의 문장에 하나의 요구를 담으세요.', '- 결과를 빠르게 실행할 수 있게 직접적으로 쓰세요.'],
+      linesEn: ['- Write short, explicit instructions.', '- Keep one request per sentence.', '- Be direct and execution-oriented.'],
+    },
+    genspark: {
+      labelKo: 'Genspark 스타일',
+      labelEn: 'Genspark style',
+      linesKo: ['- 실행 순서를 먼저 정리하세요.', '- 핵심 요약과 바로 쓸 수 있는 형태를 우선하세요.', '- 탐색과 실행 단계를 분리하세요.'],
+      linesEn: ['- Start with the execution order.', '- Prioritize a concise summary and ready-to-use output.', '- Separate exploration from execution.'],
+    },
+    custom: {
+      labelKo: '직접 지정',
+      labelEn: 'Custom',
+      linesKo: ['- 기본 구조를 유지하되, 필요하면 사용자가 직접 조정할 수 있게 하세요.'],
+      linesEn: ['- Keep the base structure, but leave room for manual adjustment.'],
+    },
+  }
+  const profile = profiles[normalized] || profiles.gpt
+  return {
+    label: english ? profile.labelEn : profile.labelKo,
+    lines: english ? profile.linesEn : profile.linesKo,
+  }
+}
+
 apiRouter.post('/logs', async (c) => {
   try {
     const payload = await c.req.json()
@@ -549,7 +591,7 @@ apiRouter.post('/optimize', async (c) => {
 // ── POST /api/generate ────────────────────────────────────────────
 apiRouter.post('/generate', async (c) => {
   try {
-    const { techniqueId, fields: inputFields, purpose, keyword, language } = await c.req.json()
+    const { techniqueId, fields: inputFields, purpose, keyword, language, promptStyle } = await c.req.json()
     const tech = TECHNIQUES[techniqueId]
     const autoFields = generateAutoFields(purpose || 'custom', keyword || '', techniqueId)
     const fields = { ...autoFields, ...(inputFields || {}) } as Record<string, string>
@@ -693,6 +735,9 @@ apiRouter.post('/generate', async (c) => {
     if (extraNotes.length) {
       prompt += `\n\n## 추가 입력\n${extraNotes.join('\n')}`
     }
+
+    const styleProfile = getPromptStyleProfile(promptStyle || 'gpt', language || 'ko')
+    prompt += `\n\n## AI 스타일 프리셋\n${styleProfile.label}\n${styleProfile.lines.join('\n')}`
 
     if (purpose && purpose !== 'custom' && keyword) {
       const purposeInfo = PURPOSE_PRESETS.find(p => p.id === purpose)
