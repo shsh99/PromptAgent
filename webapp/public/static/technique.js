@@ -66,6 +66,7 @@ async function requestRecommendation() {
     const data = await res.json();
     state.recommendation = data;
     displayRecommendation(data);
+    return data;
   } catch (e) {
     console.error(e);
   } finally {

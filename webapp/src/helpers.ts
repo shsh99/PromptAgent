@@ -166,6 +166,16 @@ export function generateAutoFields(purpose: string, keyword: string, techniqueId
     fields.tech_stack    = getTechStack(purpose);
     fields.core_features = getCoreFeatures(purpose, keyword);
     fields.data_model    = getDataModel(purpose, keyword);
+    fields.project_structure = `webapp/src, webapp/public/static, docs, scripts, tests`;
+    fields.existing_assets = '기존 템플릿, 프롬프트 분석기, 라이브러리, 히스토리 저장 구조를 재사용합니다.';
+    fields.workflow_steps = getChainSteps(purpose, keyword);
+    fields.code_conventions = '한국어 중심 문서, 재사용 가능한 helper 우선, 중복 로직 최소화';
+    fields.branch_strategy = 'main 배포 기준, feature/* 작업 브랜치 사용';
+    fields.code_review_rules = '동작 변경은 이유와 영향 범위를 함께 설명합니다.';
+    fields.testing_rules = '핵심 흐름은 빌드 후 수동 검증, 신규 기능은 최소 1회 재확인합니다.';
+    fields.deployment_rules = '배포 전 빌드 확인, 실패 시 변경 내용을 바로 기록합니다.';
+    fields.risks = '과도한 복잡도, 입력 누락, 라이트 모드 대비 부족 가능성을 점검합니다.';
+    fields.appendix_docs = 'README, docs/plan.md, docs/phase.md, docs/features/*';
     fields.constraints   = '한국어 UI, 반응형 디자인, 성능 최적화, 접근성 준수';
     fields.tone          = '전문적이고 체계적인';
     return fields;
@@ -175,10 +185,20 @@ export function generateAutoFields(purpose: string, keyword: string, techniqueId
     fields.role          = getRoleForPurpose(purpose);
     fields.context       = `${purposeLabel} 프로젝트입니다. "${keyword}"를 개발하려 합니다. ${getContextDetail(purpose)}`;
     fields.task          = `"${keyword}" 프로젝트의 전체 아키텍처를 설계하고, 핵심 기능을 정의하며, 구현 계획을 수립해주세요.`;
+    fields.goal          = `${keyword} 프로젝트를 실제 구현 가능한 수준으로 구조화합니다.`;
+    fields.non_goal      = '이번 단계에서 불필요한 부가기능과 과도한 이론 설명은 제외합니다.';
+    fields.must_have     = `문제 정의, 입력 데이터, 출력 형식, 제약 조건, 평가 기준을 포함하세요.\n빈칸이 있으면 합리적인 기본값으로 채우세요.`;
+    fields.should_have   = `사무직 사용자도 이해할 수 있는 짧은 설명과 예시를 포함하세요.\n필요하면 단계별 안내를 추가하세요.`;
+    fields.nice_to_have  = `템플릿 예시, 버전 비교, 복구 안내, 모델별 변환 힌트를 있으면 추가하세요.`;
     fields.input_data    = `프로젝트 유형: ${purposeLabel}\n핵심 키워드: ${keyword}`;
-    fields.output_format = '마크다운 형식으로: 1) 프로젝트 개요 2) 기술 스택 3) 핵심 기능 목록 4) 데이터 모델 5) 프로젝트 구조 6) 구현 단계';
+    fields.output_format = '마크다운 형식으로: 1) 프로젝트 개요 2) 문제 정의 3) 핵심 기능 4) 데이터 모델 5) 프로젝트 구조 6) 구현 단계 7) 실패 대응';
     fields.tone          = '전문적이고 실용적인';
-    fields.constraints   = '실제 구현 가능한 현실적인 설계, 한국어로 작성, 초보 개발자도 따라할 수 있도록 상세히';
+    fields.constraints   = '실제 구현 가능한 현실적인 설계, 한국어로 작성, 초보 개발자도 따라할 수 있도록 상세히, 누락된 항목은 기본값으로 보완';
+    fields.input_guardrails = '모호한 표현은 구체적인 수치와 조건으로 바꾸고, 빈칸이 있으면 추정값을 제안합니다.';
+    fields.output_guardrails = '출력 구조를 유지하고, 필수 항목이 빠지면 자동 보완합니다.';
+    fields.monitoring_rules = '구조 누락, 모호성, 반복 토큰, 실패 원인을 함께 확인합니다.';
+    fields.failure_response = '결과가 약하면 문제 정의와 제약 조건을 강화한 뒤 다시 작성합니다.';
+    fields.rollback_plan = '개선 전 버전과 비교하여 언제든 이전 구조로 되돌릴 수 있게 합니다.';
     return fields;
   }
 

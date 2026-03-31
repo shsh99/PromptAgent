@@ -549,8 +549,10 @@ apiRouter.post('/optimize', async (c) => {
 // ── POST /api/generate ────────────────────────────────────────────
 apiRouter.post('/generate', async (c) => {
   try {
-    const { techniqueId, fields, purpose, keyword, language } = await c.req.json()
+    const { techniqueId, fields: inputFields, purpose, keyword, language } = await c.req.json()
     const tech = TECHNIQUES[techniqueId]
+    const autoFields = generateAutoFields(purpose || 'custom', keyword || '', techniqueId)
+    const fields = { ...autoFields, ...(inputFields || {}) } as Record<string, string>
     if (!tech) return c.json({ error: '유효하지 않은 기법입니다.' }, 400)
 
     let prompt = ''

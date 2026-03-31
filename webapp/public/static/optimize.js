@@ -42,6 +42,63 @@ const OPTIMIZE_EXAMPLES = [
   },
 ];
 
+const QUICK_STARTS = [
+  {
+    group: 'office',
+    title: '업무 이메일',
+    purpose: 'content',
+    keyword: '정중한 업무 이메일 작성',
+    technique: 'harness',
+    icon: 'fa-envelope',
+    description: '상황, 목표, 톤, 출력 형식을 자동으로 채워 초안을 빠르게 만듭니다.',
+  },
+  {
+    group: 'office',
+    title: '회의 요약',
+    purpose: 'content',
+    keyword: '회의 내용 요약과 후속 조치 정리',
+    technique: 'harness',
+    icon: 'fa-clipboard-list',
+    description: '결정사항, 할 일, 담당자를 빠르게 정리하는 구조로 시작합니다.',
+  },
+  {
+    group: 'office',
+    title: '보고서 초안',
+    purpose: 'content',
+    keyword: '주간 보고서 초안 작성',
+    technique: 'harness',
+    icon: 'fa-chart-line',
+    description: '문제 정의, 핵심 지표, 개선안이 들어간 보고서 구조를 만듭니다.',
+  },
+  {
+    group: 'office',
+    title: '자기소개서',
+    purpose: 'content',
+    keyword: '자기소개서 초안 작성',
+    technique: 'role-prompting',
+    icon: 'fa-user-edit',
+    description: '경험, 강점, 지원 동기를 빈칸 없이 이어지도록 채워줍니다.',
+  },
+  {
+    group: 'developer',
+    title: '코드 리뷰',
+    purpose: 'web-app',
+    keyword: '리액트 코드 리뷰',
+    technique: 'harness',
+    icon: 'fa-code',
+    description: '문제, 원인, 수정안, 리스크를 구조화해서 정리합니다.',
+  },
+  {
+    group: 'developer',
+    title: '기획 문서',
+    purpose: 'web-app',
+    keyword: '서비스 기획서 초안',
+    technique: 'context-engineering',
+    icon: 'fa-sitemap',
+    description: '목표, 사용자, 기능, 데이터 모델을 한 번에 정리합니다.',
+  },
+];
+
 const BUILDER_STARTERS = [
   {
     title: '프로젝트 설계',
@@ -230,6 +287,71 @@ function injectOptimizeUI() {
     </div>
   `;
   firstBuilderSection.parentElement.insertBefore(templatePanel, firstBuilderSection);
+
+  const quickStartPanel = document.createElement('section');
+  quickStartPanel.id = 'quick-start-panel';
+  quickStartPanel.className = 'hidden mb-10';
+  quickStartPanel.innerHTML = `
+    <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-6">
+      <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">퀵 모드</div>
+          <h3 class="mt-2 text-2xl font-bold">자주 쓰는 업무를 바로 시작하세요</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">카드를 누르면 목적, 키워드, 구조가 자동으로 들어갑니다. 빈칸이 있어도 생성되도록 기본값을 채워 둡니다.</p>
+        </div>
+        <button onclick="switchMode('builder')" class="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-500">
+          <i class="fas fa-code"></i> 고급자 모드 열기
+        </button>
+      </div>
+
+      <div class="grid gap-5 xl:grid-cols-2">
+        <div class="rounded-3xl border border-gray-200 bg-gray-50 p-5">
+          <div class="mb-3 flex items-center gap-2">
+            <i class="fas fa-briefcase text-brand-600"></i>
+            <h4 class="font-semibold text-gray-900">사무직 퀵 템플릿</h4>
+          </div>
+          <div class="grid gap-3 md:grid-cols-2">
+            ${QUICK_STARTS.filter((item) => item.group === 'office').map((item, index) => `
+              <button onclick="loadQuickStart(${index})" class="rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-brand-300">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2">
+                    <i class="fas ${item.icon} text-brand-600"></i>
+                    <span class="font-semibold text-gray-900">${escapeHtml(item.title)}</span>
+                  </div>
+                  <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-700">퀵</span>
+                </div>
+                <div class="mt-2 text-xs leading-5 text-gray-600">${escapeHtml(item.description)}</div>
+                <div class="mt-3 text-[11px] font-medium text-brand-600">누르면 바로 채워집니다</div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-gray-200 bg-gray-50 p-5">
+          <div class="mb-3 flex items-center gap-2">
+            <i class="fas fa-code text-indigo-600"></i>
+            <h4 class="font-semibold text-gray-900">개발자 고급 시작</h4>
+          </div>
+          <div class="grid gap-3 md:grid-cols-2">
+            ${QUICK_STARTS.filter((item) => item.group === 'developer').map((item, index) => `
+              <button onclick="loadQuickStart(${index + 4})" class="rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2">
+                    <i class="fas ${item.icon} text-indigo-600"></i>
+                    <span class="font-semibold text-gray-900">${escapeHtml(item.title)}</span>
+                  </div>
+                  <span class="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">고급</span>
+                </div>
+                <div class="mt-2 text-xs leading-5 text-gray-600">${escapeHtml(item.description)}</div>
+                <div class="mt-3 text-[11px] font-medium text-indigo-600">구조화된 입력으로 바로 이동</div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  firstBuilderSection.parentElement.insertBefore(quickStartPanel, firstBuilderSection);
 
   const builderHelperPanel = document.createElement('section');
   builderHelperPanel.id = 'builder-helper-panel';
@@ -421,6 +543,7 @@ function setActiveModeTab(mode) {
 function toggleSections(mode) {
   const builderIds = ['step-purpose', 'recommendation-section', 'step-technique', 'step-fields', 'result-section'];
   const templatePanel = document.getElementById('template-workspace');
+  const quickStartPanel = document.getElementById('quick-start-panel');
   const builderHelperPanel = document.getElementById('builder-helper-panel');
   const optimizePanel = document.getElementById('optimize-workspace');
   const showBuilder = mode === 'builder';
@@ -438,6 +561,7 @@ function toggleSections(mode) {
   });
   if (builderHelperPanel) builderHelperPanel.classList.toggle('hidden', !showBuilder);
   if (templatePanel) templatePanel.classList.toggle('hidden', !showTemplate);
+  if (quickStartPanel) quickStartPanel.classList.toggle('hidden', !showTemplate);
   if (optimizePanel) optimizePanel.classList.toggle('hidden', !showOptimize);
 }
 
@@ -744,6 +868,35 @@ async function loadBuilderStarter(index) {
   if (firstField) firstField.focus();
 }
 
+async function loadQuickStart(index) {
+  const item = QUICK_STARTS[index];
+  if (!item) return;
+  switchMode('builder');
+
+  if (typeof selectPurpose === 'function') {
+    selectPurpose(item.purpose);
+  } else {
+    state.purpose = item.purpose;
+    const keywordSection = document.getElementById('keyword-section');
+    if (keywordSection) keywordSection.classList.remove('hidden');
+  }
+
+  const keywordInput = document.getElementById('keyword-input');
+  if (keywordInput) keywordInput.value = item.keyword;
+
+  if (typeof state !== 'undefined') {
+    state.keyword = item.keyword;
+    state.techniqueId = item.technique;
+  }
+
+  if (typeof selectTechniqueManual === 'function') {
+    await selectTechniqueManual(item.technique);
+  }
+
+  const firstField = document.querySelector('.field-input');
+  if (firstField) firstField.focus();
+}
+
 function loadOptimizeExample(index) {
   const item = OPTIMIZE_EXAMPLES[index];
   if (!item) return;
@@ -830,6 +983,7 @@ window.rollbackOptimizeVersion = rollbackOptimizeVersion;
 window.clearOptimizeCompare = clearOptimizeCompare;
 window.rollbackOptimizePrompt = rollbackOptimizePrompt;
 window.loadBuilderStarter = loadBuilderStarter;
+window.loadQuickStart = loadQuickStart;
 window.loadOptimizeExample = loadOptimizeExample;
 window.copyOptimizeExample = copyOptimizeExample;
 window.polishHomepageCopy = polishHomepageCopy;

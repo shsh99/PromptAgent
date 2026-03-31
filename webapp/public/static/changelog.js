@@ -7,6 +7,16 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v2.7',
+    items: [
+      { tag: 'improve', text: '퀵 모드에 바로 시작할 수 있는 사무직/개발자 카드와 자동 시작 흐름을 추가했다.' },
+      { tag: 'improve', text: '고급자 모드의 빈칸 자동 보강과 must-have / should-have / nice-to-have 기본값을 강화했다.' },
+      { tag: 'improve', text: '라이트 모드 색상과 그림자를 더 통일감 있게 정리했다.' },
+      { tag: 'improve', text: 'README를 최신 배포 URL과 상세 설명 기준으로 다시 정리했다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v2.6',
     items: [
       { tag: 'improve',  text: '퀵 모드 / 고급자 모드 / 최적화 모드로 첫 진입 구조를 더 단순하게 정리.' },
