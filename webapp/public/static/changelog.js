@@ -7,6 +7,15 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v3.0',
+    items: [
+      { tag: 'improve', text: '선택 입력을 원하는 항목만 골라 추가하는 방식으로 바꿨다.' },
+      { tag: 'improve', text: '빈 입력 칸을 추가해 자유롭게 메모를 넣을 수 있게 했다.' },
+      { tag: 'improve', text: '추가한 빈 입력 내용도 생성 프롬프트에 포함되도록 연결했다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v2.9',
     items: [
       { tag: 'improve', text: '선택 입력이 한 번에 펼쳐지지 않고 하나씩 추가되도록 바꿨다.' },

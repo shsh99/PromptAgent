@@ -372,3 +372,182 @@ function resetFields() {
   });
   document.getElementById('result-section').classList.add('hidden');
 }
+
+function renderSelectedField(field) {
+  const req = field.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
+  const help = field.description ? `<div class="mt-1 text-xs text-gray-500">${field.description}</div>` : '';
+  if (field.type === 'textarea') {
+    return `
+      <div class="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <div class="text-sm font-semibold text-gray-200">${field.label}${req}</div>
+          ${help}
+        </div>
+      </div>
+      <textarea id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}" rows="4"
+        class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+        oninput="updateField('${field.id}', this.value)"></textarea>
+    `;
+  }
+  return `
+    <div class="mb-3 flex items-center justify-between gap-3">
+      <div>
+        <div class="text-sm font-semibold text-gray-200">${field.label}${req}</div>
+        ${help}
+      </div>
+    </div>
+    <input type="text" id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}"
+      class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+      oninput="updateField('${field.id}', this.value)" />
+  `;
+}
+
+function addSelectedAdvancedField(fieldId) {
+  const fields = state.advancedFields || [];
+  const field = fields.find((item) => item.id === fieldId);
+  if (!field) return;
+
+  const selected = document.getElementById('selected-advanced-fields');
+  const picker = document.getElementById('advanced-field-picker');
+  if (!selected || !picker) return;
+
+  if (selected.querySelector(`[data-added-field="${fieldId}"]`)) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'rounded-2xl border border-gray-700 bg-gray-950/50 p-4';
+  wrapper.dataset.addedField = fieldId;
+  wrapper.innerHTML = renderSelectedField(field);
+  selected.appendChild(wrapper);
+
+  const btn = Array.from(picker.querySelectorAll('button')).find((button) => button.textContent?.trim() === field.label);
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add('opacity-40', 'cursor-not-allowed');
+    btn.textContent = `${field.label} 추가됨`;
+  }
+}
+
+function addBlankInputField() {
+  const selected = document.getElementById('selected-advanced-fields');
+  if (!selected) return;
+
+  state.customBlankCount = (state.customBlankCount || 0) + 1;
+  const index = state.customBlankCount;
+  const fieldId = `custom_note_${index}`;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'rounded-2xl border border-gray-700 bg-gray-950/50 p-4';
+  wrapper.dataset.addedField = fieldId;
+  wrapper.innerHTML = `
+    <div class="mb-3 flex items-center justify-between gap-3">
+      <div>
+        <div class="text-sm font-semibold text-gray-200">빈 입력 ${index}</div>
+        <div class="mt-1 text-xs text-gray-500">원하는 내용을 자유롭게 적는 칸입니다.</div>
+      </div>
+      <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-200">자유 입력</span>
+    </div>
+    <textarea id="${fieldId}" data-field="${fieldId}" rows="4" placeholder="여기에 자유롭게 입력하세요."
+      class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+      oninput="updateField('${fieldId}', this.value)"></textarea>
+  `;
+  selected.appendChild(wrapper);
+}
+
+function renderFields(data) {
+  const container = document.getElementById('fields-container');
+  state.fields = {};
+  state.techniqueFields = data.fields || [];
+  const advancedIds = new Set([
+    'project_structure',
+    'existing_assets',
+    'workflow_steps',
+    'code_conventions',
+    'branch_strategy',
+    'code_review_rules',
+    'testing_rules',
+    'deployment_rules',
+    'risks',
+    'appendix_docs',
+    'data_governance',
+    'access_policy',
+    'monitoring_rules',
+    'feedback_loop',
+    'failure_response',
+    'human_in_the_loop',
+    'audit_log_rules',
+    'compliance_rules',
+    'rollback_plan',
+  ]);
+
+  const visible = [];
+  const advanced = [];
+  (data.fields || []).forEach((field) => {
+    if (advancedIds.has(field.id) && ['content', 'custom'].includes(state.purpose)) {
+      advanced.push(field);
+      return;
+    }
+    visible.push(field);
+  });
+  state.advancedFields = advanced;
+  state.customBlankCount = 0;
+
+  const renderField = (f) => {
+    const req = f.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
+    if (f.type === 'textarea') {
+      return `<div>
+        <label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>
+        <textarea id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder}" rows="4"
+          class="field-input w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+          oninput="updateField('${f.id}', this.value)"
+          onfocus="this.classList.remove('border-brand-500/30','bg-brand-500/5')"></textarea>
+      </div>`;
+    }
+    return `<div>
+      <label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>
+      <input type="text" id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder}"
+        class="field-input w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+        oninput="updateField('${f.id}', this.value)"
+        onfocus="this.classList.remove('border-brand-500/30','bg-brand-500/5')" />
+    </div>`;
+  };
+
+  container.innerHTML = `
+    <div class="mb-4 rounded-2xl border border-brand-500/20 bg-brand-500/5 px-4 py-3 text-sm text-gray-200">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <div class="font-semibold text-white">${getFieldGroupTitle(state.techniqueId)}</div>
+          <div class="mt-1 text-xs text-gray-400">핵심 입력만 먼저 보이고, 필요한 항목을 골라 하나씩 추가할 수 있습니다.</div>
+        </div>
+        ${advanced.length ? '<span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-300">선택 입력</span>' : ''}
+      </div>
+    </div>
+    <div class="space-y-5">
+      ${visible.map(renderField).join('')}
+      ${advanced.length ? `
+        <div class="rounded-2xl border border-dashed border-gray-700 bg-gray-900/40 p-4">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="text-sm font-semibold text-gray-200">선택 입력 추가</div>
+              <div class="mt-1 text-xs text-gray-400">필요한 것만 골라 추가하세요. 아래 개발용 항목은 사무직에서는 보통 필요하지 않습니다.</div>
+            </div>
+            <span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-gray-400">${advanced.length}개</span>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2" id="advanced-field-picker">
+            ${advanced.map((field) => `
+              <button type="button" class="rounded-xl border border-gray-700 bg-gray-900/60 px-3 py-2 text-xs font-semibold text-gray-200 hover:border-brand-500 hover:bg-brand-500/10" onclick="addSelectedAdvancedField('${field.id}')">
+                ${field.label}
+              </button>
+            `).join('')}
+            <button type="button" class="rounded-xl border border-dashed border-brand-500/40 bg-brand-500/5 px-3 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/10" onclick="addBlankInputField()">
+              빈 입력 추가
+            </button>
+          </div>
+          <div class="mt-5 space-y-5" id="selected-advanced-fields"></div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+window.addSelectedAdvancedField = addSelectedAdvancedField;
+window.addBlankInputField = addBlankInputField;

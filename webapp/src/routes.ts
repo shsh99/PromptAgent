@@ -687,6 +687,13 @@ apiRouter.post('/generate', async (c) => {
     }
 
     // 바이브 코딩 헤더
+    const extraNotes = Object.entries(fields)
+      .filter(([key, value]) => key.startsWith('custom_note_') && String(value || '').trim())
+      .map(([, value], index) => `${index + 1}. ${String(value).trim()}`)
+    if (extraNotes.length) {
+      prompt += `\n\n## 추가 입력\n${extraNotes.join('\n')}`
+    }
+
     if (purpose && purpose !== 'custom' && keyword) {
       const purposeInfo = PURPOSE_PRESETS.find(p => p.id === purpose)
       prompt = `[바이브 코딩 프로젝트]\n프로젝트 유형: ${purposeInfo?.label || purpose}\n핵심 키워드: ${keyword}\n\n` + prompt
