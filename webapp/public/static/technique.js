@@ -270,25 +270,7 @@ function renderFields(data) {
     visible.push(field);
   });
 
-  const renderField = (f) => {
-    const req = f.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
-    if (f.type === 'textarea') {
-      return `<div>
-        <label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>
-        <textarea id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder}" rows="4"
-          class="field-input w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
-          oninput="updateField('${f.id}', this.value)"
-          onfocus="this.classList.remove('border-brand-500/30','bg-brand-500/5')"></textarea>
-      </div>`;
-    }
-    return `<div>
-      <label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>
-      <input type="text" id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder}"
-        class="field-input w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
-        oninput="updateField('${f.id}', this.value)"
-        onfocus="this.classList.remove('border-brand-500/30','bg-brand-500/5')" />
-    </div>`;
-  };
+  const renderField = (f) => renderFieldControl(f, state.fields?.[f.id] || '');
 
   container.innerHTML = `
     <div class="mb-4 rounded-2xl border border-brand-500/20 bg-brand-500/5 px-4 py-3 text-sm text-gray-200">
@@ -362,6 +344,13 @@ function addNextAdvancedField() {
 
 function updateField(id, value) {
   state.fields[id] = value;
+  if (id === 'workflow_state') {
+    state.workflowState = value;
+    localStorage.setItem('pf_workflow_state', value);
+    if (typeof setWorkflowState === 'function') {
+      setWorkflowState(value);
+    }
+  }
 }
 
 function resetFields() {
@@ -566,6 +555,42 @@ function syncAdvancedPickerButton(fieldId, active) {
   button.disabled = active;
 }
 
+function renderFieldControl(f, value = '', showLabel = true) {
+  const req = f.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
+  const baseClass = 'field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all';
+  const labelBlock = showLabel ? `<label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>` : '';
+  if (f.type === 'select') {
+    const options = (f.options || []).map((opt) => `
+      <option value="${escapeHtml(opt.value)}" ${String(value || '').toLowerCase() === String(opt.value || '').toLowerCase() ? 'selected' : ''}>
+        ${escapeHtml(opt.label)}
+      </option>`).join('');
+    return `
+      <div>
+        ${labelBlock}
+        <select id="field-${f.id}" data-field="${f.id}"
+          class="${baseClass}"
+          onchange="updateField('${f.id}', this.value)">
+          ${options}
+        </select>
+      </div>
+    `;
+  }
+  if (f.type === 'textarea') {
+    return `<div>
+      ${labelBlock}
+      <textarea id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder || ''}" rows="4"
+        class="${baseClass} resize-y"
+        oninput="updateField('${f.id}', this.value)">${escapeHtml(value || '')}</textarea>
+    </div>`;
+  }
+  return `<div>
+    ${labelBlock}
+    <input type="text" id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder || ''}" value="${escapeHtml(value || '')}"
+      class="${baseClass}"
+      oninput="updateField('${f.id}', this.value)" />
+  </div>`;
+}
+
 function buildAdvancedCardTitle(label, note) {
   return `
     <div class="text-sm font-semibold text-gray-200">${label}</div>
@@ -608,14 +633,7 @@ function addSelectedAdvancedField(fieldId) {
         ${renderAdvancedRemoveButton('removeSelectedAdvancedField', field.id)}
       </div>
     </div>
-    ${field.type === 'textarea'
-      ? `<textarea id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}" rows="4"
-          class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
-          oninput="updateField('${field.id}', this.value)">${state.fields?.[field.id] || ''}</textarea>`
-      : `<input type="text" id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}"
-          value="${state.fields?.[field.id] || ''}"
-          class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
-          oninput="updateField('${field.id}', this.value)" />`}
+    ${renderFieldControl(field, state.fields?.[field.id] || '', false)}
   `;
   selected.appendChild(wrapper);
 

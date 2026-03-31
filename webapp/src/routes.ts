@@ -126,6 +126,54 @@ function stripStepPrefix(value: string): string {
   return String(value || '').replace(/^Step\s*\d+\s*[:：-]?\s*/i, '').trim()
 }
 
+function getWorkflowStateProfile(state: string, language: string) {
+  const normalized = String(state || 'new').toLowerCase()
+  const ko = {
+    new: {
+      title: '새로 시작',
+      summary: '처음부터 프롬프트를 설계하는 상황입니다.',
+      sectionTitle: '초기 작성 기준',
+      bullets: [
+        '목표와 배경을 먼저 정리하세요.',
+        '입력값이 비어 있으면 예시와 기본값으로 보완하세요.',
+        '출력 형식과 성공 기준을 먼저 적어두세요.',
+      ],
+    },
+    'in-progress': {
+      title: '진행 중',
+      summary: '이미 작업을 시작했고, 다음 질문이나 후속 작업이 필요한 상황입니다.',
+      sectionTitle: '진행 중 작성 기준',
+      bullets: [
+        '현재까지 완료된 내용과 남은 일을 분리하세요.',
+        '막힌 지점과 확인해야 할 질문을 함께 적으세요.',
+        '답변은 "완료 / 다음 단계 / 확인 필요" 순서로 정리하세요.',
+      ],
+    },
+    done: {
+      title: '완료 보고',
+      summary: '작업이 끝났거나 결과를 보고하는 상황입니다.',
+      sectionTitle: '완료 보고 기준',
+      bullets: [
+        '무엇이 끝났는지 먼저 정리하세요.',
+        '핵심 결과와 남은 후속 조치를 구분하세요.',
+        '"완료되었습니다" 톤으로 요약하고 다음 액션을 제안하세요.',
+      ],
+    },
+    blocked: {
+      title: '막힘 / 수정 요청',
+      summary: '작업이 막혔거나 사용자의 수정 지시가 필요한 상황입니다.',
+      sectionTitle: '수정 요청 기준',
+      bullets: [
+        '문제 현상, 원인 추정, 필요한 도움을 분리하세요.',
+        '무엇을 바꾸면 되는지 명확하게 적으세요.',
+        '사용자가 바로 답할 수 있는 질문을 덧붙이세요.',
+      ],
+    },
+  }
+  const profile = ko[normalized as keyof typeof ko] || ko.new
+  return profile
+}
+
 function getPromptStyleProfile(modelTarget: string, language: string) {
   const normalized = (modelTarget || 'gpt').toLowerCase()
   const english = language === 'en'
@@ -604,6 +652,7 @@ apiRouter.post('/generate', async (c) => {
   try {
     const body = await c.req.json()
     const { techniqueId, fields: inputFields, purpose, keyword, language, promptStyle } = body
+    const workflowState = String(body.workflowState || inputFields?.workflow_state || 'new')
     const selectedAdvancedFields = body.selectedAdvancedFields || []
     const customBlankFields = body.customBlankFields || []
     const tech = TECHNIQUES[techniqueId]
@@ -778,9 +827,20 @@ apiRouter.post('/generate', async (c) => {
     const styleProfile = getPromptStyleProfile(promptStyle || 'gpt', language || 'ko')
     prompt += `\n\n## AI ?ㅽ????꾨━??n${styleProfile.label}\n${styleProfile.lines.join('\n')}`
 
+    const workflowProfile = getWorkflowStateProfile(workflowState, language || 'ko')
+    const workflowBlock = [
+      '## 작업 상태',
+      workflowProfile.title,
+      workflowProfile.summary,
+      '',
+      `## ${workflowProfile.sectionTitle}`,
+      ...workflowProfile.bullets.map((line) => `- ${line}`),
+    ].join('\n')
+    prompt = `${workflowBlock}\n\n${prompt}`
+
     if (purpose && purpose !== 'custom' && keyword) {
       const purposeInfo = PURPOSE_PRESETS.find(p => p.id === purpose)
-      prompt = `[諛붿씠釉?肄붾뵫 ?꾨줈?앺듃]\n?꾨줈?앺듃 ?좏삎: ${purposeInfo?.label || purpose}\n?듭떖 ?ㅼ썙?? ${keyword}\n\n` + prompt
+      prompt = `[바이브 코딩 프로젝트]\n프로젝트 유형: ${purposeInfo?.label || purpose}\n작업 키워드: ${keyword}\n\n` + prompt
     }
 
     const qualityReport = analyzePromptQualityEnhanced(prompt, fields)

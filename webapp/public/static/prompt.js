@@ -19,6 +19,7 @@ async function generatePrompt() {
         keyword,
         language: state.promptLanguage || 'ko',
         promptStyle: state.promptStyle || 'gpt',
+        workflowState: state.workflowState || 'new',
       }),
     });
     const data = await res.json();
@@ -35,6 +36,7 @@ async function generatePrompt() {
         techniqueId: state.techniqueId,
         purpose: state.purpose,
         keyword,
+        workflowState: state.workflowState || 'new',
         score: data.qualityReport?.percentage,
       });
     }

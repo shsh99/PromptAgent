@@ -51,6 +51,41 @@ app.get('/', (c) => {
       </nav>
 
       <main class="mx-auto max-w-7xl px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+        <aside class="fixed left-4 top-24 z-40 hidden w-64 xl:block">
+          <div class="rounded-3xl border border-white/10 bg-slate-950/90 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
+            <div class="mb-4 flex items-center justify-between">
+              <div>
+                <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">빠른 이동</div>
+                <div class="mt-1 text-sm font-semibold text-white">처음 쓰는 사람용</div>
+              </div>
+              <span class="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">BETA</span>
+            </div>
+            <div class="space-y-2">
+              <button onclick="switchMode('template')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                템플릿 모드
+              </button>
+              <button onclick="switchMode('builder')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                빌더 모드
+              </button>
+              <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                최적화 모드
+              </button>
+            </div>
+            <div class="mt-4 border-t border-white/10 pt-4">
+              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">작업 상태</div>
+              <div class="mt-2 grid gap-2">
+                <button data-workflow-state="new" onclick="setWorkflowState('new')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">새로 시작</button>
+                <button data-workflow-state="in-progress" onclick="setWorkflowState('in-progress')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">진행 중</button>
+                <button data-workflow-state="done" onclick="setWorkflowState('done')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">완료 보고</button>
+                <button data-workflow-state="blocked" onclick="setWorkflowState('blocked')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">막힘 / 수정 요청</button>
+              </div>
+            </div>
+            <div class="mt-4 rounded-2xl border border-brand-500/20 bg-brand-500/10 p-3 text-xs leading-6 text-slate-200">
+              기본은 한국어입니다. 영어가 필요할 때만 영어 프롬프트로 바꿔주세요.
+            </div>
+          </div>
+        </aside>
+
         <section class="mb-10 space-y-6">
           <div class="space-y-4">
             <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">

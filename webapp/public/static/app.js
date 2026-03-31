@@ -5,6 +5,7 @@ let state = {
   theme: localStorage.getItem('pf_theme') || 'light',
   promptLanguage: localStorage.getItem('pf_prompt_lang') || 'ko',
   promptStyle: localStorage.getItem('pf_prompt_style') || 'gpt',
+  workflowState: localStorage.getItem('pf_workflow_state') || 'new',
   purpose: null,
   keyword: '',
   techniqueId: null,
@@ -56,6 +57,24 @@ function setPromptStyle(style) {
   });
 }
 
+function setWorkflowState(workflowState) {
+  const nextState = ['new', 'in-progress', 'done', 'blocked'].includes(workflowState) ? workflowState : 'new';
+  state.workflowState = nextState;
+  state.fields = state.fields || {};
+  state.fields.workflow_state = nextState;
+  localStorage.setItem('pf_workflow_state', nextState);
+  document.querySelectorAll('[data-workflow-state]').forEach((button) => {
+    const active = button.dataset.workflowState === nextState;
+    button.classList.toggle('ring-2', active);
+    button.classList.toggle('ring-brand-400/40', active);
+    button.classList.toggle('bg-brand-500/15', active);
+    button.classList.toggle('text-white', active);
+    button.classList.toggle('border-brand-400/30', active);
+    button.classList.toggle('bg-white/5', !active);
+    button.classList.toggle('text-slate-200', !active);
+  });
+}
+
 function setModeSelection(mode) {
   const activeMode = ['template', 'builder', 'optimize'].includes(mode) ? mode : 'template';
   document.querySelectorAll('button[onclick*="switchMode("]').forEach((button) => {
@@ -91,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setTheme(state.theme);
   setPromptLanguage(state.promptLanguage);
   setPromptStyle(state.promptStyle);
+  setWorkflowState(state.workflowState);
   setModeSelection(state.mode);
   await loadPurposes();
   await loadTechniques();
@@ -111,4 +131,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.setTheme = setTheme;
 window.setPromptLanguage = setPromptLanguage;
 window.setPromptStyle = setPromptStyle;
+window.setWorkflowState = setWorkflowState;
 window.setModeSelection = setModeSelection;

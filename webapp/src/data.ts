@@ -47,13 +47,13 @@ export const TECHNIQUES: Record<string, any> = {
     id: 'context-engineering', name: '컨텍스트 엔지니어링', nameEn: 'Context Engineering',
     icon: 'fa-layer-group', color: 'cyan', difficulty: '고급', category: 'context',
     description: '프로젝트 전체 맥락을 구조화하는 운영 문서입니다. 목표, 구조, 규칙, 리뷰 기준, 테스트 전략까지 포함해 AI가 팀의 기준을 이해하도록 만듭니다.',
-    fields: ['project_name', 'project_goal', 'non_goal', 'target_user', 'tech_stack', 'project_structure', 'existing_assets', 'core_features', 'data_model', 'workflow_steps', 'code_conventions', 'branch_strategy', 'code_review_rules', 'testing_rules', 'deployment_rules', 'risks', 'appendix_docs', 'constraints', 'tone'],
+    fields: ['project_name', 'project_goal', 'workflow_state', 'non_goal', 'target_user', 'tech_stack', 'project_structure', 'existing_assets', 'core_features', 'data_model', 'workflow_steps', 'code_conventions', 'branch_strategy', 'code_review_rules', 'testing_rules', 'deployment_rules', 'risks', 'appendix_docs', 'constraints', 'tone'],
   },
   'harness': {
     id: 'harness', name: '하네스 엔지니어링', nameEn: 'Harness Engineering',
     icon: 'fa-gears', color: 'indigo', difficulty: '고급', category: 'harness',
     description: 'AI 에이전트를 안전하고 예측 가능하게 운용하는 제어 구조입니다. 가드레일, 데이터 거버넌스, 모니터링과 피드백 루프까지 포함한 실행 매뉴얼을 만듭니다.',
-    fields: ['role', 'context', 'task', 'goal', 'non_goal', 'must_have', 'should_have', 'nice_to_have', 'project_structure', 'code_conventions', 'branch_strategy', 'code_review_rules', 'input_guardrails', 'output_guardrails', 'data_governance', 'access_policy', 'monitoring_rules', 'feedback_loop', 'failure_response', 'human_in_the_loop', 'audit_log_rules', 'compliance_rules', 'rollback_plan', 'appendix_docs', 'output_format', 'tone', 'constraints', 'example'],
+    fields: ['role', 'context', 'task', 'goal', 'workflow_state', 'non_goal', 'must_have', 'should_have', 'nice_to_have', 'project_structure', 'code_conventions', 'branch_strategy', 'code_review_rules', 'input_guardrails', 'output_guardrails', 'data_governance', 'access_policy', 'monitoring_rules', 'feedback_loop', 'failure_response', 'human_in_the_loop', 'audit_log_rules', 'compliance_rules', 'rollback_plan', 'appendix_docs', 'output_format', 'tone', 'constraints', 'example'],
   },
 };
 
@@ -94,6 +94,18 @@ export const FIELD_DEFINITIONS: Record<string, any> = {
   risks:             { label: '리스크 및 제약',              placeholder: '예: 외부 API rate limit, 민감정보 처리, UI 깨짐 가능성, 일정 제약',                                  type: 'textarea', required: false },
   appendix_docs:     { label: 'Appendix / 참고 문서',        placeholder: '예: API 명세, 디자인 링크, PRD, 외부 아티클, 운영 가이드 URL',                                       type: 'textarea', required: false },
   goal:              { label: '핵심 목표',                   placeholder: '예: 안전하고 예측 가능하게 AI 작업을 수행하도록 실행 규칙 정의',                                     type: 'textarea', required: true },
+  workflow_state:    {
+    label: '작업 상태',
+    placeholder: '현재 작업이 어떤 단계인지 선택하세요',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'new', label: '새로 시작' },
+      { value: 'in-progress', label: '진행 중' },
+      { value: 'done', label: '완료 보고' },
+      { value: 'blocked', label: '막힘 / 수정 요청' },
+    ],
+  },
   must_have:         { label: 'Must-have',                   placeholder: '반드시 지켜야 할 요구사항을 줄바꿈으로 작성',                                                          type: 'textarea', required: false },
   should_have:       { label: 'Should-have',                 placeholder: '가능하면 포함할 요구사항을 줄바꿈으로 작성',                                                           type: 'textarea', required: false },
   nice_to_have:      { label: 'Nice-to-have',                placeholder: '있으면 좋은 선택 요소를 줄바꿈으로 작성',                                                             type: 'textarea', required: false },
