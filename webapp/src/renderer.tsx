@@ -44,7 +44,7 @@ export const renderer = jsxRenderer(({ children }) => {
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link href="/static/style.css" rel="stylesheet" />
       </head>
-      <body class="prompt-shell bg-slate-950 text-gray-100 font-sans min-h-screen">
+      <body class="prompt-shell theme-light bg-white text-slate-900 font-sans min-h-screen">
         {children}
         <script src="/static/utils.js"></script>
         <script src="/static/changelog.js"></script>

@@ -221,7 +221,7 @@ function injectOptimizeUI() {
             <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4">
               <div class="flex items-center justify-between gap-3 mb-2">
                 <div class="font-semibold text-gray-900">${escapeHtml(item.title)}</div>
-                <button onclick="loadBuilderStarter(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">Use</button>
+                <button onclick="loadBuilderStarter(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">적용</button>
               </div>
               <div class="text-xs text-gray-500 leading-relaxed">${escapeHtml(item.description)}</div>
             </div>
@@ -446,7 +446,7 @@ async function runOptimize() {
   if (!prompt || !output) return;
 
   btn.disabled = true;
-  btn.textContent = 'Optimizing...';
+  btn.textContent = '최적화 중...';
 
   try {
     const res = await fetch('/api/optimize', {
@@ -476,7 +476,7 @@ async function runOptimize() {
     document.getElementById('optimize-status').textContent = error.message;
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Run Optimize';
+    btn.textContent = '최적화 실행';
   }
 }
 
@@ -501,7 +501,7 @@ function renderOptimizeResult(data) {
     </div>
     <div class="rounded-2xl bg-brand-50 p-3">
       <div class="text-[10px] uppercase tracking-[0.2em] text-brand-600 mb-2">다음 실행</div>
-      <div class="text-sm text-brand-900">${escapeHtml(data.nextAction || 'Run the revised prompt again.')}</div>
+      <div class="text-sm text-brand-900">${escapeHtml(data.nextAction || '수정한 프롬프트로 다시 실행해 보세요.')}</div>
     </div>
   `;
   document.getElementById('optimize-issues').innerHTML = issueHtml;
@@ -541,7 +541,7 @@ function renderOptimizeHistory() {
   if (!container) return;
   const history = getOptimizeHistory();
   if (!history.length) {
-    container.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">No optimize versions yet.</div>';
+    container.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">아직 저장된 버전이 없습니다.</div>';
     return;
   }
   container.innerHTML = history.slice(0, 5).map((item) => `
@@ -553,9 +553,9 @@ function renderOptimizeHistory() {
       <div class="text-xs text-gray-500 mb-2">${escapeHtml(item.createdAt || '')}</div>
       <div class="text-sm text-gray-700 line-clamp-2">${escapeHtml(item.prompt || '')}</div>
       <div class="mt-4 flex flex-wrap gap-2">
-        <button onclick="loadOptimizeVersion(${item.id})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">Load</button>
-        <button onclick="compareOptimizeVersion(${item.id})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">Compare</button>
-        <button onclick="rollbackOptimizeVersion(${item.id})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">Rollback</button>
+        <button onclick="loadOptimizeVersion(${item.id})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">불러오기</button>
+        <button onclick="compareOptimizeVersion(${item.id})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">비교</button>
+        <button onclick="rollbackOptimizeVersion(${item.id})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">되돌리기</button>
       </div>
     </div>
   `).join('');
@@ -570,15 +570,15 @@ function renderOptimizeDiff(entry) {
   diffContainer.innerHTML = `
     <div class="rounded-2xl bg-gray-50 p-4">
       <div class="flex items-center justify-between mb-3">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">선택 버전</div>
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">선택한 버전</div>
         <div class="text-xs text-gray-500">v${entry.version}</div>
       </div>
-      <div class="text-sm text-gray-700">${escapeHtml(entry.goal || 'No goal stored.')}</div>
+      <div class="text-sm text-gray-700">${escapeHtml(entry.goal || '저장된 목표가 없습니다.')}</div>
     </div>
     <div class="rounded-2xl border border-gray-200 overflow-hidden">
       <div class="grid grid-cols-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 bg-gray-50 border-b border-gray-200">
-        <div class="px-3 py-2">Before</div>
-        <div class="px-3 py-2">After</div>
+        <div class="px-3 py-2">이전</div>
+        <div class="px-3 py-2">이후</div>
       </div>
       <div class="p-3 space-y-2 max-h-[360px] overflow-auto">
         ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">비교 가능한 차이가 없습니다.</div>'}
@@ -598,12 +598,12 @@ function renderOptimizeCurrentDiff(session, data) {
         <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">현재 세션</div>
         <div class="text-xs text-gray-500">실시간 미리보기</div>
       </div>
-      <div class="text-sm text-gray-700">${escapeHtml(session.goal || 'No goal stored.')}</div>
+      <div class="text-sm text-gray-700">${escapeHtml(session.goal || '저장된 목표가 없습니다.')}</div>
     </div>
     <div class="rounded-2xl border border-gray-200 overflow-hidden">
       <div class="grid grid-cols-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 bg-gray-50 border-b border-gray-200">
-        <div class="px-3 py-2">Before</div>
-        <div class="px-3 py-2">After</div>
+        <div class="px-3 py-2">이전</div>
+        <div class="px-3 py-2">이후</div>
       </div>
       <div class="p-3 space-y-2 max-h-[360px] overflow-auto">
         ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">비교 가능한 차이가 없습니다.</div>'}
@@ -616,7 +616,7 @@ function clearOptimizeCompare() {
   localStorage.removeItem(OPTIMIZE_COMPARE_KEY);
   const diffContainer = document.getElementById('optimize-diff');
   if (!diffContainer) return;
-  diffContainer.innerHTML = '<div class="rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">Select a version to compare.</div>';
+  diffContainer.innerHTML = '<div class="rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">비교할 버전을 선택하세요.</div>';
 }
 
 function loadOptimizeVersion(id) {
@@ -667,7 +667,7 @@ function rollbackOptimizeVersion(id) {
       issues: entry.issues || [],
       improvements: entry.improvements || [],
       improvedPrompt: entry.improvedPrompt || entry.prompt || '',
-      nextAction: 'Run Optimize again after rollback.',
+      nextAction: '되돌린 뒤에는 다시 최적화해 보세요.',
     },
     createdAt: new Date().toISOString(),
   };
@@ -722,13 +722,13 @@ function copyOptimizeExample(index) {
   const item = OPTIMIZE_EXAMPLES[index];
   if (!item) return;
   const text = [
-    'Prompt:',
+    '프롬프트:',
     item.prompt,
     '',
-    'Output:',
+    '결과:',
     item.output,
     '',
-    'Goal:',
+    '목표:',
     item.goal,
   ].join('\n');
   navigator.clipboard.writeText(text);
@@ -754,7 +754,7 @@ function polishHomepageCopy() {
 
 function localizeWorkspaceCopy() {
   const mapping = [
-    ['button[onclick*="loadBuilderStarter"]', '불러오기'],
+    ['button[onclick*="loadBuilderStarter"]', '적용'],
     ['button[onclick*="loadOptimizeExample"]', '불러오기'],
     ['button[onclick*="copyOptimizeExample"]', '복사'],
     ['button[onclick*="copyOptimizePrompt"]', '복사'],

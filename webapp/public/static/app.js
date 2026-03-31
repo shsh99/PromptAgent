@@ -1,7 +1,8 @@
 // ===== app.js - 전역 상태 + 초기화 =====
 
 let state = {
-  mode: localStorage.getItem('pf_mode') || 'builder',
+  mode: localStorage.getItem('pf_mode') || 'template',
+  theme: localStorage.getItem('pf_theme') || 'light',
   purpose: null,
   keyword: '',
   techniqueId: null,
@@ -16,6 +17,15 @@ let state = {
   contextDocMeta: null,
 };
 
+function setTheme(theme) {
+  const nextTheme = theme === 'light' ? 'light' : 'dark';
+  state.theme = nextTheme;
+  localStorage.setItem('pf_theme', nextTheme);
+  document.body.classList.toggle('theme-light', nextTheme === 'light');
+  document.body.classList.toggle('theme-dark', nextTheme === 'dark');
+  localStorage.setItem('pf_mode', state.mode || 'builder');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof ensureVisitorId === 'function') ensureVisitorId();
   if (typeof recordActivity === 'function') {
@@ -26,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  setTheme(state.theme);
   await loadPurposes();
   await loadTechniques();
 
@@ -41,3 +52,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeMode(state.mode);
   }
 });
+
+window.setTheme = setTheme;
