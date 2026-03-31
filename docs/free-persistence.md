@@ -7,6 +7,8 @@ PromptBuilder는 기본적으로 브라우저 `localStorage`에 사용자 히스
 - 프롬프트 생성 로그
 - 최적화 / 개선 로그
 - 다운로드 / 복사 / 열람 같은 행동 로그
+- 프롬프트 히스토리 스레드
+- 프롬프트 버전
 - 관리자 대시보드용 집계 데이터
 - 건의사항 제출 로그
 
@@ -15,7 +17,7 @@ PromptBuilder는 기본적으로 브라우저 `localStorage`에 사용자 히스
 1. Cloudflare 대시보드에서 D1 데이터베이스를 생성합니다.
 2. Pages 프로젝트에 D1 바인딩을 추가합니다.
 3. 바인딩 이름은 `DB`를 권장합니다.
-4. `migrations/0001_event_logs.sql`의 스키마를 기준으로 테이블을 초기화합니다.
+4. `migrations/0001_event_logs.sql`와 `migrations/0002_prompt_history_and_suggestions.sql`을 순서대로 적용합니다.
 5. 배포 후 `/api/admin/logs`가 D1 데이터를 읽는지 확인합니다.
 
 ## 동작 방식
@@ -23,6 +25,7 @@ PromptBuilder는 기본적으로 브라우저 `localStorage`에 사용자 히스
 - `DB` 바인딩이 있으면 D1이 우선입니다.
 - D1 연결 실패 시 메모리 fallback으로 동작합니다.
 - 사용자 브라우저 기록은 계속 `localStorage`에 유지됩니다.
+- 건의사항은 `suggestions` 테이블, 히스토리는 `prompt_threads` / `prompt_versions` 테이블에 저장됩니다.
 
 ## 장점
 
@@ -30,4 +33,3 @@ PromptBuilder는 기본적으로 브라우저 `localStorage`에 사용자 히스
 - 서버 재시작 후에도 로그가 남음
 - 관리자 통계가 유지됨
 - 추후 사용자 계정이 추가되어도 확장 가능
-

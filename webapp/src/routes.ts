@@ -51,6 +51,61 @@ CREATE TABLE IF NOT EXISTS event_logs (
 );
 `
 
+const PROMPT_THREADS_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS prompt_threads (
+  id TEXT PRIMARY KEY,
+  visitor_id TEXT NOT NULL,
+  session_id TEXT,
+  title TEXT,
+  purpose TEXT,
+  keyword TEXT,
+  technique_id TEXT,
+  technique_name TEXT,
+  workflow_state TEXT,
+  latest_prompt TEXT,
+  prompt_count INTEGER DEFAULT 0,
+  fields_json TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+`
+
+const PROMPT_VERSIONS_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS prompt_versions (
+  id TEXT PRIMARY KEY,
+  thread_id TEXT NOT NULL,
+  version_number INTEGER NOT NULL,
+  kind TEXT,
+  title TEXT,
+  prompt TEXT,
+  input_raw TEXT,
+  intent_json TEXT,
+  result_mode TEXT,
+  technique_id TEXT,
+  technique_name TEXT,
+  purpose TEXT,
+  keyword TEXT,
+  workflow_state TEXT,
+  score INTEGER,
+  quality_grade TEXT,
+  fields_json TEXT,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY(thread_id) REFERENCES prompt_threads(id) ON DELETE CASCADE
+);
+`
+
+const SUGGESTIONS_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS suggestions (
+  id TEXT PRIMARY KEY,
+  visitor_id TEXT NOT NULL,
+  session_id TEXT,
+  title TEXT,
+  text TEXT NOT NULL,
+  status TEXT,
+  created_at TEXT NOT NULL
+);
+`
+
 function getLogStore(): LogStore {
   const g = globalThis as any
   if (!g.__promptAgentLogStore) {
@@ -82,6 +137,26 @@ async function ensureEventLogSchema(c: any) {
     })
   }
   return g.__promptAgentEventLogSchemaPromise
+}
+
+async function ensureAppDataSchema(c: any) {
+  const db = getPersistentDb(c)
+  if (!db || typeof db.prepare !== 'function') return
+  const g = globalThis as any
+  if (!g.__promptAgentAppSchemaPromise) {
+    g.__promptAgentAppSchemaPromise = Promise.all([
+      db.prepare(PROMPT_THREADS_SCHEMA_SQL).run(),
+      db.prepare(PROMPT_VERSIONS_SCHEMA_SQL).run(),
+      db.prepare(SUGGESTIONS_SCHEMA_SQL).run(),
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_prompt_threads_updated_at ON prompt_threads(updated_at DESC)').run(),
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_prompt_versions_thread_id ON prompt_versions(thread_id, version_number DESC)').run(),
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_suggestions_created_at ON suggestions(created_at DESC)').run(),
+    ]).catch((error) => {
+      g.__promptAgentAppSchemaPromise = null
+      throw error
+    })
+  }
+  return g.__promptAgentAppSchemaPromise
 }
 
 function normalizeEventLog(row: any) {
@@ -217,6 +292,219 @@ function isAdminRequest(c: any): boolean {
 function trimStore(store: LogStore) {
   store.promptLogs = store.promptLogs.slice(0, MAX_PROMPT_LOGS)
   store.activityLogs = store.activityLogs.slice(0, MAX_ACTIVITY_LOGS)
+}
+
+async function persistPromptThread(c: any, thread: any, version: any) {
+  const db = getPersistentDb(c)
+  if (!db || typeof db.prepare !== 'function') return
+  try {
+    await ensureAppDataSchema(c)
+    await db.prepare(`
+      INSERT INTO prompt_threads (
+        id, visitor_id, session_id, title, purpose, keyword, technique_id,
+        technique_name, workflow_state, latest_prompt, prompt_count, fields_json,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        visitor_id = excluded.visitor_id,
+        session_id = excluded.session_id,
+        title = excluded.title,
+        purpose = excluded.purpose,
+        keyword = excluded.keyword,
+        technique_id = excluded.technique_id,
+        technique_name = excluded.technique_name,
+        workflow_state = excluded.workflow_state,
+        latest_prompt = excluded.latest_prompt,
+        prompt_count = excluded.prompt_count,
+        fields_json = excluded.fields_json,
+        updated_at = excluded.updated_at
+    `).bind(
+      String(thread.id),
+      String(thread.visitorId || 'anonymous'),
+      String(thread.sessionId || ''),
+      String(thread.title || ''),
+      String(thread.purpose || ''),
+      String(thread.keyword || ''),
+      String(thread.techniqueId || ''),
+      String(thread.techniqueName || ''),
+      String(thread.workflowState || ''),
+      String(thread.latestPrompt || ''),
+      Number(thread.promptCount || 0),
+      JSON.stringify(thread.fields || {}),
+      String(thread.createdAt || new Date().toISOString()),
+      String(thread.updatedAt || new Date().toISOString()),
+    ).run()
+
+    await db.prepare(`
+      INSERT INTO prompt_versions (
+        id, thread_id, version_number, kind, title, prompt, input_raw, intent_json,
+        result_mode, technique_id, technique_name, purpose, keyword, workflow_state,
+        score, quality_grade, fields_json, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        thread_id = excluded.thread_id,
+        version_number = excluded.version_number,
+        kind = excluded.kind,
+        title = excluded.title,
+        prompt = excluded.prompt,
+        input_raw = excluded.input_raw,
+        intent_json = excluded.intent_json,
+        result_mode = excluded.result_mode,
+        technique_id = excluded.technique_id,
+        technique_name = excluded.technique_name,
+        purpose = excluded.purpose,
+        keyword = excluded.keyword,
+        workflow_state = excluded.workflow_state,
+        score = excluded.score,
+        quality_grade = excluded.quality_grade,
+        fields_json = excluded.fields_json,
+        created_at = excluded.created_at
+    `).bind(
+      String(version.id),
+      String(thread.id),
+      Number(version.versionNumber || 1),
+      String(version.kind || 'generate'),
+      String(version.title || ''),
+      String(version.prompt || ''),
+      String(version.inputRaw || ''),
+      JSON.stringify(version.intent || null),
+      String(version.resultMode || ''),
+      String(version.techniqueId || ''),
+      String(version.techniqueName || ''),
+      String(version.purpose || ''),
+      String(version.keyword || ''),
+      String(version.workflowState || ''),
+      Number(version.score || 0),
+      String(version.qualityGrade || ''),
+      JSON.stringify(version.fields || {}),
+      String(version.createdAt || new Date().toISOString()),
+    ).run()
+  } catch {
+    // fallback handled by client-side local history
+  }
+}
+
+async function persistSuggestion(c: any, suggestion: any) {
+  const db = getPersistentDb(c)
+  if (!db || typeof db.prepare !== 'function') return
+  try {
+    await ensureAppDataSchema(c)
+    await db.prepare(`
+      INSERT INTO suggestions (
+        id, visitor_id, session_id, title, text, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        visitor_id = excluded.visitor_id,
+        session_id = excluded.session_id,
+        title = excluded.title,
+        text = excluded.text,
+        status = excluded.status,
+        created_at = excluded.created_at
+    `).bind(
+      String(suggestion.id),
+      String(suggestion.visitorId || 'anonymous'),
+      String(suggestion.sessionId || ''),
+      String(suggestion.title || ''),
+      String(suggestion.text || ''),
+      String(suggestion.status || 'submitted'),
+      String(suggestion.createdAt || new Date().toISOString()),
+    ).run()
+  } catch {
+    // fallback handled client-side
+  }
+}
+
+async function readPromptThreads(c: any, limit: number) {
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureAppDataSchema(c)
+      const result = await db.prepare(
+        'SELECT * FROM prompt_threads ORDER BY updated_at DESC LIMIT ?'
+      ).bind(limit).all()
+      const rows = Array.isArray(result?.results) ? result.results : []
+      return rows.map((row: any) => ({
+        id: row.id,
+        visitorId: row.visitor_id || 'anonymous',
+        sessionId: row.session_id || '',
+        title: row.title || '',
+        purpose: row.purpose || '',
+        keyword: row.keyword || '',
+        techniqueId: row.technique_id || '',
+        techniqueName: row.technique_name || '',
+        workflowState: row.workflow_state || '',
+        latestPrompt: row.latest_prompt || '',
+        promptCount: Number(row.prompt_count || 0),
+        fields: (() => { try { return row.fields_json ? JSON.parse(row.fields_json) : {}; } catch { return {}; } })(),
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      }))
+    } catch {
+      return []
+    }
+  }
+  return []
+}
+
+async function readPromptVersions(c: any, threadId: string, limit: number) {
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureAppDataSchema(c)
+      const result = await db.prepare(
+        'SELECT * FROM prompt_versions WHERE thread_id = ? ORDER BY version_number DESC LIMIT ?'
+      ).bind(threadId, limit).all()
+      const rows = Array.isArray(result?.results) ? result.results : []
+      return rows.map((row: any) => ({
+        id: row.id,
+        threadId: row.thread_id,
+        versionNumber: Number(row.version_number || 0),
+        kind: row.kind || '',
+        title: row.title || '',
+        prompt: row.prompt || '',
+        inputRaw: row.input_raw || '',
+        intent: (() => { try { return row.intent_json ? JSON.parse(row.intent_json) : null; } catch { return null; } })(),
+        resultMode: row.result_mode || '',
+        techniqueId: row.technique_id || '',
+        techniqueName: row.technique_name || '',
+        purpose: row.purpose || '',
+        keyword: row.keyword || '',
+        workflowState: row.workflow_state || '',
+        score: Number(row.score || 0),
+        qualityGrade: row.quality_grade || '',
+        fields: (() => { try { return row.fields_json ? JSON.parse(row.fields_json) : {}; } catch { return {}; } })(),
+        createdAt: row.created_at,
+      }))
+    } catch {
+      return []
+    }
+  }
+  return []
+}
+
+async function readSuggestions(c: any, limit: number) {
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureAppDataSchema(c)
+      const result = await db.prepare(
+        'SELECT * FROM suggestions ORDER BY created_at DESC LIMIT ?'
+      ).bind(limit).all()
+      const rows = Array.isArray(result?.results) ? result.results : []
+      return rows.map((row: any) => ({
+        id: row.id,
+        visitorId: row.visitor_id || 'anonymous',
+        sessionId: row.session_id || '',
+        title: row.title || '',
+        text: row.text || '',
+        status: row.status || 'submitted',
+        createdAt: row.created_at,
+      }))
+    } catch {
+      return []
+    }
+  }
+  return []
 }
 
 function buildStats(store: LogStore) {
@@ -441,15 +729,24 @@ apiRouter.post('/logs', async (c) => {
 
 apiRouter.get('/admin/logs', async (c) => {
   if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
-  const [promptLogs, activityLogs] = await Promise.all([
+  const [promptLogs, activityLogs, promptThreads, suggestionItems] = await Promise.all([
     readEventLogs(c, 'prompt', MAX_PROMPT_LOGS),
     readEventLogs(c, 'activity', MAX_ACTIVITY_LOGS),
+    readPromptThreads(c, 80),
+    readSuggestions(c, 80),
   ])
   const store = { promptLogs, activityLogs }
+  const stats = buildStats(store)
   return c.json({
     promptLogs: store.promptLogs,
     activityLogs: store.activityLogs,
-    stats: buildStats(store),
+    promptThreads,
+    suggestions: suggestionItems,
+    stats: {
+      ...stats,
+      promptThreadCount: promptThreads.length,
+      suggestionStoreCount: suggestionItems.length,
+    },
   })
 })
 
@@ -457,6 +754,35 @@ apiRouter.delete('/admin/logs', async (c) => {
   if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
   await clearEventLogs(c)
   return c.json({ ok: true })
+})
+
+apiRouter.post('/history/persist', async (c) => {
+  try {
+    const payload = await c.req.json()
+    const thread = payload.thread || {}
+    const version = payload.version || {}
+    if (!thread.id || !version.id) {
+      return c.json({ error: 'thread.id와 version.id가 필요합니다.' }, 400)
+    }
+    await persistPromptThread(c, thread, version)
+    return c.json({ ok: true })
+  } catch {
+    return c.json({ error: '히스토리 저장에 실패했습니다.' }, 400)
+  }
+})
+
+apiRouter.post('/suggestions', async (c) => {
+  try {
+    const payload = await c.req.json()
+    const suggestion = payload.suggestion || payload
+    if (!suggestion.id || !suggestion.text) {
+      return c.json({ error: '건의사항 내용이 필요합니다.' }, 400)
+    }
+    await persistSuggestion(c, suggestion)
+    return c.json({ ok: true })
+  } catch {
+    return c.json({ error: '건의사항 저장에 실패했습니다.' }, 400)
+  }
 })
 
 // ?? GET /api/techniques ????????????????????????????????????????????
