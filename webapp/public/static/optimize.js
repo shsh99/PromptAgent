@@ -249,7 +249,7 @@ function injectOptimizeUI() {
             <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4">
               <div class="flex items-center justify-between gap-3 mb-2">
                 <div class="font-semibold text-gray-900">${escapeHtml(item.title)}</div>
-                <button onclick="loadBuilderStarter(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">적용</button>
+                <button onclick="loadBuilderStarter(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">이 예시 사용</button>
               </div>
               <div class="text-xs text-gray-500 leading-relaxed">${escapeHtml(item.description)}</div>
             </div>
@@ -790,7 +790,7 @@ function polishHomepageCopy() {
 
 function localizeWorkspaceCopy() {
   const mapping = [
-    ['button[onclick*="loadBuilderStarter"]', '적용'],
+    ['button[onclick*="loadBuilderStarter"]', '이 예시 사용'],
     ['button[onclick*="loadOptimizeExample"]', '불러오기'],
     ['button[onclick*="copyOptimizeExample"]', '복사'],
     ['button[onclick*="copyOptimizePrompt"]', '복사'],

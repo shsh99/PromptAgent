@@ -66,81 +66,45 @@ app.get('/', (c) => {
             </p>
             <div class="flex flex-wrap gap-3">
               <button onclick="switchMode('template')" class="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10 hover:bg-slate-100">
-                템플릿으로 시작
+                퀵 모드로 시작
               </button>
               <button onclick="switchMode('builder')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
-                빌더 열기
+                고급자 모드
               </button>
               <button onclick="switchMode('optimize')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
                 최적화 열기
               </button>
             </div>
           </div>
-
-        </section>
-
-        <section class="mb-8 grid gap-4 lg:grid-cols-[280px_1fr]">
-          <aside class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-            <div class="mb-4">
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">빠른 경로</div>
-              <h3 class="mt-2 text-lg font-semibold text-white">지금 무엇을 하실 건가요?</h3>
-              <p class="mt-1 text-sm leading-6 text-slate-300">아래에서 가장 가까운 목적을 고르면, 나머지는 자동으로 안내됩니다.</p>
-            </div>
-            <div class="space-y-2">
-              <button onclick="switchMode('template')" class="w-full rounded-2xl border border-white/10 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-brand-100 hover:bg-brand-500/15">
-                사무직 / 템플릿
-              </button>
-              <button onclick="loadBuilderStarter(0)" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-                개발자 / 프로젝트 설계
-              </button>
-              <button onclick="loadBuilderStarter(1)" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-                진행 중 질문
-              </button>
-              <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-                최적화 / 개선
-              </button>
-            </div>
-          </aside>
           <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
             <div class="mb-4 flex items-center justify-between gap-3">
               <div>
-                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">직군 / 주제</div>
-                <h3 class="mt-2 text-lg font-semibold text-white">바로 고를 수 있는 카테고리</h3>
+                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">모드 선택</div>
+                <h3 class="mt-2 text-lg font-semibold text-white">가장 쉬운 방식부터 시작하세요</h3>
               </div>
-              <div class="text-xs text-slate-400">클릭 한 번으로 시작</div>
+              <div class="text-xs text-slate-400">한 번만 고르면 됩니다</div>
             </div>
-            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <button onclick="switchMode('template')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left hover:bg-white/10">
-                <div class="text-sm font-semibold text-white">사무직</div>
-                <div class="mt-1 text-xs text-slate-400">이메일, 보고서, 회의록, 요약</div>
+            <div class="grid gap-3 md:grid-cols-3">
+              <button onclick="switchMode('template')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-semibold text-white">퀵 모드</div>
+                  <span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-200">사무직</span>
+                </div>
+                <div class="mt-2 text-xs leading-5 text-slate-400">이메일, 보고서, 회의록처럼 자주 쓰는 일을 빠르게 시작합니다.</div>
               </button>
-              <button onclick="loadBuilderStarter(0)" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left hover:bg-white/10">
-                <div class="text-sm font-semibold text-white">개발자</div>
-                <div class="mt-1 text-xs text-slate-400">프로젝트 설계, 코드 리뷰, 아키텍처</div>
+              <button onclick="switchMode('builder')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-semibold text-white">고급자 모드</div>
+                  <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200">개발자</span>
+                </div>
+                <div class="mt-2 text-xs leading-5 text-slate-400">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
               </button>
-              <button onclick="switchMode('template')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left hover:bg-white/10">
-                <div class="text-sm font-semibold text-white">마케팅</div>
-                <div class="mt-1 text-xs text-slate-400">캠페인, 문구, CTA, 전환 개선</div>
-              </button>
-              <button onclick="switchMode('template')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left hover:bg-white/10">
-                <div class="text-sm font-semibold text-white">유튜브 / 블로그</div>
-                <div class="mt-1 text-xs text-slate-400">썸네일, 스크립트, 글감, 제목</div>
-              </button>
-              <button onclick="switchMode('template')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left hover:bg-white/10">
-                <div class="text-sm font-semibold text-white">보고서</div>
-                <div class="mt-1 text-xs text-slate-400">분석, 정리, 결과, 제안</div>
-              </button>
-              <button onclick="loadBuilderStarter(1)" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left hover:bg-white/10">
-                <div class="text-sm font-semibold text-white">업무 질문</div>
-                <div class="mt-1 text-xs text-slate-400">진행 중 확인해야 할 질문 정리</div>
-              </button>
-              <button onclick="switchMode('template')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left hover:bg-white/10">
-                <div class="text-sm font-semibold text-white">자소서</div>
-                <div class="mt-1 text-xs text-slate-400">지원동기, 경험, 강점, 마무리</div>
-              </button>
-              <button onclick="switchMode('optimize')" class="rounded-2xl border border-brand-400/20 bg-brand-500/10 px-4 py-4 text-left hover:bg-brand-500/15">
-                <div class="text-sm font-semibold text-brand-200">프롬프트 개선</div>
-                <div class="mt-1 text-xs text-brand-100/80">결과를 넣고 더 완성형으로 고치기</div>
+              <button onclick="switchMode('optimize')" class="rounded-3xl border border-brand-400/20 bg-brand-500/10 px-4 py-4 text-left transition hover:bg-brand-500/15">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm font-semibold text-brand-100">최적화 모드</div>
+                  <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-100">개선</span>
+                </div>
+                <div class="mt-2 text-xs leading-5 text-brand-100/80">이미 만든 프롬프트를 결과 기준으로 고칩니다.</div>
               </button>
             </div>
           </div>

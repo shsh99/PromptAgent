@@ -7,6 +7,16 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v2.6',
+    items: [
+      { tag: 'improve',  text: '퀵 모드 / 고급자 모드 / 최적화 모드로 첫 진입 구조를 더 단순하게 정리.' },
+      { tag: 'fix',      text: '라이트 모드 색상 계열을 더 통일되게 맞춤.' },
+      { tag: 'improve',  text: 'README에 배포 주소와 프로젝트 구성, 기능 설명을 더 상세히 추가.' },
+      { tag: 'fix',      text: '내부 용어인 적용 버튼을 이해하기 쉬운 표현으로 변경.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v2.5',
     items: [
       { tag: 'fix',      text: '최적화 모드 실행 안정성을 높이고 빈 입력 안내를 추가.' },
