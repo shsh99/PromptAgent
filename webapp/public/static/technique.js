@@ -490,6 +490,8 @@ function renderFields(data) {
   });
   state.advancedFields = advanced;
   state.customBlankCount = 0;
+  state.selectedAdvancedFields = [];
+  state.customBlankFields = [];
 
   const renderField = (f) => {
     const req = f.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
@@ -534,7 +536,7 @@ function renderFields(data) {
           </div>
           <div class="mt-4 flex flex-wrap gap-2" id="advanced-field-picker">
             ${advanced.map((field) => `
-              <button type="button" class="rounded-xl border border-gray-700 bg-gray-900/60 px-3 py-2 text-xs font-semibold text-gray-200 hover:border-brand-500 hover:bg-brand-500/10" onclick="addSelectedAdvancedField('${field.id}')">
+              <button type="button" data-field-id="${field.id}" data-field-label="${field.label}" class="rounded-xl border border-gray-700 bg-gray-900/60 px-3 py-2 text-xs font-semibold text-gray-200 hover:border-brand-500 hover:bg-brand-500/10" onclick="addSelectedAdvancedField('${field.id}')">
                 ${field.label}
               </button>
             `).join('')}
@@ -549,5 +551,171 @@ function renderFields(data) {
   `;
 }
 
+function syncAdvancedPickerButton(fieldId, active) {
+  const button = document.querySelector(`#advanced-field-picker [data-field-id="${fieldId}"]`);
+  if (!button) return;
+  const label = button.dataset.fieldLabel || String(button.textContent || '').replace('선택됨 · ', '').trim() || fieldId;
+  button.dataset.selected = active ? 'true' : 'false';
+  button.classList.toggle('border-brand-500', active);
+  button.classList.toggle('bg-brand-500/15', active);
+  button.classList.toggle('text-white', active);
+  button.classList.toggle('text-gray-200', !active);
+  button.classList.toggle('opacity-40', active);
+  button.classList.toggle('cursor-not-allowed', active);
+  button.textContent = active ? `선택됨 · ${label}` : label;
+  button.disabled = active;
+}
+
+function buildAdvancedCardTitle(label, note) {
+  return `
+    <div class="text-sm font-semibold text-gray-200">${label}</div>
+    ${note ? `<div class="mt-1 text-xs text-gray-500">${note}</div>` : ''}
+  `;
+}
+
+function renderAdvancedRemoveButton(handlerName, id) {
+  return `
+    <button type="button"
+      class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-slate-300 hover:bg-white/10"
+      onclick="${handlerName}('${id}')">
+      제거
+    </button>
+  `;
+}
+
+function addSelectedAdvancedField(fieldId) {
+  const fields = state.advancedFields || [];
+  const field = fields.find((item) => item.id === fieldId);
+  if (!field) return;
+
+  state.selectedAdvancedFields = state.selectedAdvancedFields || [];
+  if (state.selectedAdvancedFields.some((item) => item.id === fieldId)) return;
+
+  const selected = document.getElementById('selected-advanced-fields');
+  if (!selected) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'rounded-2xl border border-brand-500/20 bg-gray-950/50 p-4';
+  wrapper.dataset.addedField = fieldId;
+  wrapper.dataset.addedType = 'advanced';
+  wrapper.innerHTML = `
+    <div class="mb-3 flex items-center justify-between gap-3">
+      <div>
+        ${buildAdvancedCardTitle(field.label, field.description || '선택한 항목은 값이 비어 있어도 프롬프트에 포함됩니다.')}
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-200">선택 입력</span>
+        ${renderAdvancedRemoveButton('removeSelectedAdvancedField', field.id)}
+      </div>
+    </div>
+    ${field.type === 'textarea'
+      ? `<textarea id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}" rows="4"
+          class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+          oninput="updateField('${field.id}', this.value)">${state.fields?.[field.id] || ''}</textarea>`
+      : `<input type="text" id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}"
+          value="${state.fields?.[field.id] || ''}"
+          class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+          oninput="updateField('${field.id}', this.value)" />`}
+  `;
+  selected.appendChild(wrapper);
+
+  state.selectedAdvancedFields.push({
+    id: field.id,
+    label: field.label,
+    description: field.description || '',
+    required: !!field.required,
+    placeholder: field.placeholder || '',
+    type: field.type || 'text',
+  });
+  if (!Object.prototype.hasOwnProperty.call(state.fields, field.id)) {
+    state.fields[field.id] = '';
+  }
+  syncAdvancedPickerButton(field.id, true);
+}
+
+function removeSelectedAdvancedField(fieldId) {
+  const selected = document.getElementById('selected-advanced-fields');
+  const wrapper = selected?.querySelector(`[data-added-field="${fieldId}"]`);
+  if (wrapper) wrapper.remove();
+  state.selectedAdvancedFields = (state.selectedAdvancedFields || []).filter((item) => item.id !== fieldId);
+  if (state.fields && Object.prototype.hasOwnProperty.call(state.fields, fieldId)) {
+    delete state.fields[fieldId];
+  }
+  syncAdvancedPickerButton(fieldId, false);
+}
+
+function addBlankInputField() {
+  const selected = document.getElementById('selected-advanced-fields');
+  if (!selected) return;
+
+  state.customBlankCount = (state.customBlankCount || 0) + 1;
+  const index = state.customBlankCount;
+  const fieldId = `custom_note_${index}`;
+  const label = `추가 입력 ${index}`;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'rounded-2xl border border-brand-500/20 bg-gray-950/50 p-4';
+  wrapper.dataset.addedField = fieldId;
+  wrapper.dataset.addedType = 'blank';
+  wrapper.innerHTML = `
+    <div class="mb-3 flex items-center justify-between gap-3">
+      <div>
+        ${buildAdvancedCardTitle(label, '직접 적는 자유 입력입니다. 비어 있어도 생성 프롬프트에 반영됩니다.')}
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-200">빈 입력</span>
+        ${renderAdvancedRemoveButton('removeBlankInputField', fieldId)}
+      </div>
+    </div>
+    <textarea id="${fieldId}" data-field="${fieldId}" rows="4" placeholder="자유롭게 적고 싶은 내용을 입력하세요."
+      class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+      oninput="updateField('${fieldId}', this.value)"></textarea>
+  `;
+  selected.appendChild(wrapper);
+
+  state.customBlankFields = state.customBlankFields || [];
+  state.customBlankFields.push({
+    id: fieldId,
+    label,
+    value: '',
+  });
+  state.fields[fieldId] = '';
+}
+
+function removeBlankInputField(fieldId) {
+  const selected = document.getElementById('selected-advanced-fields');
+  const wrapper = selected?.querySelector(`[data-added-field="${fieldId}"]`);
+  if (wrapper) wrapper.remove();
+  state.customBlankFields = (state.customBlankFields || []).filter((item) => item.id !== fieldId);
+  if (state.fields && Object.prototype.hasOwnProperty.call(state.fields, fieldId)) {
+    delete state.fields[fieldId];
+  }
+}
+
+function resetFields() {
+  state.fields = {};
+  state.selectedAdvancedFields = [];
+  state.customBlankFields = [];
+  state.customBlankCount = 0;
+  document.querySelectorAll('.field-input').forEach(el => {
+    el.value = '';
+    el.classList.remove('border-brand-500/30', 'bg-brand-500/5');
+  });
+  document.querySelectorAll('#advanced-field-picker [data-field-id]').forEach((button) => {
+    const label = button.dataset.fieldLabel || String(button.textContent || '').replace('선택됨 · ', '').trim() || '';
+    button.dataset.selected = 'false';
+    button.disabled = false;
+    button.classList.remove('border-brand-500', 'bg-brand-500/15', 'text-white', 'opacity-40', 'cursor-not-allowed');
+    button.classList.add('text-gray-200');
+    button.textContent = label;
+  });
+  const selected = document.getElementById('selected-advanced-fields');
+  if (selected) selected.innerHTML = '';
+  document.getElementById('result-section').classList.add('hidden');
+}
+
 window.addSelectedAdvancedField = addSelectedAdvancedField;
 window.addBlankInputField = addBlankInputField;
+window.removeSelectedAdvancedField = removeSelectedAdvancedField;
+window.removeBlankInputField = removeBlankInputField;
+window.resetFields = resetFields;

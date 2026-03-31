@@ -7,6 +7,15 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v3.2',
+    items: [
+      { tag: 'improve', text: '선택 입력을 개별 삭제할 수 있게 해서 입력 흐름을 더 유연하게 만들었습니다.' },
+      { tag: 'improve', text: '비어 있는 선택 입력도 최종 프롬프트의 추가 입력 섹션에 반영되도록 정리했습니다.' },
+      { tag: 'improve', text: 'Template / Builder / Optimize 모드의 활성 상태가 더 분명하게 보이도록 강조했습니다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v3.1',
     items: [
       { tag: 'improve', text: 'GPT, Claude, Gemini, Genspark 스타일 프리셋을 선택할 수 있게 했다.' },

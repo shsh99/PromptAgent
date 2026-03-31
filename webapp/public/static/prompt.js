@@ -13,6 +13,8 @@ async function generatePrompt() {
       body: JSON.stringify({
         techniqueId: state.techniqueId,
         fields: state.fields,
+        selectedAdvancedFields: state.selectedAdvancedFields || [],
+        customBlankFields: state.customBlankFields || [],
         purpose: state.purpose,
         keyword,
         language: state.promptLanguage || 'ko',

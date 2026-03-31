@@ -572,6 +572,9 @@ function switchMode(mode) {
   if (nextMode === 'optimize' && !document.getElementById('optimize-workspace')) {
     injectOptimizeUI();
   }
+  if (typeof setModeSelection === 'function') {
+    setModeSelection(nextMode);
+  }
   setActiveModeTab(nextMode);
   toggleSections(nextMode);
 
