@@ -7,6 +7,16 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v2.8',
+    items: [
+      { tag: 'improve', text: '퀵 모드에서 사무직과 개발자 진입점이 더 명확하게 보이도록 카드형 시작 흐름을 정리했다.' },
+      { tag: 'improve', text: '입력 폼은 기술별로 핵심 입력과 선택 입력을 나눠서 보여주도록 바꿨다.' },
+      { tag: 'improve', text: '사무직 사용자는 코딩 컨벤션, 브랜치 규칙 같은 개발용 항목을 기본적으로 숨기도록 조정했다.' },
+      { tag: 'fix', text: 'README와 배포 URL을 최신 상태로 다시 맞출 수 있게 정리했다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v2.7',
     items: [
       { tag: 'improve', text: '퀵 모드에 바로 시작할 수 있는 사무직/개발자 카드와 자동 시작 흐름을 추가했다.' },

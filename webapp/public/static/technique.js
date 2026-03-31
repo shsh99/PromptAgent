@@ -229,10 +229,48 @@ async function selectRecommendedTechnique(id) {
 }
 
 // ── 필드 렌더링 ────────────────────────────────────────────────────
+function getFieldGroupTitle(techniqueId) {
+  if (techniqueId === 'harness') return '기본 입력';
+  if (techniqueId === 'context-engineering') return '핵심 정보';
+  if (techniqueId === 'role-prompting') return '기본 정보';
+  return '입력 정보';
+}
+
 function renderFields(data) {
   const container = document.getElementById('fields-container');
   state.fields = {};
-  container.innerHTML = data.fields.map(f => {
+  const advancedIds = new Set([
+    'project_structure',
+    'existing_assets',
+    'workflow_steps',
+    'code_conventions',
+    'branch_strategy',
+    'code_review_rules',
+    'testing_rules',
+    'deployment_rules',
+    'risks',
+    'appendix_docs',
+    'data_governance',
+    'access_policy',
+    'monitoring_rules',
+    'feedback_loop',
+    'failure_response',
+    'human_in_the_loop',
+    'audit_log_rules',
+    'compliance_rules',
+    'rollback_plan',
+  ]);
+  const visible = [];
+  const advanced = [];
+  data.fields.forEach((field) => {
+    if (advancedIds.has(field.id) && ['content', 'custom'].includes(state.purpose)) {
+      advanced.push(field);
+      return;
+    }
+    visible.push(field);
+  });
+
+  const renderField = (f) => {
     const req = f.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
     if (f.type === 'textarea') {
       return `<div>
@@ -250,7 +288,33 @@ function renderFields(data) {
         oninput="updateField('${f.id}', this.value)"
         onfocus="this.classList.remove('border-brand-500/30','bg-brand-500/5')" />
     </div>`;
-  }).join('');
+  };
+
+  container.innerHTML = `
+    <div class="mb-4 rounded-2xl border border-brand-500/20 bg-brand-500/5 px-4 py-3 text-sm text-gray-200">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <div class="font-semibold text-white">${getFieldGroupTitle(state.techniqueId)}</div>
+          <div class="mt-1 text-xs text-gray-400">핵심 입력만 먼저 보이고, 필요할 때 선택 입력을 펼칠 수 있습니다.</div>
+        </div>
+        ${advanced.length ? '<span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-300">선택 입력 숨김</span>' : ''}
+      </div>
+    </div>
+    <div class="space-y-5">
+      ${visible.map(renderField).join('')}
+      ${advanced.length ? `
+        <details class="rounded-2xl border border-dashed border-gray-700 bg-gray-900/40 p-4">
+          <summary class="cursor-pointer list-none flex items-center justify-between gap-3 text-sm font-semibold text-gray-200">
+            <span>선택 입력</span>
+            <span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-gray-400">${advanced.length}개</span>
+          </summary>
+          <div class="mt-4 space-y-5">
+            ${advanced.map(renderField).join('')}
+          </div>
+        </details>
+      ` : ''}
+    </div>
+  `;
 }
 
 function updateField(id, value) {
