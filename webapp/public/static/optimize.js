@@ -156,6 +156,20 @@ function setCurrentCompareId(id) {
   localStorage.setItem(OPTIMIZE_COMPARE_KEY, String(id || 0));
 }
 
+function getOptimizeEl(id) {
+  return document.getElementById(id);
+}
+
+function setOptimizeText(id, value) {
+  const el = getOptimizeEl(id);
+  if (el) el.textContent = value;
+}
+
+function setOptimizeValue(id, value) {
+  const el = getOptimizeEl(id);
+  if (el) el.value = value;
+}
+
 function injectOptimizeUI() {
   if (document.getElementById('optimize-tabs')) return;
   const firstBuilderSection = document.getElementById('step-purpose');
@@ -431,6 +445,9 @@ function switchMode(mode) {
   const nextMode = mode || 'builder';
   if (typeof state !== 'undefined') state.mode = nextMode;
   localStorage.setItem('pf_mode', nextMode);
+  if (nextMode === 'optimize' && !document.getElementById('optimize-workspace')) {
+    injectOptimizeUI();
+  }
   setActiveModeTab(nextMode);
   toggleSections(nextMode);
 
@@ -453,12 +470,16 @@ function getOptimizeDraft() {
 }
 
 async function runOptimize() {
-  const prompt = document.getElementById('optimize-prompt')?.value.trim() || '';
-  const output = document.getElementById('optimize-output')?.value.trim() || '';
-  const goal = document.getElementById('optimize-goal')?.value.trim() || '';
-  const btn = document.getElementById('optimize-run-btn');
-  if (!prompt || !output) return;
+  const prompt = getOptimizeEl('optimize-prompt')?.value.trim() || '';
+  const output = getOptimizeEl('optimize-output')?.value.trim() || '';
+  const goal = getOptimizeEl('optimize-goal')?.value.trim() || '';
+  const btn = getOptimizeEl('optimize-run-btn');
+  if (!btn || !prompt || !output) {
+    setOptimizeText('optimize-status', '프롬프트와 결과를 먼저 입력하세요.');
+    return;
+  }
 
+  setOptimizeText('optimize-status', '실행 중...');
   btn.disabled = true;
   btn.textContent = '최적화 중...';
 
@@ -466,7 +487,7 @@ async function runOptimize() {
     const res = await fetch('/api/optimize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, output, goal }),
+      body: JSON.stringify({ prompt, output, goal, language: state?.promptLanguage || 'ko' }),
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
@@ -476,6 +497,7 @@ async function runOptimize() {
       output,
       goal,
       result: data,
+      language: state?.promptLanguage || 'ko',
       createdAt: new Date().toISOString(),
     };
     setOptimizeSession(session);
@@ -487,7 +509,7 @@ async function runOptimize() {
       });
     }
   } catch (error) {
-    document.getElementById('optimize-status').textContent = error.message;
+    setOptimizeText('optimize-status', error.message || '최적화 실행에 실패했습니다.');
   } finally {
     btn.disabled = false;
     btn.textContent = '최적화 실행';
@@ -495,9 +517,9 @@ async function runOptimize() {
 }
 
 function renderOptimizeResult(data) {
-  document.getElementById('optimize-score').textContent = data.score ?? 0;
-  document.getElementById('optimize-status').textContent = data.issues?.length ? '개선 필요' : '반복 가능';
-  document.getElementById('optimize-improved-prompt').textContent = data.improvedPrompt || '';
+  setOptimizeText('optimize-score', data.score ?? 0);
+  setOptimizeText('optimize-status', data.issues?.length ? '개선 필요' : '반복 가능');
+  setOptimizeText('optimize-improved-prompt', data.improvedPrompt || '');
   const issues = data.issues || [];
   const improvements = data.improvements || [];
   const issueHtml = `
@@ -518,7 +540,8 @@ function renderOptimizeResult(data) {
       <div class="text-sm text-brand-900">${escapeHtml(data.nextAction || '수정한 프롬프트로 다시 실행해 보세요.')}</div>
     </div>
   `;
-  document.getElementById('optimize-issues').innerHTML = issueHtml;
+  const issueContainer = getOptimizeEl('optimize-issues');
+  if (issueContainer) issueContainer.innerHTML = issueHtml;
 
   const session = getOptimizeSession();
   if (session?.prompt) {
@@ -538,6 +561,7 @@ function saveOptimizeVersion() {
     improvedPrompt: session.result.improvedPrompt || session.prompt || '',
     goal: session.goal || '',
     output: session.output || '',
+    language: session.language || 'ko',
     issues: session.result.issues || [],
     improvements: session.result.improvements || [],
     score: session.result.score ?? 0,
@@ -551,7 +575,7 @@ function saveOptimizeVersion() {
 }
 
 function renderOptimizeHistory() {
-  const container = document.getElementById('optimize-history');
+  const container = getOptimizeEl('optimize-history');
   if (!container) return;
   const history = getOptimizeHistory();
   if (!history.length) {
@@ -576,7 +600,7 @@ function renderOptimizeHistory() {
 }
 
 function renderOptimizeDiff(entry) {
-  const diffContainer = document.getElementById('optimize-diff');
+  const diffContainer = getOptimizeEl('optimize-diff');
   if (!diffContainer || !entry) return;
   const current = getOptimizeSession();
   const beforeText = entry.basePrompt || entry.prompt || '';
@@ -602,7 +626,7 @@ function renderOptimizeDiff(entry) {
 }
 
 function renderOptimizeCurrentDiff(session, data) {
-  const diffContainer = document.getElementById('optimize-diff');
+  const diffContainer = getOptimizeEl('optimize-diff');
   if (!diffContainer) return;
   const beforeText = session.prompt || '';
   const afterText = data?.improvedPrompt || '';
@@ -628,7 +652,7 @@ function renderOptimizeCurrentDiff(session, data) {
 
 function clearOptimizeCompare() {
   localStorage.removeItem(OPTIMIZE_COMPARE_KEY);
-  const diffContainer = document.getElementById('optimize-diff');
+  const diffContainer = getOptimizeEl('optimize-diff');
   if (!diffContainer) return;
   diffContainer.innerHTML = '<div class="rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">비교할 버전을 선택하세요.</div>';
 }
@@ -636,12 +660,12 @@ function clearOptimizeCompare() {
 function loadOptimizeVersion(id) {
   const entry = getOptimizeHistory().find((item) => item.id === id);
   if (!entry) return;
-  document.getElementById('optimize-prompt').value = entry.basePrompt || entry.prompt || '';
-  document.getElementById('optimize-goal').value = entry.goal || '';
-  document.getElementById('optimize-output').value = entry.output || '';
-  document.getElementById('optimize-improved-prompt').textContent = entry.improvedPrompt || entry.prompt || '';
-  document.getElementById('optimize-score').textContent = entry.score ?? 0;
-  document.getElementById('optimize-status').textContent = '기록에서 불러옴';
+  setOptimizeValue('optimize-prompt', entry.basePrompt || entry.prompt || '');
+  setOptimizeValue('optimize-goal', entry.goal || '');
+  setOptimizeValue('optimize-output', entry.output || '');
+  setOptimizeText('optimize-improved-prompt', entry.improvedPrompt || entry.prompt || '');
+  setOptimizeText('optimize-score', entry.score ?? 0);
+  setOptimizeText('optimize-status', '기록에서 불러옴');
   setCurrentCompareId(id);
   renderOptimizeDiff(entry);
 }
@@ -656,26 +680,27 @@ function compareOptimizeVersion(id) {
 function rollbackOptimizePrompt() {
   const session = getOptimizeSession();
   if (!session?.prompt) return;
-  document.getElementById('optimize-prompt').value = session.prompt || '';
-  document.getElementById('optimize-output').value = session.output || '';
-  document.getElementById('optimize-goal').value = session.goal || '';
-  document.getElementById('optimize-status').textContent = '현재 세션으로 되돌림';
+  setOptimizeValue('optimize-prompt', session.prompt || '');
+  setOptimizeValue('optimize-output', session.output || '');
+  setOptimizeValue('optimize-goal', session.goal || '');
+  setOptimizeText('optimize-status', '현재 세션으로 되돌림');
 }
 
 function rollbackOptimizeVersion(id) {
   const entry = getOptimizeHistory().find((item) => item.id === id);
   if (!entry) return;
-  document.getElementById('optimize-prompt').value = entry.basePrompt || entry.prompt || '';
-  document.getElementById('optimize-output').value = entry.output || '';
-  document.getElementById('optimize-goal').value = entry.goal || '';
-  document.getElementById('optimize-improved-prompt').textContent = entry.improvedPrompt || entry.prompt || '';
-  document.getElementById('optimize-score').textContent = entry.score ?? 0;
-  document.getElementById('optimize-status').textContent = '선택한 버전으로 되돌림';
+  setOptimizeValue('optimize-prompt', entry.basePrompt || entry.prompt || '');
+  setOptimizeValue('optimize-output', entry.output || '');
+  setOptimizeValue('optimize-goal', entry.goal || '');
+  setOptimizeText('optimize-improved-prompt', entry.improvedPrompt || entry.prompt || '');
+  setOptimizeText('optimize-score', entry.score ?? 0);
+  setOptimizeText('optimize-status', '선택한 버전으로 되돌림');
 
   const session = {
     prompt: entry.basePrompt || entry.prompt || '',
     output: entry.output || '',
     goal: entry.goal || '',
+    language: entry.language || 'ko',
     result: {
       score: entry.score ?? 0,
       issues: entry.issues || [],
@@ -723,13 +748,10 @@ function loadOptimizeExample(index) {
   const item = OPTIMIZE_EXAMPLES[index];
   if (!item) return;
   switchMode('optimize');
-  const promptEl = document.getElementById('optimize-prompt');
-  const outputEl = document.getElementById('optimize-output');
-  const goalEl = document.getElementById('optimize-goal');
-  if (promptEl) promptEl.value = item.prompt;
-  if (outputEl) outputEl.value = item.output;
-  if (goalEl) goalEl.value = item.goal;
-  document.getElementById('optimize-status').textContent = '예시를 불러왔습니다';
+  setOptimizeValue('optimize-prompt', item.prompt);
+  setOptimizeValue('optimize-output', item.output);
+  setOptimizeValue('optimize-goal', item.goal);
+  setOptimizeText('optimize-status', '예시를 불러왔습니다');
 }
 
 function copyOptimizeExample(index) {

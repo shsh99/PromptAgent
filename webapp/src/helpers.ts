@@ -117,14 +117,14 @@ export function getDataModel(purpose: string, keyword: string): string {
 
 export function getChainSteps(purpose: string, keyword: string): string {
   const map: Record<string, string> = {
-    'web-app':       `Step 1: "${keyword}" 프로젝트 요구사항 분석 및 기능 명세 작성\nStep 2: 기술 스택 결정 및 프로젝트 아키텍처 설계\nStep 3: 데이터베이스 스키마 및 API 엔드포인트 설계\nStep 4: UI/UX 와이어프레임 및 컴포넌트 구조 설계\nStep 5: 핵심 기능 구현 코드 작성`,
-    'mobile-app':    `Step 1: "${keyword}" 앱 요구사항 및 화면 흐름 정의\nStep 2: 기술 스택 및 앱 아키텍처 설계\nStep 3: UI/UX 디자인 및 네비게이션 구조\nStep 4: 핵심 기능 및 API 연동 구현\nStep 5: 테스트 및 앱스토어 배포 준비`,
-    'ai-tool':       `Step 1: "${keyword}" AI 도구 기능 정의 및 모델 선택\nStep 2: 데이터 파이프라인 및 프롬프트 설계\nStep 3: 백엔드 API 및 모델 연동 구현\nStep 4: 프론트엔드 인터페이스 구현\nStep 5: 테스트 및 프롬프트 최적화`,
-    'data-analysis': `Step 1: "${keyword}" 분석 목표 및 데이터 소스 정의\nStep 2: 데이터 수집 및 전처리 파이프라인 설계\nStep 3: 분석 로직 및 통계 모델 구현\nStep 4: 시각화 대시보드 및 리포트 생성\nStep 5: 인사이트 도출 및 결과 검증`,
-    'automation':    `Step 1: "${keyword}" 자동화 대상 워크플로 분석\nStep 2: 자동화 아키텍처 및 트리거 설계\nStep 3: 핵심 자동화 스크립트 구현\nStep 4: 모니터링 및 알림 시스템 구축\nStep 5: 테스트 및 점진적 배포`,
-    'content':       `Step 1: "${keyword}" 콘텐츠 전략 및 타겟 오디언스 분석\nStep 2: 콘텐츠 구조 및 톤/스타일 가이드 설정\nStep 3: 핵심 콘텐츠 초안 작성\nStep 4: SEO 최적화 및 편집\nStep 5: 퍼블리싱 및 성과 측정 계획`,
-    'game':          `Step 1: "${keyword}" 게임 컨셉 및 핵심 메카닉 설계\nStep 2: 게임 아키텍처 및 기술 스택 결정\nStep 3: 핵심 게임 로직 및 시스템 구현\nStep 4: UI/UX 및 비주얼 에셋 설계\nStep 5: 플레이테스트 및 밸런싱`,
-    'custom':        `Step 1: "${keyword}" 프로젝트 요구사항 분석\nStep 2: 기술 스택 및 아키텍처 설계\nStep 3: 핵심 기능 구현\nStep 4: UI/UX 설계 및 구현\nStep 5: 테스트 및 배포`,
+    'web-app':       `1단계: "${keyword}" 프로젝트 요구사항 분석 및 기능 명세 작성\n2단계: 기술 스택 결정 및 프로젝트 아키텍처 설계\n3단계: 데이터베이스 스키마 및 API 엔드포인트 설계\n4단계: UI/UX 와이어프레임 및 컴포넌트 구조 설계\n5단계: 핵심 기능 구현 코드 작성`,
+    'mobile-app':    `1단계: "${keyword}" 앱 요구사항 및 화면 흐름 정의\n2단계: 기술 스택 및 앱 아키텍처 설계\n3단계: UI/UX 디자인 및 네비게이션 구조\n4단계: 핵심 기능 및 API 연동 구현\n5단계: 테스트 및 앱스토어 배포 준비`,
+    'ai-tool':       `1단계: "${keyword}" AI 도구 기능 정의 및 모델 선택\n2단계: 데이터 파이프라인 및 프롬프트 설계\n3단계: 백엔드 API 및 모델 연동 구현\n4단계: 프론트엔드 인터페이스 구현\n5단계: 테스트 및 프롬프트 최적화`,
+    'data-analysis': `1단계: "${keyword}" 분석 목표 및 데이터 소스 정의\n2단계: 데이터 수집 및 전처리 파이프라인 설계\n3단계: 분석 로직 및 통계 모델 구현\n4단계: 시각화 대시보드 및 리포트 생성\n5단계: 인사이트 도출 및 결과 검증`,
+    'automation':    `1단계: "${keyword}" 자동화 대상 워크플로 분석\n2단계: 자동화 아키텍처 및 트리거 설계\n3단계: 핵심 자동화 스크립트 구현\n4단계: 모니터링 및 알림 시스템 구축\n5단계: 테스트 및 점진적 배포`,
+    'content':       `1단계: "${keyword}" 콘텐츠 전략 및 타겟 오디언스 분석\n2단계: 콘텐츠 구조 및 톤/스타일 가이드 설정\n3단계: 핵심 콘텐츠 초안 작성\n4단계: SEO 최적화 및 편집\n5단계: 퍼블리싱 및 성과 측정 계획`,
+    'game':          `1단계: "${keyword}" 게임 컨셉 및 핵심 메카닉 설계\n2단계: 게임 아키텍처 및 기술 스택 결정\n3단계: 핵심 게임 로직 및 시스템 구현\n4단계: UI/UX 및 비주얼 에셋 설계\n5단계: 플레이테스트 및 밸런싱`,
+    'custom':        `1단계: "${keyword}" 프로젝트 요구사항 분석\n2단계: 기술 스택 및 아키텍처 설계\n3단계: 핵심 기능 구현\n4단계: UI/UX 설계 및 구현\n5단계: 테스트 및 배포`,
   };
   return map[purpose] || map['custom'];
 }
@@ -349,47 +349,47 @@ export function analyzePromptQualityEnhanced(prompt: string, fields: Record<stri
   const hasRole = Boolean(fields.role || fields.role_detail || fields.project_name || /you are|as an?|role:/i.test(text));
   addCheck(
     'role',
-    'Role Definition',
+    '역할 정의',
     hasRole,
-    hasRole ? 'Role is clearly defined.' : 'Role is missing or too generic.',
-    'Add a specific role or subject line.',
+    hasRole ? '역할이 명확합니다.' : '역할이 없거나 너무 일반적입니다.',
+    '구체적인 역할이나 주제를 추가하세요.',
   );
 
   const taskText = String(fields.task || fields.project_goal || fields.goal || '').trim();
   const hasTask = taskText.length > 30 || /output|analyze|generate|summarize|design|compare|evaluate|build|create|write/i.test(normalized);
   addCheck(
     'task',
-    'Task Specificity',
+    '작업 구체성',
     hasTask,
-    hasTask ? 'Task is specific enough.' : 'Task is too generic.',
-    'Rewrite the task with a clear objective and expected action.',
+    hasTask ? '작업이 충분히 구체적입니다.' : '작업이 너무 일반적입니다.',
+    '목표와 기대 행동이 드러나도록 다시 작성하세요.',
   );
 
   const hasOutput = Boolean(fields.output_format || /json|markdown|table|bullet|steps?|schema|format/i.test(text));
   addCheck(
     'output_format',
-    'Output Contract',
+    '출력 계약',
     hasOutput,
-    hasOutput ? 'Output format is defined.' : 'Output format is missing.',
-    'Specify the output format explicitly.',
+    hasOutput ? '출력 형식이 정의되어 있습니다.' : '출력 형식이 없습니다.',
+    '출력 형식을 명시적으로 적어주세요.',
   );
 
   const hasConstraints = Boolean(fields.constraints || fields.input_guardrails || fields.output_guardrails || /must|should|avoid|do not|limit|at least|under|over/i.test(normalized));
   addCheck(
     'constraints',
-    'Constraints',
+    '제약 조건',
     hasConstraints,
-    hasConstraints ? 'Constraints are present.' : 'Constraints are missing.',
-    'Add length, style, and exclusion rules.',
+    hasConstraints ? '제약 조건이 있습니다.' : '제약 조건이 부족합니다.',
+    '길이, 스타일, 금지 항목을 추가하세요.',
   );
 
   const hasContext = Boolean(fields.context || fields.expertise || fields.core_features || fields.project_goal || fields.project_name || lines.length > 4);
   addCheck(
     'context',
-    'Context Depth',
+    '맥락 깊이',
     hasContext,
-    hasContext ? 'Context exists.' : 'Context is too thin.',
-    'Add background, examples, or project context.',
+    hasContext ? '맥락이 충분합니다.' : '맥락이 너무 얇습니다.',
+    '배경, 예시, 프로젝트 맥락을 추가하세요.',
   );
 
   const ambiguous = [
@@ -398,47 +398,47 @@ export function analyzePromptQualityEnhanced(prompt: string, fields: Record<stri
   ].some((pattern) => pattern.test(normalized));
   addCheck(
     'ambiguity',
-    'Ambiguity',
+    '모호성',
     !ambiguous,
-    ambiguous ? 'Ambiguous phrases detected.' : 'No obvious ambiguity detected.',
-    'Replace vague terms with concrete rules and examples.',
+    ambiguous ? '모호한 표현이 감지되었습니다.' : '눈에 띄는 모호성은 없습니다.',
+    '모호한 표현을 구체적인 규칙과 예시로 바꾸세요.',
   );
 
   const repeatedLines = lines.filter((line, index) => lines.indexOf(line) !== index).length;
   const tokenWaste = normalized.length > 1200 || repeatedLines > 0 || /very very|please please/i.test(normalized);
   addCheck(
     'token_waste',
-    'Token Efficiency',
+    '토큰 효율',
     !tokenWaste,
-    tokenWaste ? 'The prompt likely repeats itself or is too long.' : 'No major token waste detected.',
-    'Remove repeated text and compress redundant sections.',
+    tokenWaste ? '프롬프트가 반복되거나 너무 길어 보입니다.' : '큰 토큰 낭비는 보이지 않습니다.',
+    '중복된 문장을 줄이고 불필요한 부분을 압축하세요.',
   );
 
   const hasFailure = Boolean(fields.rollback_plan || fields.feedback_loop || /failure|rollback|fallback|retry|if .* fails/i.test(normalized));
   addCheck(
     'failure_boundaries',
-    'Failure Boundaries',
+    '실패 대응',
     hasFailure,
-    hasFailure ? 'Failure handling exists.' : 'Failure handling is missing.',
-    'Add what should happen when the first attempt fails.',
+    hasFailure ? '실패 대응이 포함되어 있습니다.' : '실패 대응이 없습니다.',
+    '첫 시도가 실패했을 때 어떻게 할지 추가하세요.',
   );
 
   const hasTone = Boolean(fields.tone);
   addCheck(
     'tone',
-    'Tone',
+    '톤',
     hasTone,
-    hasTone ? 'Tone is defined.' : 'Tone is not defined.',
-    'Add tone only if it affects output quality.',
+    hasTone ? '톤이 정의되어 있습니다.' : '톤이 정의되지 않았습니다.',
+    '출력 품질에 영향을 줄 때만 톤을 추가하세요.',
   );
 
   const hasModelTarget = Boolean(fields.model_target);
   addCheck(
     'model_target',
-    'Model Targeting',
+    '모델 지정',
     hasModelTarget,
-    hasModelTarget ? 'A model target is set.' : 'No model target is set.',
-    'Set a target model when you want a model-specific rewrite.',
+    hasModelTarget ? '대상 모델이 설정되어 있습니다.' : '대상 모델이 없습니다.',
+    '모델별로 다르게 쓰고 싶을 때만 지정하세요.',
   );
 
   if (!hasRole) {

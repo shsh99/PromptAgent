@@ -28,6 +28,7 @@
 - 예시 입력과 도움말 제공
 - 로컬 히스토리 저장
 - 라이트 / 다크 테마
+- 기본 한국어 출력, 필요할 때만 영어 전환
 
 ### 모드
 
@@ -82,6 +83,7 @@ The product is designed for office workers, non-developers, and anyone who strug
 - Examples and helper guidance
 - Local history storage
 - Light and dark themes
+- Korean-first output with optional English mode
 
 ### Modes
 

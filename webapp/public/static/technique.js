@@ -92,7 +92,7 @@ function displayRecommendation(data) {
       class="w-full bg-brand-500/10 border-2 border-brand-500/40 hover:border-brand-500 rounded-xl p-4 text-left transition-all group">
       <div class="flex items-center gap-2 mb-2">
         <span class="text-[10px] bg-brand-500/30 text-brand-300 px-2 py-0.5 rounded-full font-bold">1순위 추천</span>
-        <span class="text-[10px] px-2 py-0.5 rounded-full ${catColors[p.category] || ''}">${catLabels[p.category] || ''} 엔지니어링</span>
+        <span class="text-[10px] px-2 py-0.5 rounded-full ${catColors[p.category] || ''}">${catLabels[p.category] || ''}</span>
       </div>
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-brand-500/20 rounded-lg flex items-center justify-center">
@@ -118,7 +118,7 @@ function displayRecommendation(data) {
         </div>
         <div>
           <div class="text-xs font-medium text-gray-300 group-hover:text-white">${t.name}</div>
-          <div class="text-[10px] text-gray-600">${catLabels[t.category] || ''} 엔지니어링</div>
+          <div class="text-[10px] text-gray-600">${catLabels[t.category] || ''}</div>
         </div>
       </button>`).join('')}`;
 

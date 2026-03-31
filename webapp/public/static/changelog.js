@@ -7,6 +7,16 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v2.5',
+    items: [
+      { tag: 'fix',      text: '최적화 모드 실행 안정성을 높이고 빈 입력 안내를 추가.' },
+      { tag: 'improve',  text: '한국어 기본 출력을 강화하고 영어는 선택했을 때만 나오도록 정리.' },
+      { tag: 'improve',  text: '라이트 모드 색감과 그림자 톤을 더 부드럽게 조정.' },
+      { tag: 'refactor', text: '첫 화면의 중복 안내를 줄여 진입 동선을 더 단순하게 정리.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v2.4',
     items: [
       { tag: 'new',      text: '한국어 기본 UI와 라이트/다크 테마 전환을 추가.' },

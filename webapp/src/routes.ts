@@ -54,6 +54,41 @@ function buildStats(store: LogStore) {
   }
 }
 
+function applyPromptLanguage(text: string, language: string): string {
+  if (language !== 'en') return text
+  return String(text || '')
+    .replace(/## 역할/g, '## Role')
+    .replace(/## 문제 정의/g, '## Problem Definition')
+    .replace(/## 입력 데이터/g, '## Input Data')
+    .replace(/## 작업/g, '## Task')
+    .replace(/## 제약 조건/g, '## Constraints')
+    .replace(/## 사고 방향/g, '## Reasoning')
+    .replace(/## 출력 형식/g, '## Output Format')
+    .replace(/## 평가 기준/g, '## Evaluation Criteria')
+    .replace(/## 예시/g, '## Examples')
+    .replace(/## 프로젝트 컨텍스트 문서/g, '## Project Context Document')
+    .replace(/## 프로젝트명/g, '## Project Name')
+    .replace(/## 프로젝트 목표/g, '## Project Goal')
+    .replace(/## 대상 사용자/g, '## Target User')
+    .replace(/## 기술 스택/g, '## Tech Stack')
+    .replace(/## 핵심 기능/g, '## Core Features')
+    .replace(/## 데이터 모델/g, '## Data Model')
+    .replace(/## 제약 조건 및 요구사항/g, '## Constraints and Requirements')
+    .replace(/## 커뮤니케이션 톤/g, '## Communication Tone')
+    .replace(/1단계:/g, 'Step 1:')
+    .replace(/2단계:/g, 'Step 2:')
+    .replace(/3단계:/g, 'Step 3:')
+    .replace(/4단계:/g, 'Step 4:')
+    .replace(/5단계:/g, 'Step 5:')
+    .replace(/출력 형식:/g, 'Output Format:')
+    .replace(/제약 조건:/g, 'Constraints:')
+    .replace(/단계별로 차근차근 생각해 보세요:/g, 'Think step by step:')
+    .replace(/다음 관점에서 개선하세요:/g, 'Improve the prompt from the following perspectives:')
+    .replace(/개선된 프롬프트와 변경 이유를 설명해주세요\./g, 'Provide the improved prompt and explain the changes.')
+    .replace(/프롬프트를 다시 작성하세요\./g, 'Rewrite the prompt.')
+    .replace(/수정한 프롬프트를 한 번 더 실행하고 결과를 비교하세요\./g, 'Run the revised prompt once more and compare the output.')
+}
+
 apiRouter.post('/logs', async (c) => {
   try {
     const payload = await c.req.json()
@@ -169,7 +204,7 @@ apiRouter.post('/auto-fill', async (c) => {
 // ── POST /api/generate-chain ──────────────────────────────────────
 apiRouter.post('/generate-chain', async (c) => {
   try {
-    const { purpose, keyword, fields } = await c.req.json()
+    const { purpose, keyword, fields, language } = await c.req.json()
     if (!keyword) return c.json({ error: '키워드가 필요합니다.' }, 400)
 
     const p = PURPOSE_PRESETS.find(pp => pp.id === purpose)
@@ -211,10 +246,16 @@ apiRouter.post('/generate-chain', async (c) => {
       if (fields?.output_format) prompt += `\n\n출력 형식: ${fields.output_format}`
       if (fields?.constraints) prompt += `\n제약 조건: ${fields.constraints}`
 
-      return { step: stepNum, title: step, prompt: prompt.trim() }
+      return { step: stepNum, title: step, prompt: applyPromptLanguage(prompt.trim(), language || 'ko') }
     })
 
-    return c.json({ totalSteps: steps.length, project: keyword, purpose: purposeLabel, chainPrompts })
+    return c.json({
+      totalSteps: steps.length,
+      project: keyword,
+      purpose: purposeLabel,
+      chainPrompts,
+      language: language || 'ko',
+    })
   } catch {
     return c.json({ error: '잘못된 요청입니다.' }, 400)
   }
@@ -223,7 +264,7 @@ apiRouter.post('/generate-chain', async (c) => {
 // ── POST /api/generate-context-doc ───────────────────────────────
 apiRouter.post('/generate-context-doc', async (c) => {
   try {
-    const { purpose, keyword, fields } = await c.req.json()
+    const { purpose, keyword, fields, language } = await c.req.json()
     if (!keyword) return c.json({ error: '키워드가 필요합니다.' }, 400)
 
     const p = PURPOSE_PRESETS.find(pp => pp.id === purpose)
@@ -300,10 +341,11 @@ apiRouter.post('/generate-context-doc', async (c) => {
     doc.push('```')
 
     return c.json({
-      document: doc.join('\n'),
+      document: applyPromptLanguage(doc.join('\n'), language || 'ko'),
       filename:  `${(fields?.project_name || keyword).replace(/\s+/g, '-').toLowerCase()}-context.md`,
       sections:  8,
       features:  features.length,
+      language: language || 'ko',
     })
   } catch {
     return c.json({ error: '잘못된 요청입니다.' }, 400)
@@ -357,7 +399,7 @@ apiRouter.post('/improve', async (c) => {
 
 apiRouter.post('/optimize', async (c) => {
   try {
-    const { prompt, output, goal, modelTarget } = await c.req.json()
+    const { prompt, output, goal, modelTarget, language } = await c.req.json()
     if (!String(prompt || '').trim() || !String(output || '').trim()) {
       return c.json({ error: 'prompt와 output이 모두 필요합니다.' }, 400)
     }
@@ -474,17 +516,30 @@ apiRouter.post('/optimize', async (c) => {
       ? `집중할 항목: ${issues.slice(0, 3).join(', ')}`
       : '수정한 프롬프트를 한 번 더 실행하고 결과를 비교하세요.'
     const score = Math.max(0, 100 - issues.length * 18)
+    const promptLanguage = language || 'ko'
+    const localizedIssues = promptLanguage === 'en'
+      ? issues.map((item) => applyPromptLanguage(item, promptLanguage))
+      : issues
+    const localizedImprovements = promptLanguage === 'en'
+      ? improvements.map((item) => applyPromptLanguage(item, promptLanguage))
+      : improvements
+    const localizedNextAction = promptLanguage === 'en'
+      ? applyPromptLanguage(nextAction, promptLanguage)
+      : nextAction
+    const localizedOptimizeSeed = applyPromptLanguage(optimizeSeed, promptLanguage)
+    const localizedImprovedPrompt = applyPromptLanguage(improvedPrompt, promptLanguage)
 
     return c.json({
       prompt: promptText,
       output: outputText,
       goal: goalText,
       modelTarget: modelTarget || '',
-      issues,
-      improvements,
+      language: promptLanguage,
+      issues: localizedIssues,
+      improvements: localizedImprovements,
       score,
-      improvedPrompt: `${optimizeSeed}\n\n---\n\n${improvedPrompt}`,
-      nextAction,
+      improvedPrompt: `${localizedOptimizeSeed}\n\n---\n\n${localizedImprovedPrompt}`,
+      nextAction: localizedNextAction,
     })
   } catch (err: any) {
     return c.json({ error: err?.message || '최적화에 실패했습니다.' }, 500)
@@ -494,7 +549,7 @@ apiRouter.post('/optimize', async (c) => {
 // ── POST /api/generate ────────────────────────────────────────────
 apiRouter.post('/generate', async (c) => {
   try {
-    const { techniqueId, fields, purpose, keyword } = await c.req.json()
+    const { techniqueId, fields, purpose, keyword, language } = await c.req.json()
     const tech = TECHNIQUES[techniqueId]
     if (!tech) return c.json({ error: '유효하지 않은 기법입니다.' }, 400)
 
@@ -669,12 +724,13 @@ apiRouter.post('/generate', async (c) => {
     }
 
     return c.json({
-      prompt: prompt.trim(),
+      prompt: applyPromptLanguage(prompt.trim(), language || 'ko'),
       technique: { name: tech.name, nameEn: tech.nameEn },
       qualityReport,
       tips: getPromptTips(techniqueId),
       chainData,
       contextDocMeta,
+      language: language || 'ko',
     })
   } catch (err: any) {
     return c.json({ error: err?.message || '생성 중 오류가 발생했습니다.' }, 500)

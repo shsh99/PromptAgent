@@ -15,6 +15,7 @@ async function generatePrompt() {
         fields: state.fields,
         purpose: state.purpose,
         keyword,
+        language: state.promptLanguage || 'ko',
       }),
     });
     const data = await res.json();

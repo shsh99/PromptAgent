@@ -16,14 +16,15 @@
 
 .prompt-shell.theme-light {
   background:
-    radial-gradient(circle at top left, rgba(92, 124, 250, 0.12), transparent 28%),
-    radial-gradient(circle at top right, rgba(56, 189, 248, 0.08), transparent 24%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    radial-gradient(circle at top left, rgba(92, 124, 250, 0.08), transparent 26%),
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.06), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.05), transparent 20%),
+    linear-gradient(180deg, #fbfcfe 0%, #f3f6fb 52%, #edf2f7 100%);
   color: #0f172a;
-  --surface: rgba(255, 255, 255, 0.82);
-  --surface-strong: rgba(255, 255, 255, 0.94);
-  --border-soft: rgba(148, 163, 184, 0.14);
-  --shadow-soft: 0 14px 40px rgba(15, 23, 42, 0.08);
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-strong: rgba(255, 255, 255, 0.96);
+  --border-soft: rgba(148, 163, 184, 0.12);
+  --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
 .prompt-shell.theme-light::before {
@@ -55,8 +56,8 @@
 }
 
 .prompt-shell.theme-light nav {
-  background: rgba(255, 255, 255, 0.84) !important;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.16) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
 }
 
 .prompt-shell.theme-dark .bg-white,
@@ -77,7 +78,7 @@
 .prompt-shell.theme-light .bg-gray-50,
 .prompt-shell.theme-light .bg-gray-100,
 .prompt-shell.theme-light .bg-gray-200 {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.94) !important;
   color: #0f172a !important;
 }
 
@@ -166,7 +167,7 @@
 
 .prompt-shell .rounded-2xl,
 .prompt-shell .rounded-3xl {
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
 }
 
 .prompt-shell button {
@@ -193,8 +194,13 @@
 .prompt-shell.theme-light input,
 .prompt-shell.theme-light textarea,
 .prompt-shell.theme-light pre {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.98) !important;
   color: #0f172a !important;
+}
+
+.prompt-shell.theme-light .rounded-2xl.border,
+.prompt-shell.theme-light .rounded-3xl.border {
+  border-color: rgba(203, 213, 225, 0.92) !important;
 }
 
 .prompt-shell input::placeholder,
