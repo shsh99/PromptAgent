@@ -56,7 +56,7 @@ app.get('/', (c) => {
 
       <div id="mobile-sidebar" class="fixed inset-0 z-[60] hidden xl:hidden">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleMobileSidebar(false)"></div>
-        <div class="absolute bottom-0 left-0 top-16 w-[86vw] max-w-sm overflow-y-auto border-r border-white/10 bg-slate-950/96 p-4 shadow-2xl shadow-black/40">
+        <div class="sidebar-surface absolute bottom-0 left-0 top-16 w-[86vw] max-w-sm overflow-y-auto border-r border-white/10 bg-slate-950/96 p-4 shadow-2xl shadow-black/40">
           <div class="mb-4 flex items-center justify-between">
             <div>
               <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">빠른 이동</div>
@@ -95,7 +95,7 @@ app.get('/', (c) => {
       <main class="mx-auto max-w-7xl px-4 pb-16 pt-24 sm:px-6 lg:px-8">
         <div class="xl:grid xl:grid-cols-[16rem_minmax(0,1fr)] xl:gap-8">
           <aside class="hidden xl:block xl:sticky xl:top-24 xl:self-start">
-            <div class="rounded-3xl border border-white/10 bg-slate-950/90 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
+            <div class="sidebar-surface rounded-3xl border border-white/10 bg-slate-950/90 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
               <div class="mb-4 flex items-center justify-between">
                 <div>
                   <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">빠른 이동</div>
