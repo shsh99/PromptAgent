@@ -7,7 +7,7 @@ export const renderer = jsxRenderer(({ children }) => {
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PromptBuilder - AI 프롬프트 생성기</title>
+        <title>프롬프트빌더 - 프롬프트 생성과 최적화</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -44,7 +44,7 @@ export const renderer = jsxRenderer(({ children }) => {
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link href="/static/style.css" rel="stylesheet" />
       </head>
-      <body class="bg-gray-950 text-gray-100 font-sans min-h-screen">
+      <body class="prompt-shell bg-slate-950 text-gray-100 font-sans min-h-screen">
         {children}
         <script src="/static/utils.js"></script>
         <script src="/static/changelog.js"></script>

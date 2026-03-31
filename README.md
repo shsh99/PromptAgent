@@ -1,15 +1,16 @@
 # PromptBuilder
 
-PromptBuilder is a local-first prompt engineering workspace for building, improving, and optimizing prompts.
+프롬프트를 몰라도 AI를 잘 쓰게 만드는 플랫폼입니다.
+업무 템플릿으로 쉽게 시작하고, 빌더로 직접 설계하고, 최적화로 품질을 높이세요.
 
 ## What It Does
 
-- generates structured prompts from selected techniques
-- analyzes prompt quality and weak spots
-- improves prompts with feedback
-- supports Optimize Mode for prompt -> output -> evaluate -> improve loops
-- stores history and versions locally
-- provides starter templates and helper examples for faster prompt creation
+- 선택한 방식에 따라 구조화된 프롬프트를 생성합니다
+- 프롬프트의 약점을 분석하고 개선 포인트를 제안합니다
+- 결과를 바탕으로 프롬프트를 반복 개선합니다
+- Optimize Mode에서 실행-평가-개선 루프를 지원합니다
+- 버전과 히스토리를 로컬에 저장합니다
+- 시작용 템플릿과 예시를 제공해 처음 진입을 쉽게 만듭니다
 
 ## Main Modes
 
@@ -94,4 +95,3 @@ npx wrangler pages deploy dist --project-name promptbuilder --branch main --comm
 - The app is designed to stay usable without paid APIs.
 - Examples and helper templates are stored locally and can be expanded over time.
 - Version comparison and rollback are implemented in Optimize Mode.
-

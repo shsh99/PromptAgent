@@ -5,71 +5,71 @@ const OPTIMIZE_SESSION_KEY = 'pf_optimize_session';
 const OPTIMIZE_COMPARE_KEY = 'pf_optimize_compare';
 const OPTIMIZE_EXAMPLES = [
   {
-    title: 'Problem Framing',
+    title: '문제 정의',
     prompt: 'You are helping improve a marketing prompt. The issue is low conversion among 20s male users. Define the problem, the target audience, the KPI, and the expected output format before giving the final answer.',
     output: 'The result should be a short campaign brief with a clear angle, target audience, measurable KPI, and 3 action items.',
-    goal: 'Make the prompt start from the problem, not from the task only.',
+    goal: '작업이 아니라 문제 정의부터 시작하도록 바꾸기.',
   },
   {
-    title: 'Structured Output',
+    title: '구조화 출력',
     prompt: 'Act as a product manager. Analyze the feature request and return the result as JSON with title, summary, risks, and action_items.',
     output: 'Return valid JSON only. Do not add commentary outside the schema.',
-    goal: 'Force strict output structure and reduce drift.',
+    goal: '출력 구조를 고정해 결과 흔들림을 줄이기.',
   },
   {
-    title: 'Reasoning + Constraints',
+    title: '사고 과정과 제약',
     prompt: 'Review the bug report, think step by step, identify the root cause, and propose a fix plan. Keep the final answer under 8 bullets.',
     output: 'Provide the diagnosis first, then the fix plan, then the verification steps.',
-    goal: 'Add reasoning and hard constraints to the prompt.',
+    goal: '사고 과정과 강한 제약을 넣기.',
   },
   {
-    title: 'Code Review',
+    title: '코드 리뷰',
     prompt: 'You are a senior engineer reviewing this pull request. Identify correctness issues, maintainability risks, and missing tests. Return the result in a table.',
     output: 'Return only 3 sections: issues, impact, fix suggestion.',
-    goal: 'Make the review actionable and structured.',
+    goal: '리뷰를 실행 가능한 구조로 바꾸기.',
   },
   {
-    title: 'Meeting Summary',
+    title: '회의 요약',
     prompt: 'Summarize the meeting notes into decisions, open questions, and next actions. Keep the tone concise and practical.',
     output: 'Return a 3-part summary with clear action items and owners.',
-    goal: 'Convert raw notes into a reusable summary format.',
+    goal: '원본 메모를 재사용 가능한 요약 형식으로 바꾸기.',
   },
   {
-    title: 'Marketing Draft',
+    title: '마케팅 초안',
     prompt: 'Write a campaign draft for a product launch. Start with the audience problem, define the offer, then produce 3 headline options and 3 CTA options.',
     output: 'Include audience, problem, hook, headlines, and CTA in a structured format.',
-    goal: 'Improve conversion-oriented structure and output schema.',
+    goal: '전환 중심 구조와 출력 형식을 강화하기.',
   },
 ];
 
 const BUILDER_STARTERS = [
   {
-    title: 'Marketing Brief',
+    title: '마케팅 브리프',
     purpose: 'content',
     keyword: 'Product launch brief',
     technique: 'harness',
-    description: 'Start with audience, problem, and output schema for marketing work.',
+    description: '대상, 문제, 출력 형식을 먼저 채워 마케팅 작업을 시작합니다.',
   },
   {
-    title: 'Code Review',
+    title: '코드 리뷰',
     purpose: 'web-app',
     keyword: 'Pull request review',
     technique: 'harness',
-    description: 'Set up a review prompt with risks, checks, and fix suggestions.',
+    description: '리스크, 확인 항목, 수정 제안을 포함한 리뷰 프롬프트입니다.',
   },
   {
-    title: 'Meeting Notes',
+    title: '회의 메모',
     purpose: 'custom',
     keyword: 'Meeting summary',
     technique: 'few-shot',
-    description: 'Turn notes into decisions, action items, and owners.',
+    description: '메모를 결정 사항, 실행 항목, 담당자로 정리합니다.',
   },
   {
-    title: 'Bug Triage',
+    title: '버그 분류',
     purpose: 'web-app',
     keyword: 'Bug triage brief',
     technique: 'chain-of-thought',
-    description: 'Frame the problem, reason through causes, and create an action plan.',
+    description: '문제를 정의하고 원인을 추론한 뒤 실행 계획을 만듭니다.',
   },
 ];
 
@@ -155,15 +155,15 @@ function injectOptimizeUI() {
       <div class="inline-flex rounded-2xl border border-gray-200 bg-white p-1.5 shadow-sm">
         <button onclick="switchMode('template')" id="tab-template" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
           <i class="fas fa-th-large"></i>
-          <span>Template</span>
+          <span>템플릿</span>
         </button>
         <button onclick="switchMode('builder')" id="tab-builder" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 active bg-brand-600 text-white">
           <i class="fas fa-code"></i>
-          <span>Builder</span>
+          <span>빌더</span>
         </button>
         <button onclick="switchMode('optimize')" id="tab-optimize" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
           <i class="fas fa-magic"></i>
-          <span>Optimize</span>
+          <span>최적화</span>
         </button>
       </div>
     </div>
@@ -178,25 +178,25 @@ function injectOptimizeUI() {
       <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
         <div class="flex items-center gap-2 mb-3 text-brand-600">
           <i class="fas fa-briefcase"></i>
-          <h3 class="font-semibold">Work Starter</h3>
+          <h3 class="font-semibold">업무 시작 카드</h3>
         </div>
-        <p class="text-sm text-gray-600 leading-relaxed">Role, problem, and output schema are prefilled for office tasks.</p>
+        <p class="text-sm text-gray-600 leading-relaxed">역할, 문제, 출력 형식이 미리 채워져 있어 바로 시작할 수 있습니다.</p>
       </div>
       <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
         <div class="flex items-center gap-2 mb-3 text-brand-600">
           <i class="fas fa-code"></i>
-          <h3 class="font-semibold">Builder Starter</h3>
+          <h3 class="font-semibold">빌더 시작 카드</h3>
         </div>
-        <p class="text-sm text-gray-600 leading-relaxed">Use harness fields when you need stronger constraints and structure.</p>
+        <p class="text-sm text-gray-600 leading-relaxed">강한 제약과 구조가 필요할 때 하네스 필드를 바로 사용할 수 있습니다.</p>
       </div>
       <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
         <div class="flex items-center gap-2 mb-3 text-brand-600">
           <i class="fas fa-magic"></i>
-          <h3 class="font-semibold">Optimize Starter</h3>
+          <h3 class="font-semibold">최적화 시작 카드</h3>
         </div>
-        <p class="text-sm text-gray-600 leading-relaxed">Paste the prompt, paste the output, then improve the next version.</p>
+        <p class="text-sm text-gray-600 leading-relaxed">프롬프트와 결과를 넣고, 다음 버전을 더 좋게 개선할 수 있습니다.</p>
         <button onclick="switchMode('optimize')" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500">
-          Open Optimize
+          최적화 열기
         </button>
       </div>
     </div>
@@ -211,10 +211,10 @@ function injectOptimizeUI() {
       <div class="xl:col-span-2 rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
         <div class="flex items-center justify-between mb-4">
           <div>
-            <h3 class="text-lg font-semibold">Builder Starter Templates</h3>
-            <p class="text-sm text-gray-500">Pick a use case and jump straight into structured prompt building.</p>
+            <h3 class="text-lg font-semibold">빌더 시작 템플릿</h3>
+            <p class="text-sm text-gray-500">사용 사례를 고르면 구조화된 프롬프트 작성으로 바로 진입할 수 있습니다.</p>
           </div>
-          <span class="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-700">Quick start</span>
+          <span class="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-700">빠른 시작</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           ${BUILDER_STARTERS.map((item, index) => `
@@ -231,14 +231,14 @@ function injectOptimizeUI() {
       <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
         <div class="flex items-center gap-2 mb-4">
           <i class="fas fa-clipboard-check text-brand-600"></i>
-          <h4 class="font-semibold">Builder Checklist</h4>
+        <h4 class="font-semibold">빌더 체크리스트</h4>
         </div>
         <ul class="space-y-2 text-sm text-gray-600 leading-relaxed">
-          <li>Describe the problem before the task.</li>
-          <li>Separate input data from instruction.</li>
-          <li>Specify the output schema.</li>
-          <li>Add a constraint for length and format.</li>
-          <li>Add one example if the task is unstable.</li>
+          <li>작업보다 먼저 문제를 정의하세요.</li>
+          <li>입력 데이터와 지시문을 분리하세요.</li>
+          <li>출력 형식을 명확히 지정하세요.</li>
+          <li>길이와 형식 제약을 추가하세요.</li>
+          <li>불안정한 작업이면 예시를 1개 넣으세요.</li>
         </ul>
       </div>
     </div>
@@ -254,33 +254,33 @@ function injectOptimizeUI() {
         <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="text-lg font-semibold">Optimize Mode</h3>
-              <p class="text-sm text-gray-500">Prompt -> Run -> Output -> Evaluate -> Improve -> Version</p>
+              <h3 class="text-lg font-semibold">최적화 모드</h3>
+              <p class="text-sm text-gray-500">프롬프트 → 실행 → 결과 → 평가 → 개선 → 버전</p>
             </div>
             <div class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-              <span class="h-2 w-2 rounded-full bg-emerald-500"></span>loop ready
+              <span class="h-2 w-2 rounded-full bg-emerald-500"></span>루프 준비 완료
             </div>
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">Prompt</label>
-              <textarea id="optimize-prompt" rows="12" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="Paste or draft the prompt to optimize."></textarea>
+              <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">프롬프트</label>
+              <textarea id="optimize-prompt" rows="12" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="최적화할 프롬프트를 붙여넣거나 작성하세요."></textarea>
             </div>
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">Output</label>
-              <textarea id="optimize-output" rows="12" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="Paste the model output here."></textarea>
+              <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">결과</label>
+              <textarea id="optimize-output" rows="12" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="모델이 생성한 결과를 붙여넣으세요."></textarea>
             </div>
           </div>
           <div class="mt-4">
-            <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">Goal</label>
-            <input id="optimize-goal" type="text" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="What should the output have done better?" />
+            <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">목표</label>
+            <input id="optimize-goal" type="text" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="결과가 어떻게 더 좋아졌어야 했는지 적어주세요." />
           </div>
           <div class="mt-5 flex flex-col sm:flex-row gap-3">
             <button onclick="runOptimize()" id="optimize-run-btn" class="flex-1 rounded-2xl bg-brand-600 px-5 py-3 font-semibold text-white hover:bg-brand-500">
-              Run Optimize
+              최적화 실행
             </button>
             <button onclick="saveOptimizeVersion()" class="rounded-2xl border border-gray-200 bg-white px-5 py-3 font-semibold text-gray-700 hover:bg-gray-50">
-              Save Version
+              버전 저장
             </button>
           </div>
         </div>
@@ -288,10 +288,10 @@ function injectOptimizeUI() {
         <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h4 class="font-semibold">Starter Templates</h4>
-              <p class="text-xs text-gray-500">Use these when you do not know where to start.</p>
+              <h4 class="font-semibold">시작 템플릿</h4>
+              <p class="text-xs text-gray-500">어떻게 시작할지 막막할 때 바로 사용할 수 있습니다.</p>
             </div>
-            <span class="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-700">Examples</span>
+            <span class="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-700">예시</span>
           </div>
           <div class="space-y-3" id="optimize-example-list">
             ${OPTIMIZE_EXAMPLES.map((item, index) => `
@@ -299,8 +299,8 @@ function injectOptimizeUI() {
                 <div class="flex items-center justify-between gap-3 mb-2">
                   <div class="font-semibold text-gray-900">${escapeHtml(item.title)}</div>
                   <div class="flex items-center gap-2">
-                    <button onclick="loadOptimizeExample(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">Use</button>
-                    <button onclick="copyOptimizeExample(${index})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">Copy</button>
+                    <button onclick="loadOptimizeExample(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">불러오기</button>
+                    <button onclick="copyOptimizeExample(${index})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">복사</button>
                   </div>
                 </div>
                 <div class="text-xs text-gray-500 line-clamp-3">${escapeHtml(item.goal)}</div>
@@ -311,10 +311,10 @@ function injectOptimizeUI() {
 
         <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
           <div class="flex items-center justify-between mb-4">
-            <h4 class="font-semibold">Improved Prompt</h4>
+            <h4 class="font-semibold">개선된 프롬프트</h4>
             <div class="flex items-center gap-2">
-              <button onclick="copyOptimizePrompt()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">Copy</button>
-              <button onclick="rollbackOptimizePrompt()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">Rollback</button>
+              <button onclick="copyOptimizePrompt()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">복사</button>
+              <button onclick="rollbackOptimizePrompt()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">되돌리기</button>
             </div>
           </div>
           <pre id="optimize-improved-prompt" class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4 text-sm leading-relaxed text-gray-800 min-h-[220px]"></pre>
@@ -323,13 +323,13 @@ function injectOptimizeUI() {
         <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h4 class="font-semibold">Version Diff</h4>
-              <p class="text-xs text-gray-500">Compare the selected version against the current session.</p>
+              <h4 class="font-semibold">버전 비교</h4>
+              <p class="text-xs text-gray-500">선택한 버전과 현재 세션을 비교합니다.</p>
             </div>
-            <button onclick="clearOptimizeCompare()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">Clear</button>
+            <button onclick="clearOptimizeCompare()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">초기화</button>
           </div>
           <div id="optimize-diff" class="space-y-3">
-            <div class="rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">Select a version to compare.</div>
+            <div class="rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">비교할 버전을 선택하세요.</div>
           </div>
         </div>
       </div>
@@ -337,13 +337,13 @@ function injectOptimizeUI() {
         <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
           <div class="flex items-center gap-2 mb-4">
             <i class="fas fa-chart-simple text-brand-600"></i>
-            <h4 class="font-semibold">Optimize Summary</h4>
+            <h4 class="font-semibold">최적화 요약</h4>
           </div>
           <div class="flex items-center gap-4 mb-4">
             <div id="optimize-score" class="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-50 text-2xl font-black text-brand-700">0</div>
             <div>
-              <div class="text-sm text-gray-500">Iteration Score</div>
-              <div id="optimize-status" class="font-semibold text-gray-900">Waiting</div>
+              <div class="text-sm text-gray-500">반복 점수</div>
+              <div id="optimize-status" class="font-semibold text-gray-900">대기 중</div>
             </div>
           </div>
           <div id="optimize-issues" class="space-y-2 text-sm text-gray-700"></div>
@@ -352,21 +352,21 @@ function injectOptimizeUI() {
         <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
           <div class="flex items-center gap-2 mb-4">
             <i class="fas fa-clipboard-check text-brand-600"></i>
-            <h4 class="font-semibold">Prompt Checklist</h4>
+            <h4 class="font-semibold">프롬프트 체크리스트</h4>
           </div>
           <ul class="space-y-2 text-sm text-gray-600 leading-relaxed">
-            <li>Define the problem before the task.</li>
-            <li>Separate input data from instructions.</li>
-            <li>Add format and length constraints.</li>
-            <li>Show the expected output schema.</li>
-            <li>Add one example when the task is unstable.</li>
+            <li>작업보다 먼저 문제를 정의하세요.</li>
+            <li>입력 데이터와 지시문을 분리하세요.</li>
+            <li>형식과 길이 제약을 넣으세요.</li>
+            <li>기대하는 출력 구조를 보여주세요.</li>
+            <li>불안정한 작업이면 예시를 하나 넣으세요.</li>
           </ul>
         </div>
 
         <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
           <div class="flex items-center gap-2 mb-4">
             <i class="fas fa-link text-brand-600"></i>
-            <h4 class="font-semibold">Loop History</h4>
+            <h4 class="font-semibold">반복 기록</h4>
           </div>
           <div id="optimize-history" class="space-y-3"></div>
         </div>
@@ -429,6 +429,9 @@ function switchMode(mode) {
 function initializeMode(mode) {
   injectOptimizeUI();
   switchMode(mode || localStorage.getItem('pf_mode') || 'builder');
+  if (typeof localizeWorkspaceCopy === 'function') {
+    localizeWorkspaceCopy();
+  }
 }
 
 function getOptimizeDraft() {
@@ -479,25 +482,25 @@ async function runOptimize() {
 
 function renderOptimizeResult(data) {
   document.getElementById('optimize-score').textContent = data.score ?? 0;
-  document.getElementById('optimize-status').textContent = data.issues?.length ? 'Needs improvement' : 'Ready to iterate';
+  document.getElementById('optimize-status').textContent = data.issues?.length ? '개선 필요' : '반복 가능';
   document.getElementById('optimize-improved-prompt').textContent = data.improvedPrompt || '';
   const issues = data.issues || [];
   const improvements = data.improvements || [];
   const issueHtml = `
     <div class="rounded-2xl bg-gray-50 p-3">
-      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">Issues</div>
+      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">문제점</div>
       <div class="space-y-1">
-        ${issues.length ? issues.map((issue) => `<div class="flex items-start gap-2 text-sm text-gray-700"><i class="fas fa-circle-xmark mt-0.5 text-red-500"></i><span>${escapeHtml(issue)}</span></div>`).join('') : '<div class="text-sm text-gray-500">No issues detected.</div>'}
+        ${issues.length ? issues.map((issue) => `<div class="flex items-start gap-2 text-sm text-gray-700"><i class="fas fa-circle-xmark mt-0.5 text-red-500"></i><span>${escapeHtml(issue)}</span></div>`).join('') : '<div class="text-sm text-gray-500">감지된 문제점이 없습니다.</div>'}
       </div>
     </div>
     <div class="rounded-2xl bg-gray-50 p-3">
-      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">Improvements</div>
+      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">개선안</div>
       <div class="space-y-1">
-        ${improvements.length ? improvements.map((item) => `<div class="flex items-start gap-2 text-sm text-gray-700"><i class="fas fa-arrow-right mt-0.5 text-brand-600"></i><span>${escapeHtml(item)}</span></div>`).join('') : '<div class="text-sm text-gray-500">No improvements yet.</div>'}
+        ${improvements.length ? improvements.map((item) => `<div class="flex items-start gap-2 text-sm text-gray-700"><i class="fas fa-arrow-right mt-0.5 text-brand-600"></i><span>${escapeHtml(item)}</span></div>`).join('') : '<div class="text-sm text-gray-500">아직 개선안이 없습니다.</div>'}
       </div>
     </div>
     <div class="rounded-2xl bg-brand-50 p-3">
-      <div class="text-[10px] uppercase tracking-[0.2em] text-brand-600 mb-2">Next Action</div>
+      <div class="text-[10px] uppercase tracking-[0.2em] text-brand-600 mb-2">다음 실행</div>
       <div class="text-sm text-brand-900">${escapeHtml(data.nextAction || 'Run the revised prompt again.')}</div>
     </div>
   `;
@@ -567,7 +570,7 @@ function renderOptimizeDiff(entry) {
   diffContainer.innerHTML = `
     <div class="rounded-2xl bg-gray-50 p-4">
       <div class="flex items-center justify-between mb-3">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Selected Version</div>
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">선택 버전</div>
         <div class="text-xs text-gray-500">v${entry.version}</div>
       </div>
       <div class="text-sm text-gray-700">${escapeHtml(entry.goal || 'No goal stored.')}</div>
@@ -578,7 +581,7 @@ function renderOptimizeDiff(entry) {
         <div class="px-3 py-2">After</div>
       </div>
       <div class="p-3 space-y-2 max-h-[360px] overflow-auto">
-        ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">No diff available.</div>'}
+        ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">비교 가능한 차이가 없습니다.</div>'}
       </div>
     </div>
   `;
@@ -592,8 +595,8 @@ function renderOptimizeCurrentDiff(session, data) {
   diffContainer.innerHTML = `
     <div class="rounded-2xl bg-gray-50 p-4">
       <div class="flex items-center justify-between mb-3">
-        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Current Session</div>
-        <div class="text-xs text-gray-500">live preview</div>
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">현재 세션</div>
+        <div class="text-xs text-gray-500">실시간 미리보기</div>
       </div>
       <div class="text-sm text-gray-700">${escapeHtml(session.goal || 'No goal stored.')}</div>
     </div>
@@ -603,7 +606,7 @@ function renderOptimizeCurrentDiff(session, data) {
         <div class="px-3 py-2">After</div>
       </div>
       <div class="p-3 space-y-2 max-h-[360px] overflow-auto">
-        ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">No diff available.</div>'}
+        ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">비교 가능한 차이가 없습니다.</div>'}
       </div>
     </div>
   `;
@@ -624,7 +627,7 @@ function loadOptimizeVersion(id) {
   document.getElementById('optimize-output').value = entry.output || '';
   document.getElementById('optimize-improved-prompt').textContent = entry.improvedPrompt || entry.prompt || '';
   document.getElementById('optimize-score').textContent = entry.score ?? 0;
-  document.getElementById('optimize-status').textContent = 'Loaded from history';
+  document.getElementById('optimize-status').textContent = '기록에서 불러옴';
   setCurrentCompareId(id);
   renderOptimizeDiff(entry);
 }
@@ -642,7 +645,7 @@ function rollbackOptimizePrompt() {
   document.getElementById('optimize-prompt').value = session.prompt || '';
   document.getElementById('optimize-output').value = session.output || '';
   document.getElementById('optimize-goal').value = session.goal || '';
-  document.getElementById('optimize-status').textContent = 'Rolled back to current session';
+  document.getElementById('optimize-status').textContent = '현재 세션으로 되돌림';
 }
 
 function rollbackOptimizeVersion(id) {
@@ -653,7 +656,7 @@ function rollbackOptimizeVersion(id) {
   document.getElementById('optimize-goal').value = entry.goal || '';
   document.getElementById('optimize-improved-prompt').textContent = entry.improvedPrompt || entry.prompt || '';
   document.getElementById('optimize-score').textContent = entry.score ?? 0;
-  document.getElementById('optimize-status').textContent = 'Rolled back to selected version';
+  document.getElementById('optimize-status').textContent = '선택한 버전으로 되돌림';
 
   const session = {
     prompt: entry.basePrompt || entry.prompt || '',
@@ -712,7 +715,7 @@ function loadOptimizeExample(index) {
   if (promptEl) promptEl.value = item.prompt;
   if (outputEl) outputEl.value = item.output;
   if (goalEl) goalEl.value = item.goal;
-  document.getElementById('optimize-status').textContent = 'Example loaded';
+  document.getElementById('optimize-status').textContent = '예시를 불러왔습니다';
 }
 
 function copyOptimizeExample(index) {
@@ -737,6 +740,49 @@ function copyOptimizePrompt() {
   navigator.clipboard.writeText(text);
 }
 
+function polishHomepageCopy() {
+  const hero = document.querySelector('main > section.text-center');
+  if (!hero) return;
+  const badge = hero.querySelector('div.inline-flex');
+  const title = hero.querySelector('h2');
+  const description = hero.querySelector('p');
+
+  if (badge) badge.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> 프롬프트를 몰라도 AI를 잘 쓰게 만드는 플랫폼';
+  if (title) title.innerHTML = '업무 템플릿으로 쉽게 시작하고, <br /><span class="bg-gradient-to-r from-brand-400 to-purple-400 bg-clip-text text-transparent">빌더로 직접 설계하고 최적화로 품질을 높이세요</span>';
+  if (description) description.innerHTML = '복잡한 프롬프트를 외울 필요 없이 시작할 수 있고, <br class="hidden sm:inline" />빌더로 직접 설계한 뒤 최적화 루프로 품질을 계속 높일 수 있습니다.';
+}
+
+function localizeWorkspaceCopy() {
+  const mapping = [
+    ['button[onclick*="loadBuilderStarter"]', '불러오기'],
+    ['button[onclick*="loadOptimizeExample"]', '불러오기'],
+    ['button[onclick*="copyOptimizeExample"]', '복사'],
+    ['button[onclick*="copyOptimizePrompt"]', '복사'],
+    ['button[onclick*="rollbackOptimizePrompt"]', '되돌리기'],
+    ['button[onclick*="clearOptimizeCompare"]', '초기화'],
+    ['button[onclick*="loadOptimizeVersion"]', '불러오기'],
+    ['button[onclick*="compareOptimizeVersion"]', '비교'],
+    ['button[onclick*="rollbackOptimizeVersion"]', '되돌리기'],
+  ];
+
+  mapping.forEach(([selector, label]) => {
+    document.querySelectorAll(selector).forEach((button) => {
+      button.textContent = label;
+    });
+  });
+
+  const runBtn = document.getElementById('optimize-run-btn');
+  if (runBtn) runBtn.textContent = '최적화 실행';
+
+  const labels = document.querySelectorAll('#optimize-workspace label, #builder-helper-panel h4, #optimize-workspace h4');
+  labels.forEach((el) => {
+    const text = el.textContent || '';
+    if (text.includes('Prompt')) el.textContent = '프롬프트';
+    if (text.includes('Output')) el.textContent = '결과';
+    if (text.includes('Goal')) el.textContent = '목표';
+  });
+}
+
 window.switchMode = switchMode;
 window.initializeMode = initializeMode;
 window.runOptimize = runOptimize;
@@ -750,3 +796,5 @@ window.rollbackOptimizePrompt = rollbackOptimizePrompt;
 window.loadBuilderStarter = loadBuilderStarter;
 window.loadOptimizeExample = loadOptimizeExample;
 window.copyOptimizeExample = copyOptimizeExample;
+window.polishHomepageCopy = polishHomepageCopy;
+window.localizeWorkspaceCopy = localizeWorkspaceCopy;
