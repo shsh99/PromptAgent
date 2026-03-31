@@ -7,6 +7,8 @@
 - 템플릿 모드로 빠르게 시작
 - 빌더 모드로 직접 프롬프트 설계
 - 최적화 모드로 기존 프롬프트 개선
+- 생성 결과 3개 변형 비교
+- 결과 화면의 Optimize 버튼으로 즉시 최적화 진입
 - 생성 결과 히스토리 저장
 - 건의사항 게시판
 - 관리자 전체화면 대시보드
@@ -53,6 +55,7 @@ wrangler d1 migrations apply DB --remote --config wrangler.toml
 - `migrations/0001_event_logs.sql`
 - `migrations/0002_prompt_history_and_suggestions.sql`
 - `migrations/0003_prompt_training_samples.sql`
+- `migrations/0004_prompt_thread_variants.sql`
 
 ## 실행
 
@@ -76,3 +79,9 @@ npm run deploy
 ## 업데이트 로그
 
 최근 변경 내용은 `webapp/public/static/changelog.js`에서 확인할 수 있습니다.
+
+## 포트폴리오 정리 기준
+
+- 기능은 `docs/phase.md` 기준으로 페이즈 단위로 정리합니다.
+- 현재 우선순위는 `결과 3개 생성 -> Optimize -> Compare/히스토리 -> Intent Engine -> 관리자 분석`입니다.
+- 새 기능을 추가할 때는 `README`, `docs/phase.md`, `docs/plan.md`, `webapp/public/static/changelog.js`를 같이 갱신합니다.

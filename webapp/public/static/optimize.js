@@ -979,6 +979,23 @@ function copyOptimizePrompt() {
   navigator.clipboard.writeText(text);
 }
 
+function openOptimizeFromResult() {
+  const variants = state.generatedVariants || [];
+  const index = Number.isInteger(state.selectedGeneratedVariantIndex) ? state.selectedGeneratedVariantIndex : 0;
+  const selected = variants[index] || variants[0];
+  const currentPrompt = selected?.prompt || document.getElementById('result-prompt')?.textContent?.trim() || '';
+  switchMode('optimize');
+  if (!currentPrompt) {
+    setOptimizeText('optimize-status', '먼저 결과를 생성하세요.');
+    return;
+  }
+  setOptimizeValue('optimize-prompt', currentPrompt);
+  setOptimizeValue('optimize-output', '');
+  setOptimizeValue('optimize-goal', '현재 결과를 더 명확하고 실행 가능하게 다듬으세요.');
+  setOptimizeText('optimize-status', '생성 결과를 최적화 모드로 보냈습니다.');
+  getOptimizeEl('optimize-prompt')?.focus();
+}
+
 function polishHomepageCopy() {
   const hero = document.querySelector('main > section.text-center');
   if (!hero) return;
@@ -1038,3 +1055,4 @@ window.loadOptimizeExample = loadOptimizeExample;
 window.copyOptimizeExample = copyOptimizeExample;
 window.polishHomepageCopy = polishHomepageCopy;
 window.localizeWorkspaceCopy = localizeWorkspaceCopy;
+window.openOptimizeFromResult = openOptimizeFromResult;

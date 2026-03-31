@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS prompt_threads (
   latest_prompt TEXT,
   prompt_count INTEGER DEFAULT 0,
   fields_json TEXT,
+  variants_json TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -344,6 +345,7 @@ async function persistPromptThread(c: any, thread: any, version: any) {
         latest_prompt = excluded.latest_prompt,
         prompt_count = excluded.prompt_count,
         fields_json = excluded.fields_json,
+        variants_json = excluded.variants_json,
         updated_at = excluded.updated_at
     `).bind(
       String(thread.id),
@@ -358,6 +360,7 @@ async function persistPromptThread(c: any, thread: any, version: any) {
       String(thread.latestPrompt || ''),
       Number(thread.promptCount || 0),
       JSON.stringify(thread.fields || {}),
+      JSON.stringify(thread.variants || []),
       String(thread.createdAt || new Date().toISOString()),
       String(thread.updatedAt || new Date().toISOString()),
     ).run()
@@ -519,6 +522,7 @@ async function readPromptThreads(c: any, limit: number) {
         latestPrompt: row.latest_prompt || '',
         promptCount: Number(row.prompt_count || 0),
         fields: (() => { try { return row.fields_json ? JSON.parse(row.fields_json) : {}; } catch { return {}; } })(),
+        variants: (() => { try { return row.variants_json ? JSON.parse(row.variants_json) : []; } catch { return []; } })(),
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       }))
@@ -625,6 +629,36 @@ async function readTrainingSamples(c: any, limit: number) {
     }
   }
   return []
+}
+
+async function readPublicStats(c: any) {
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureEventLogSchema(c)
+      await ensureAppDataSchema(c)
+      const [generatedPromptCountResult, pageViewCountResult] = await Promise.all([
+        db.prepare('SELECT COUNT(*) AS count FROM prompt_versions WHERE kind = ?').bind('generate').all(),
+        db.prepare("SELECT COUNT(*) AS count FROM event_logs WHERE kind = ? AND action_type = ?").bind('activity', 'PAGE_VIEW').all(),
+      ])
+      const generatedPromptCount = Number((generatedPromptCountResult?.results?.[0] as any)?.count || 0)
+      const pageViewCount = Number((pageViewCountResult?.results?.[0] as any)?.count || 0)
+      return {
+        generatedPromptCount,
+        pageViewCount,
+        updatedAt: new Date().toISOString(),
+      }
+    } catch {
+      // fallback to memory below
+    }
+  }
+
+  const store = getLogStore()
+  return {
+    generatedPromptCount: store.promptLogs.filter((log: any) => String(log.kind || log.actionType || '').toUpperCase() === 'RUN').length,
+    pageViewCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PAGE_VIEW').length,
+    updatedAt: new Date().toISOString(),
+  }
 }
 
 function buildStats(store: LogStore) {
@@ -889,6 +923,15 @@ apiRouter.delete('/admin/logs', async (c) => {
     }
   }
   return c.json({ ok: true })
+})
+
+apiRouter.get('/stats', async (c) => {
+  try {
+    const stats = await readPublicStats(c)
+    return c.json(stats)
+  } catch {
+    return c.json({ error: '통계를 불러오지 못했습니다.' }, 500)
+  }
 })
 
 apiRouter.post('/history/persist', async (c) => {

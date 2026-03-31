@@ -170,8 +170,8 @@ app.get('/', (c) => {
                 프롬프트를 몰라도 AI를 잘 쓰게 만드는 구조 설계 플랫폼
               </div>
               <h2 class="text-4xl font-black leading-tight text-white sm:text-5xl">
-                업무 템플릿으로 쉽게 시작하고, <br class="hidden sm:block" />
-                <span class="bg-gradient-to-r from-brand-300 to-cyan-300 bg-clip-text text-transparent">빌더로 직접 설계하고 최적화로 품질을 높이세요</span>
+                프롬프트를 몰라도 AI를 잘 쓰게 만드는
+                <span class="block bg-gradient-to-r from-brand-300 to-cyan-300 bg-clip-text text-transparent">업무 템플릿, 빌더, 최적화를 한 화면에서</span>
               </h2>
               <p class="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
                 프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
@@ -187,21 +187,16 @@ app.get('/', (c) => {
                   최적화 열기
                 </button>
               </div>
-              <div class="grid gap-3 md:grid-cols-3">
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-300">
-                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">1. 처음 시작</div>
-                  <div class="mt-2 font-semibold text-white">템플릿 모드</div>
-                  <div class="mt-1">예시가 자동으로 채워지는 가장 쉬운 시작점입니다.</div>
+              <div class="grid gap-3 sm:grid-cols-2">
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 생성 프롬프트</div>
+                  <div class="mt-2 text-3xl font-black text-white"><span id="site-prompt-count">0</span></div>
+                  <div class="mt-1 text-xs leading-5 text-slate-400">지금까지 생성된 프롬프트 누적 수</div>
                 </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-300">
-                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">2. 직접 설계</div>
-                  <div class="mt-2 font-semibold text-white">빌더 모드</div>
-                  <div class="mt-1">문제 정의부터 직접 입력해서 세밀하게 만듭니다.</div>
-                </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-300">
-                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">3. 결과 개선</div>
-                  <div class="mt-2 font-semibold text-white">최적화 모드</div>
-                  <div class="mt-1">이미 만든 프롬프트를 결과 기준으로 다듬습니다.</div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 사이트 방문수</div>
+                  <div class="mt-2 text-3xl font-black text-white"><span id="site-visit-count">0</span></div>
+                  <div class="mt-1 text-xs leading-5 text-slate-400">지금까지 사이트에 들어온 누적 방문 수</div>
                 </div>
               </div>
             </div>
@@ -405,12 +400,17 @@ app.get('/', (c) => {
                     <button onclick="downloadPrompt()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">
                       다운로드
                     </button>
+                    <button onclick="openOptimizeFromResult()" class="rounded-xl border border-brand-500/20 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-100 hover:bg-brand-500/15">
+                      Optimize
+                    </button>
                   </div>
                 </div>
                 <div class="p-5">
                   <pre id="result-prompt" class="whitespace-pre-wrap text-sm leading-relaxed text-slate-200"></pre>
                 </div>
               </div>
+
+              <div id="result-variants" class="space-y-4"></div>
 
               <div id="chain-section" class="hidden">
                 <div class="rounded-3xl border border-teal-500/20 bg-white/5 p-5 backdrop-blur-xl">

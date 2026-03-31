@@ -6,6 +6,15 @@
 
 const CHANGELOG_ITEMS = [
   {
+    date: '26.04.01',
+    version: 'v4.1',
+    items: [
+      { tag: 'new', text: '프롬프트 생성 결과를 3개 변형으로 보여주고 바로 선택할 수 있게 했습니다.' },
+      { tag: 'new', text: '결과 화면에 Optimize 버튼을 추가해 생성 결과를 최적화 모드로 바로 보낼 수 있게 했습니다.' },
+      { tag: 'improve', text: '관리자 학습 샘플에 검색과 CSV 내보내기를 추가해 포트폴리오용 데이터 정리를 쉽게 했습니다.' },
+    ],
+  },
+  {
     date: '26.03.31',
     version: 'v4.0',
     items: [

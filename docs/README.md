@@ -44,6 +44,8 @@ PromptBuilder is a structure-first platform for users who do not know how to wri
 It already has:
 - template-based starting points
 - harness-style prompt construction
+- generated result variants
+- one-click Optimize entry
 - result-driven prompt optimization
 - quality scoring
 - history and library storage
@@ -51,6 +53,9 @@ It already has:
 - starter examples and helper guidance
 
 The next work should focus on:
+- compare workflow polish
+- history review polish
+- intent extraction and explanation
 - better default Korean prompts
 - simpler onboarding for non-developers
 - more complete example input filling

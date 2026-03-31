@@ -34,6 +34,7 @@ wrangler d1 migrations apply DB --remote --config wrangler.toml
 - `migrations/0001_event_logs.sql`
 - `migrations/0002_prompt_history_and_suggestions.sql`
 - `migrations/0003_prompt_training_samples.sql`
+- `migrations/0004_prompt_thread_variants.sql`
 
 ## 동작 방식
 
@@ -42,6 +43,7 @@ wrangler d1 migrations apply DB --remote --config wrangler.toml
 - 사용자 브라우저 기록은 계속 `localStorage`에 남습니다.
 - 건의사항은 `suggestions` 테이블에 저장됩니다.
 - 프롬프트 히스토리는 `prompt_threads`와 `prompt_versions`에 저장됩니다.
+- 결과 3개 변형은 `prompt_threads.variants_json`에 함께 저장됩니다.
 - 생성된 프롬프트와 개선/최적화 결과는 `prompt_training_samples`에 저장됩니다.
 
 ## 권장 운영 방식

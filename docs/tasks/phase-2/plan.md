@@ -10,6 +10,8 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - output input field
 - evaluation engine
 - improve endpoint for output-based feedback
+- result 3 variants
+- one-click Optimize entry
 - version save and compare
 - loop history
 
@@ -20,6 +22,7 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - add `Optimize Mode`
 - keep it separate from `Template Mode` and `Builder Mode`
 - route the UI into the new workflow
+- surface result variants before the optimize loop starts
 
 ### 2. Prompt Runner
 
@@ -57,9 +60,16 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - allow one-click loading of sample prompts
 - make the first run easier for new users
 
+### 8. Result Variants
+
+- show three prompt variants after generation
+- let the user apply, copy, or send a variant to Optimize
+- keep the selected variant in local history
+
 ## Exit Criteria
 
 - a user can complete one full optimization cycle
 - the user can repeat the cycle with saved versions
 - the free flow works without mandatory paid APIs
 - the user can start from an example instead of a blank form
+- the generated result can branch into three usable variants

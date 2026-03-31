@@ -18,6 +18,12 @@ let state = {
   recommendation: null,
   chainData: null,
   contextDocMeta: null,
+  generatedVariants: [],
+  selectedGeneratedVariantIndex: 0,
+  publicStats: {
+    generatedPromptCount: 0,
+    pageViewCount: 0,
+  },
 };
 
 function setTheme(theme) {
@@ -105,6 +111,27 @@ function toggleMobileSidebar(forceOpen) {
   document.body.classList.toggle('mobile-sidebar-open', shouldOpen);
 }
 
+function setPublicStatValue(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = Number(value || 0).toLocaleString('ko-KR');
+}
+
+async function loadPublicStats() {
+  try {
+    const res = await fetch('/api/stats');
+    if (!res.ok) return;
+    const data = await res.json();
+    state.publicStats = {
+      generatedPromptCount: data.generatedPromptCount || 0,
+      pageViewCount: data.pageViewCount || 0,
+    };
+    setPublicStatValue('site-prompt-count', state.publicStats.generatedPromptCount);
+    setPublicStatValue('site-visit-count', state.publicStats.pageViewCount);
+  } catch {
+    // keep defaults
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof ensureVisitorId === 'function') ensureVisitorId();
   if (typeof recordActivity === 'function') {
@@ -120,6 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setPromptStyle(state.promptStyle);
   setWorkflowState(state.workflowState);
   setModeSelection(state.mode);
+  loadPublicStats();
   await loadPurposes();
   await loadTechniques();
 
@@ -146,3 +174,4 @@ window.setPromptStyle = setPromptStyle;
 window.setWorkflowState = setWorkflowState;
 window.setModeSelection = setModeSelection;
 window.toggleMobileSidebar = toggleMobileSidebar;
+window.loadPublicStats = loadPublicStats;

@@ -158,6 +158,95 @@ function getPromptStyleProfile(modelTarget: string, language: string) {
   }
 }
 
+function buildVariantAddendum(kind: 'balanced' | 'compact' | 'expanded', language: string) {
+  const english = language === 'en'
+  const variants = {
+    balanced: {
+      title: english ? 'Balanced' : '균형형',
+      summary: english
+        ? 'Keeps structure, clarity, and practical detail balanced.'
+        : '구조, 명확성, 실무성을 균형 있게 유지한 기본안입니다.',
+      lines: english
+        ? [
+            '- Keep the structure balanced and avoid unnecessary verbosity.',
+            '- Preserve the original intent and output format.',
+            '- Make the prompt immediately usable as-is.',
+          ]
+        : [
+            '- 구조와 실무성을 균형 있게 유지하세요.',
+            '- 원래 의도와 출력 형식을 그대로 보존하세요.',
+            '- 바로 사용할 수 있는 기본안으로 정리하세요.',
+          ],
+    },
+    compact: {
+      title: english ? 'Compact' : '압축형',
+      summary: english
+        ? 'Removes redundant language and highlights only what matters most.'
+        : '중복을 줄이고 꼭 필요한 지시만 남긴 압축형입니다.',
+      lines: english
+        ? [
+            '- Remove redundant phrasing and keep the prompt concise.',
+            '- Surface the action order and output requirements first.',
+            '- Keep only the minimum context needed for execution.',
+          ]
+        : [
+            '- 중복 표현을 줄이고 핵심 지시만 남기세요.',
+            '- 실행 순서와 출력 요구를 먼저 드러내세요.',
+            '- 실행에 필요한 최소한의 문맥만 남기세요.',
+          ],
+    },
+    expanded: {
+      title: english ? 'Expanded' : '확장형',
+      summary: english
+        ? 'Adds examples, edge cases, and stronger guardrails.'
+        : '예시와 예외, 가드레일을 더해 안정성을 높인 확장형입니다.',
+      lines: english
+        ? [
+            '- Add one example and one edge case where helpful.',
+            '- Strengthen constraints and acceptance criteria.',
+            '- Clarify the next step after the model responds.',
+          ]
+        : [
+            '- 필요하면 예시와 예외 상황을 1개씩 추가하세요.',
+            '- 제약 조건과 성공 기준을 더 분명히 적으세요.',
+            '- 모델 응답 후 다음 행동까지 이어지게 쓰세요.',
+          ],
+    },
+  } as const
+  return variants[kind]
+}
+
+function buildPromptVariants(prompt: string, qualityReport: any, language: string) {
+  const base = String(prompt || '').trim()
+  const balanced = {
+    id: 'balanced',
+    label: buildVariantAddendum('balanced', language).title,
+    summary: buildVariantAddendum('balanced', language).summary,
+    prompt: base,
+    qualityReport,
+  }
+
+  const kinds: Array<'compact' | 'expanded'> = ['compact', 'expanded']
+  const variants = kinds.map((kind) => {
+    const addon = buildVariantAddendum(kind, language)
+    const extraBlock = [
+      `## ${addon.title}`,
+      addon.summary,
+      ...addon.lines.map((line) => line),
+    ].join('\n')
+    const candidatePrompt = `${base}\n\n${extraBlock}`.trim()
+    return {
+      id: kind,
+      label: addon.title,
+      summary: addon.summary,
+      prompt: candidatePrompt,
+      qualityReport: analyzePromptQualityEnhanced(candidatePrompt, {}),
+    }
+  })
+
+  return [balanced, ...variants]
+}
+
 type GenerateArgs = {
   techniqueId: string
   inputFields: Record<string, string>
@@ -374,6 +463,7 @@ export function buildGenerateResult(args: GenerateArgs) {
   }
 
   const qualityReport = analyzePromptQualityEnhanced(prompt, fields)
+  const variants = buildPromptVariants(prompt, qualityReport, language || 'ko')
 
   let chainData: any = null
   if (techniqueId === 'prompt-chaining' && keyword) {
@@ -411,6 +501,7 @@ export function buildGenerateResult(args: GenerateArgs) {
     tips: getPromptTips(techniqueId),
     chainData,
     contextDocMeta,
+    variants,
     language: language || 'ko',
   }
 }

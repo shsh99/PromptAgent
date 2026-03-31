@@ -29,6 +29,8 @@ async function generatePrompt() {
     }
     state.chainData = data.chainData;
     state.contextDocMeta = data.contextDocMeta;
+    state.generatedVariants = data.variants || [];
+    state.selectedGeneratedVariantIndex = 0;
     displayResult(data);
     saveToHistory(data);
     if (typeof recordActivity === 'function') {
@@ -127,6 +129,8 @@ function displayResult(data) {
     chainSection.classList.add('hidden');
   }
 
+  renderResultVariants(data.variants || []);
+
   const ctxSection = document.getElementById('context-doc-section');
   if (data.contextDocMeta) {
     ctxSection.classList.remove('hidden');
@@ -158,6 +162,79 @@ function displayResult(data) {
   injectResultActionButtons();
 
   setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function renderResultVariants(variants) {
+  const container = document.getElementById('result-variants');
+  if (!container) return;
+  const list = Array.isArray(variants) ? variants : [];
+  if (!list.length) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = `
+    <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+      <div class="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h4 class="text-sm font-semibold text-white">3가지 결과</h4>
+          <p class="text-xs text-slate-400">같은 입력에서 다른 톤과 밀도로 바로 비교할 수 있습니다.</p>
+        </div>
+        <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500">compare ready</div>
+      </div>
+      <div class="grid gap-3 lg:grid-cols-3">
+        ${list.map((variant, index) => {
+          const qr = variant.qualityReport || {};
+          const grade = qr.grade || 'C';
+          const score = qr.percentage ?? 0;
+          const isActive = index === (state.selectedGeneratedVariantIndex || 0);
+          return `
+            <div class="rounded-2xl border ${isActive ? 'border-brand-400/40 bg-brand-500/10' : 'border-white/10 bg-white/5'} p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-sm font-semibold ${isActive ? 'text-brand-100' : 'text-white'}">${escapeHtml(variant.label || `결과 ${index + 1}`)}</div>
+                  <div class="mt-1 text-[11px] ${isActive ? 'text-brand-100/80' : 'text-slate-400'}">${escapeHtml(variant.summary || '')}</div>
+                </div>
+                <span class="rounded-full ${isActive ? 'bg-brand-500/20 text-brand-100' : 'bg-white/10 text-slate-200'} px-2 py-0.5 text-[10px] font-semibold">${grade} · ${score}%</span>
+              </div>
+              <div class="mt-3 line-clamp-3 whitespace-pre-wrap text-xs leading-6 ${isActive ? 'text-brand-50' : 'text-slate-300'}">${escapeHtml(variant.prompt || '')}</div>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button onclick="selectGeneratedVariant(${index})" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">적용</button>
+                <button onclick="copyGeneratedVariant(${index})" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">복사</button>
+                <button onclick="openOptimizeFromVariant(${index})" class="rounded-xl border border-brand-500/20 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-100 hover:bg-brand-500/15">Optimize</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function selectGeneratedVariant(index) {
+  const variants = state.generatedVariants || [];
+  const variant = variants[index];
+  if (!variant) return;
+  state.selectedGeneratedVariantIndex = index;
+  const resultPrompt = document.getElementById('result-prompt');
+  const techniqueName = document.getElementById('result-technique-name');
+  if (resultPrompt) resultPrompt.textContent = variant.prompt || '';
+  if (techniqueName) techniqueName.textContent = `${state.techniqueData?.name || state.techniqueId || '프롬프트'} · ${variant.label || `결과 ${index + 1}`}`;
+  const section = document.getElementById('result-section');
+  section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyGeneratedVariant(index) {
+  const variant = (state.generatedVariants || [])[index];
+  if (!variant?.prompt) return;
+  navigator.clipboard.writeText(variant.prompt).then(() => {
+    if (typeof recordActivity === 'function') {
+      recordActivity('PROMPT_VARIANT_COPY', {
+        techniqueId: state.techniqueId,
+        keyword: state.keyword,
+        variant: variant.label || `result-${index + 1}`,
+      });
+    }
+  });
 }
 
 function copyPrompt() {

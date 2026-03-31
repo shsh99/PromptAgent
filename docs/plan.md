@@ -31,6 +31,10 @@ Already present:
 - library save/load
 - history logging
 - context-engineering flow
+- 3-result generation
+- result-screen Optimize entry
+- training sample persistence
+- admin sample CSV export
 
 Missing or incomplete:
 - ambiguity analysis
@@ -43,7 +47,8 @@ Missing or incomplete:
 - example-based learning
 - recovery prompts
 - model-aware rewriting
-- optimize mode
+- result compare workflow
+- full compare mode
 - runner flow
 - output evaluation
 - prompt version diff
@@ -54,15 +59,16 @@ Missing or incomplete:
 
 ## Execution Order
 
-1. Quality analyzer
-2. Content architecture
-3. Optimize mode
-4. Versioning
-5. Feedback loop
-6. Model optimizer
-7. Template library
-8. Starter examples and helpers
-9. Sharing and collaboration
+1. Result 3 variants
+2. Optimize entry
+3. Compare and history
+4. Intent engine
+5. Explanation layer
+6. Quality analyzer refinements
+7. Admin analytics
+8. Template library
+9. Starter examples and helpers
+10. Sharing and collaboration
 
 ## Phase Ownership
 
@@ -77,3 +83,4 @@ Missing or incomplete:
 - The free path works end to end.
 - The docs explain the behavior and storage model.
 - Existing flows still work after the change.
+- Phase and changelog notes are updated in the same change.

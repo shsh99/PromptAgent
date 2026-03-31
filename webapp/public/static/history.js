@@ -127,6 +127,7 @@ function upsertPromptHistoryVersion(data = {}) {
       latestPrompt: String(data.prompt || ''),
       promptCount: 0,
       versions: [],
+      variants: [],
       references: [],
     };
     history.unshift(thread);
@@ -162,6 +163,7 @@ function upsertPromptHistoryVersion(data = {}) {
   thread.latestPrompt = String(data.prompt || thread.latestPrompt || '');
   thread.promptCount = versions.length + 1;
   thread.fields = data.fields || thread.fields || {};
+  thread.variants = Array.isArray(data.variants) ? data.variants : thread.variants || [];
   thread.versions = [version, ...versions].slice(0, 10);
 
   saveLocalHistory(history);
@@ -321,6 +323,7 @@ function recordActivity(actionType, meta = {}) {
 }
 
 function saveToHistory(data) {
+  const variants = Array.isArray(data.variants) ? data.variants : Array.isArray(state.generatedVariants) ? state.generatedVariants : [];
   const samplePayload = {
     id: data.versionId || createLocalRecordId('ts'),
     visitorId: ensureVisitorId(),
@@ -348,6 +351,7 @@ function saveToHistory(data) {
     meta: {
       fields: data.fields || state.fields || {},
       resultMode: data.resultMode || '',
+      variants,
     },
     createdAt: new Date().toISOString(),
   };
@@ -368,6 +372,7 @@ function saveToHistory(data) {
     score: data.qualityReport?.percentage || 0,
     qualityGrade: data.qualityReport?.grade || 'C',
     fields: data.fields || state.fields || {},
+    variants,
     createdAt: new Date().toISOString(),
   });
   const logEntry = {
@@ -404,6 +409,7 @@ function saveToHistory(data) {
       latestPrompt: entry.latestPrompt,
       promptCount: entry.promptCount,
       fields: entry.fields || {},
+      variants: entry.variants || variants,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     },
@@ -425,6 +431,7 @@ function saveToHistory(data) {
       score: data.qualityReport?.percentage || 0,
       qualityGrade: data.qualityReport?.grade || 'C',
       fields: data.fields || state.fields || {},
+      variants,
       createdAt: new Date().toISOString(),
     },
   });
