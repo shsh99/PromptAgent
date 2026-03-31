@@ -569,6 +569,7 @@ function switchMode(mode) {
   const nextMode = mode || 'builder';
   if (typeof state !== 'undefined') state.mode = nextMode;
   localStorage.setItem('pf_mode', nextMode);
+  if (typeof toggleMobileSidebar === 'function') toggleMobileSidebar(false);
   if (nextMode === 'optimize' && !document.getElementById('optimize-workspace')) {
     injectOptimizeUI();
   }

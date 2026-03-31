@@ -97,6 +97,14 @@ function setModeSelection(mode) {
   });
 }
 
+function toggleMobileSidebar(forceOpen) {
+  const drawer = document.getElementById('mobile-sidebar');
+  if (!drawer) return;
+  const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : drawer.classList.contains('hidden');
+  drawer.classList.toggle('hidden', !shouldOpen);
+  document.body.classList.toggle('mobile-sidebar-open', shouldOpen);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof ensureVisitorId === 'function') ensureVisitorId();
   if (typeof recordActivity === 'function') {
@@ -128,8 +136,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') toggleMobileSidebar(false);
+});
+
 window.setTheme = setTheme;
 window.setPromptLanguage = setPromptLanguage;
 window.setPromptStyle = setPromptStyle;
 window.setWorkflowState = setWorkflowState;
 window.setModeSelection = setModeSelection;
+window.toggleMobileSidebar = toggleMobileSidebar;

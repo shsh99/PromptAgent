@@ -27,6 +27,10 @@ app.get('/', (c) => {
             </div>
 
             <div class="flex items-center gap-2">
+              <button onclick="toggleMobileSidebar()" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10 xl:hidden">
+                <i class="fas fa-bars mr-1"></i>
+                메뉴
+              </button>
               <button onclick="setTheme('light')" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">
                 라이트
               </button>
@@ -50,67 +54,106 @@ app.get('/', (c) => {
         </div>
       </nav>
 
-      <main class="mx-auto max-w-7xl px-4 pb-16 pt-24 sm:px-6 lg:px-8">
-        <aside class="fixed left-4 top-24 z-40 hidden w-64 xl:block">
-          <div class="rounded-3xl border border-white/10 bg-slate-950/90 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
-            <div class="mb-4 flex items-center justify-between">
-              <div>
-                <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">빠른 이동</div>
-                <div class="mt-1 text-sm font-semibold text-white">처음 쓰는 사람용</div>
-              </div>
-              <span class="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">BETA</span>
+      <div id="mobile-sidebar" class="fixed inset-0 z-[60] hidden xl:hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleMobileSidebar(false)"></div>
+        <div class="absolute bottom-0 left-0 top-16 w-[86vw] max-w-sm overflow-y-auto border-r border-white/10 bg-slate-950/96 p-4 shadow-2xl shadow-black/40">
+          <div class="mb-4 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">빠른 이동</div>
+              <div class="mt-1 text-sm font-semibold text-white">모바일 메뉴</div>
             </div>
-            <div class="space-y-2">
-              <button onclick="switchMode('template')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-                템플릿 모드
-              </button>
-              <button onclick="switchMode('builder')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-                빌더 모드
-              </button>
-              <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-                최적화 모드
-              </button>
-            </div>
-            <div class="mt-4 border-t border-white/10 pt-4">
-              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">작업 상태</div>
-              <div class="mt-2 grid gap-2">
-                <button data-workflow-state="new" onclick="setWorkflowState('new')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">새로 시작</button>
-                <button data-workflow-state="in-progress" onclick="setWorkflowState('in-progress')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">진행 중</button>
-                <button data-workflow-state="done" onclick="setWorkflowState('done')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">완료 보고</button>
-                <button data-workflow-state="blocked" onclick="setWorkflowState('blocked')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">막힘 / 수정 요청</button>
-              </div>
-            </div>
-            <div class="mt-4 rounded-2xl border border-brand-500/20 bg-brand-500/10 p-3 text-xs leading-6 text-slate-200">
-              기본은 한국어입니다. 영어가 필요할 때만 영어 프롬프트로 바꿔주세요.
+            <button onclick="toggleMobileSidebar(false)" class="rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">
+              닫기
+            </button>
+          </div>
+          <div class="space-y-2">
+            <button onclick="switchMode('template')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              템플릿 모드
+            </button>
+            <button onclick="switchMode('builder')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              빌더 모드
+            </button>
+            <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+              최적화 모드
+            </button>
+          </div>
+          <div class="mt-4 border-t border-white/10 pt-4">
+            <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">작업 상태</div>
+            <div class="mt-2 grid gap-2">
+              <button data-workflow-state="new" onclick="setWorkflowState('new')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">새로 시작</button>
+              <button data-workflow-state="in-progress" onclick="setWorkflowState('in-progress')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">진행 중</button>
+              <button data-workflow-state="done" onclick="setWorkflowState('done')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">완료 보고</button>
+              <button data-workflow-state="blocked" onclick="setWorkflowState('blocked')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">막힘 / 수정 요청</button>
             </div>
           </div>
-        </aside>
+          <div class="mt-4 rounded-2xl border border-brand-500/20 bg-brand-500/10 p-3 text-xs leading-6 text-slate-200">
+            기본은 한국어입니다. 영어가 필요할 때만 영어 프롬프트로 바꿔주세요.
+          </div>
+        </div>
+      </div>
 
-        <section class="mb-10 space-y-6">
-          <div class="space-y-4">
-            <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">
-              <i class="fas fa-wand-magic-sparkles"></i>
-              프롬프트를 몰라도 AI를 잘 쓰게 만드는 구조 설계 플랫폼
+      <main class="mx-auto max-w-7xl px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+        <div class="xl:grid xl:grid-cols-[16rem_minmax(0,1fr)] xl:gap-8">
+          <aside class="hidden xl:block xl:sticky xl:top-24 xl:self-start">
+            <div class="rounded-3xl border border-white/10 bg-slate-950/90 p-4 shadow-2xl shadow-black/20 backdrop-blur-xl">
+              <div class="mb-4 flex items-center justify-between">
+                <div>
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">빠른 이동</div>
+                  <div class="mt-1 text-sm font-semibold text-white">처음 쓰는 사람용</div>
+                </div>
+                <span class="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">BETA</span>
+              </div>
+              <div class="space-y-2">
+                <button onclick="switchMode('template')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                  템플릿 모드
+                </button>
+                <button onclick="switchMode('builder')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                  빌더 모드
+                </button>
+                <button onclick="switchMode('optimize')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                  최적화 모드
+                </button>
+              </div>
+              <div class="mt-4 border-t border-white/10 pt-4">
+                <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">작업 상태</div>
+                <div class="mt-2 grid gap-2">
+                  <button data-workflow-state="new" onclick="setWorkflowState('new')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">새로 시작</button>
+                  <button data-workflow-state="in-progress" onclick="setWorkflowState('in-progress')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">진행 중</button>
+                  <button data-workflow-state="done" onclick="setWorkflowState('done')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">완료 보고</button>
+                  <button data-workflow-state="blocked" onclick="setWorkflowState('blocked')" class="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-xs font-semibold text-slate-200 hover:bg-white/10">막힘 / 수정 요청</button>
+                </div>
+              </div>
+              <div class="mt-4 rounded-2xl border border-brand-500/20 bg-brand-500/10 p-3 text-xs leading-6 text-slate-200">
+                기본은 한국어입니다. 영어가 필요할 때만 영어 프롬프트로 바꿔주세요.
+              </div>
             </div>
-            <h2 class="text-4xl font-black leading-tight text-white sm:text-5xl">
-              업무 템플릿으로 쉽게 시작하고, <br class="hidden sm:block" />
-              <span class="bg-gradient-to-r from-brand-300 to-cyan-300 bg-clip-text text-transparent">빌더로 직접 설계하고 최적화로 품질을 높이세요</span>
-            </h2>
-            <p class="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-              프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
-            </p>
-            <div class="flex flex-wrap gap-3">
-              <button onclick="switchMode('template')" class="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10 hover:bg-slate-100">
-                퀵 모드로 시작
-              </button>
-              <button onclick="switchMode('builder')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
-                고급자 모드
-              </button>
-              <button onclick="switchMode('optimize')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
-                최적화 열기
-              </button>
+          </aside>
+
+          <section class="mb-10 space-y-6">
+            <div class="space-y-4">
+              <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                프롬프트를 몰라도 AI를 잘 쓰게 만드는 구조 설계 플랫폼
+              </div>
+              <h2 class="text-4xl font-black leading-tight text-white sm:text-5xl">
+                업무 템플릿으로 쉽게 시작하고, <br class="hidden sm:block" />
+                <span class="bg-gradient-to-r from-brand-300 to-cyan-300 bg-clip-text text-transparent">빌더로 직접 설계하고 최적화로 품질을 높이세요</span>
+              </h2>
+              <p class="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
+                프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
+              </p>
+              <div class="flex flex-wrap gap-3">
+                <button onclick="switchMode('template')" class="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10 hover:bg-slate-100">
+                  퀵 모드로 시작
+                </button>
+                <button onclick="switchMode('builder')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                  고급자 모드
+                </button>
+                <button onclick="switchMode('optimize')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                  최적화 열기
+                </button>
+              </div>
             </div>
-          </div>
           <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
             <div class="mb-4 flex items-center justify-between gap-3">
               <div>
@@ -177,7 +220,7 @@ app.get('/', (c) => {
           </div>
         </div>
 
-        <section id="step-purpose" class="mb-6">
+          <section id="step-purpose" class="mb-6">
           <div class="mb-4 flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">1</div>
             <div>
@@ -207,7 +250,7 @@ app.get('/', (c) => {
           </div>
         </section>
 
-        <section id="recommendation-section" class="mb-6 hidden">
+          <section id="recommendation-section" class="mb-6 hidden">
           <div class="rounded-3xl border border-brand-500/20 bg-white/5 p-5 backdrop-blur-xl">
             <div class="mb-3 flex items-center gap-2">
               <i class="fas fa-robot text-brand-300"></i>
@@ -222,7 +265,7 @@ app.get('/', (c) => {
           </div>
         </section>
 
-        <section id="step-technique" class="mb-6 opacity-40 pointer-events-none transition-all duration-300">
+          <section id="step-technique" class="mb-6 opacity-40 pointer-events-none transition-all duration-300">
           <div class="mb-2 flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-sm font-bold text-slate-300" id="step2-badge">2</div>
             <div>
@@ -233,7 +276,7 @@ app.get('/', (c) => {
           <div id="technique-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
         </section>
 
-        <section id="step-fields" class="mb-6 hidden">
+          <section id="step-fields" class="mb-6 hidden">
           <div class="mb-2 flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">3</div>
             <div>
@@ -258,7 +301,7 @@ app.get('/', (c) => {
           </div>
         </section>
 
-        <section id="result-section" class="hidden">
+          <section id="result-section" class="hidden">
           <div class="mb-4 flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
               <i class="fas fa-check text-xs"></i>
@@ -346,6 +389,7 @@ app.get('/', (c) => {
             </div>
           </div>
         </section>
+        </div>
       </main>
 
       <button

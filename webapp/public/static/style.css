@@ -50,6 +50,10 @@
   z-index: 1;
 }
 
+.prompt-shell.mobile-sidebar-open {
+  overflow: hidden;
+}
+
 .prompt-shell nav {
   background: rgba(2, 6, 23, 0.7) !important;
   border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
