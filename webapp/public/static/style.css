@@ -133,30 +133,36 @@
   background-color: rgba(248, 250, 252, 0.98) !important;
 }
 
-.prompt-shell.theme-light #result-section button:not(.bg-brand-600):not(.bg-brand-500\/10):not(.bg-brand-500\/15):not(.bg-brand-500\/20):not(.bg-cyan-600):not(.bg-cyan-500\/20):not(.bg-teal-500\/10):not(.bg-indigo-500\/20) {
+.prompt-shell.theme-light #result-section button:not(.bg-brand-600) {
   background-color: rgba(255, 255, 255, 0.98) !important;
   color: #0f172a !important;
   border-color: rgba(148, 163, 184, 0.72) !important;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08) !important;
 }
 
-.prompt-shell.theme-light #result-section button:not(.bg-brand-600):not(.bg-brand-500\/10):not(.bg-brand-500\/15):not(.bg-brand-500\/20):not(.bg-cyan-600):not(.bg-cyan-500\/20):not(.bg-teal-500\/10):not(.bg-indigo-500\/20):hover {
+.prompt-shell.theme-light #result-section button:not(.bg-brand-600):hover {
   background-color: rgba(248, 250, 252, 1) !important;
   border-color: rgba(92, 124, 250, 0.6) !important;
 }
 
-.prompt-shell.theme-light #result-section button:not(.bg-brand-600):not(.bg-brand-500\/10):not(.bg-brand-500\/15):not(.bg-brand-500\/20):not(.bg-cyan-600):not(.bg-cyan-500\/20):not(.bg-teal-500\/10):not(.bg-indigo-500\/20) i {
+.prompt-shell.theme-light #result-section button:not(.bg-brand-600) i,
+.prompt-shell.theme-light #result-section button:not(.bg-brand-600) * {
   color: inherit !important;
 }
 
-.prompt-shell.theme-light #optimize-workspace button:not(.bg-brand-600):not(.bg-brand-500\/10):not(.bg-brand-500\/15):not(.bg-brand-500\/20):not(.bg-cyan-600):not(.bg-cyan-500\/20):not(.bg-teal-500\/10):not(.bg-indigo-500\/20) {
+.prompt-shell.theme-light #optimize-workspace button:not(.bg-brand-600) {
   background-color: rgba(255, 255, 255, 0.98) !important;
   color: #0f172a !important;
   border-color: rgba(148, 163, 184, 0.72) !important;
 }
 
-.prompt-shell.theme-light #optimize-workspace button:not(.bg-brand-600):not(.bg-brand-500\/10):not(.bg-brand-500\/15):not(.bg-brand-500\/20):not(.bg-cyan-600):not(.bg-cyan-500\/20):not(.bg-teal-500\/10):not(.bg-indigo-500\/20):hover {
+.prompt-shell.theme-light #optimize-workspace button:not(.bg-brand-600):hover {
   border-color: rgba(92, 124, 250, 0.6) !important;
+}
+
+.prompt-shell.theme-light #optimize-workspace button:not(.bg-brand-600) i,
+.prompt-shell.theme-light #optimize-workspace button:not(.bg-brand-600) * {
+  color: inherit !important;
 }
 
 .prompt-shell.theme-light #chain-section button {
@@ -167,6 +173,11 @@
 
 .prompt-shell.theme-light #chain-section button:hover {
   border-color: rgba(92, 124, 250, 0.6) !important;
+}
+
+.prompt-shell.theme-light #chain-section button i,
+.prompt-shell.theme-light #chain-section button * {
+  color: inherit !important;
 }
 
 .prompt-shell.theme-light .bg-brand-500\/10,
