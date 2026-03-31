@@ -524,7 +524,7 @@ async function promptAdminToken() {
   const token = prompt('관리자 토큰을 입력하세요.') || '';
   if (!token.trim()) return;
   setAdminToken(token.trim());
-  await showHistory();
+  await showAdminDashboard();
 }
 
 function copyHistoryItem(threadId) {
@@ -612,6 +612,50 @@ async function showHistory() {
     }
     adminPanel.innerHTML = renderAdminPanel(data);
   }
+}
+
+function renderAdminDashboardShell(contentHtml) {
+  return `
+    <div class="mx-auto h-full max-w-7xl overflow-y-auto rounded-3xl border border-white/10 bg-slate-950/70 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-6">
+      ${contentHtml}
+    </div>
+  `;
+}
+
+async function showAdminDashboard() {
+  const dashboard = document.getElementById('admin-dashboard');
+  const content = document.getElementById('admin-dashboard-content');
+  if (!dashboard || !content) return;
+  dashboard.classList.remove('hidden');
+  content.innerHTML = '<div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-400">관리자 통계를 불러오는 중...</div>';
+  const token = getAdminToken();
+  if (!token) {
+    content.innerHTML = '<div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-sm text-red-200">관리자 토큰이 없습니다. 상단의 관리자 버튼으로 다시 입력하세요.</div>';
+    return;
+  }
+  const data = await fetchAdminLogs();
+  if (data?.unauthorized) {
+    clearAdminToken();
+    content.innerHTML = '<div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-sm text-red-200">관리자 토큰이 유효하지 않습니다.</div>';
+    return;
+  }
+  if (data?.error) {
+    content.innerHTML = `<div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-sm text-red-200">${escapeHtml(data.error)}</div>`;
+    return;
+  }
+  content.innerHTML = renderAdminDashboardShell(renderAdminPanel(data));
+}
+
+async function reloadAdminDashboard() {
+  const dashboard = document.getElementById('admin-dashboard');
+  if (dashboard && !dashboard.classList.contains('hidden')) {
+    await showAdminDashboard();
+  }
+}
+
+function closeAdminDashboard() {
+  const dashboard = document.getElementById('admin-dashboard');
+  if (dashboard) dashboard.classList.add('hidden');
 }
 
 function clearHistory() {
