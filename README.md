@@ -9,7 +9,7 @@
 
 ## 최신 배포
 
-- promptbuilder-df6.pages.dev
+- [PromptBuilder](https://promptbuilder-df6.pages.dev/)
 
 ## 프로젝트 개요
 
