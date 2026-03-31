@@ -13,6 +13,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 let state = {
+  mode: localStorage.getItem('pf_mode') || 'builder',
   purpose: null,
   keyword: '',
   techniqueId: null,
@@ -44,4 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   injectImproveModal();
   // 업데이트 뱃지 (changelog.js)
   renderUpdatesBadge();
+  if (typeof initializeMode === 'function') {
+    initializeMode(state.mode);
+  }
 });

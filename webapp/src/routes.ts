@@ -4,7 +4,7 @@ import {
   TECHNIQUES, FIELD_DEFINITIONS, PURPOSE_PRESETS, PURPOSE_RECOMMENDATIONS,
 } from './data'
 import {
-  generateAutoFields, analyzePromptQuality, getPromptTips,
+  generateAutoFields, analyzePromptQualityEnhanced, getPromptTips,
   getRoleForPurpose, getChainSteps, getCoreFeatures, getDataModel,
   getTechStack, getTargetUser,
 } from './helpers'
@@ -355,6 +355,142 @@ apiRouter.post('/improve', async (c) => {
   }
 })
 
+apiRouter.post('/optimize', async (c) => {
+  try {
+    const { prompt, output, goal, modelTarget } = await c.req.json()
+    if (!String(prompt || '').trim() || !String(output || '').trim()) {
+      return c.json({ error: 'prompt와 output이 모두 필요합니다.' }, 400)
+    }
+
+    const promptText = String(prompt).trim()
+    const outputText = String(output).trim()
+    const goalText = String(goal || '').trim()
+    const lowerPrompt = promptText.toLowerCase()
+    const lowerOutput = outputText.toLowerCase()
+    const lowerGoal = goalText.toLowerCase()
+    const issues: string[] = []
+    const improvements: string[] = []
+
+    if (!goalText) {
+      issues.push('goal_missing')
+      improvements.push('목표를 한 문장으로 추가하세요.')
+    }
+    if (outputText.length < 80) {
+      issues.push('output_too_short')
+      improvements.push('출력 길이 제약과 필요한 세부 수준을 명시하세요.')
+    }
+    if (/[{[]/.test(goalText) && !/[{[]/.test(outputText)) {
+      issues.push('format_mismatch')
+      improvements.push('JSON 또는 표 형식처럼 원하는 출력 구조를 분명히 지정하세요.')
+    }
+    if (!lowerOutput.includes(lowerGoal.split(/\s+/).filter(Boolean)[0] || '')) {
+      issues.push('goal_alignment')
+      improvements.push('목표와 직접 연결되는 핵심 키워드를 출력 요구사항에 넣으세요.')
+    }
+    if (!/step|steps|step-by-step|단계|순서/.test(lowerPrompt)) {
+      issues.push('reasoning_missing')
+      improvements.push('단계적으로 생각한 뒤 최종 결과를 출력하도록 지시하세요.')
+    }
+    if (!/example|예시|input|output/.test(lowerPrompt)) {
+      improvements.push('입력-출력 예시를 하나 추가하면 결과 안정성이 올라갑니다.')
+    }
+
+    const optimizeSeed = [
+      '## ROLE',
+      'You are a prompt optimization assistant.',
+      '',
+      '## CONTEXT / PROBLEM',
+      goalText ? `Solve this goal: ${goalText}` : 'Improve the prompt using the provided output feedback.',
+      '',
+      '## INPUT DATA',
+      `Original Prompt:\n${promptText}`,
+      '',
+      `Output:\n${outputText}`,
+      '',
+      '## TASK',
+      'Rewrite the prompt so it produces a better output next time.',
+      '',
+      '## CONSTRAINTS',
+      '- Keep the prompt concise but explicit.',
+      '- Make the output structure clear.',
+      '- Add missing guardrails and examples.',
+      '',
+      '## REASONING',
+      '- Identify why the output failed.',
+      '- Add only the minimum structure needed.',
+      '- Preserve useful parts of the original prompt.',
+      '',
+      '## OUTPUT FORMAT',
+      '- improved_prompt',
+      '- issues',
+      '- improvements',
+      '- next_action',
+      '',
+      '## EVALUATION CRITERIA',
+      '- clarity',
+      '- format adherence',
+      '- goal alignment',
+      '- execution readiness',
+      '',
+      '## EXAMPLES',
+      '- input -> expected output behavior',
+    ].join('\n')
+
+    const improvedPrompt = [
+      '## Optimize Prompt',
+      goalText ? `Goal: ${goalText}` : 'Goal: improve the output quality of the prompt.',
+      '',
+      '### Problem Framing',
+      goalText || 'The current prompt needs stronger structure and output control.',
+      '',
+      '### Input Data',
+      outputText,
+      '',
+      '### Task',
+      'Analyze the failure and rewrite the prompt for the next run.',
+      '',
+      '### Constraints',
+      '- Be specific about format, scope, and output length.',
+      '- Add examples if the output was unstable.',
+      '- Include recovery instructions if the model misses the goal.',
+      '',
+      '### Output Schema',
+      '- improved_prompt',
+      '- issues',
+      '- improvements',
+      '- next_action',
+      '',
+      '### Evaluation Criteria',
+      '- clear',
+      '- actionable',
+      '- goal-aligned',
+      '- reusable',
+      '',
+      '### Base Prompt',
+      promptText,
+    ].join('\n')
+
+    const nextAction = issues.length
+      ? `Focus on: ${issues.slice(0, 3).join(', ')}`
+      : 'Run the revised prompt once more and compare the output.'
+    const score = Math.max(0, 100 - issues.length * 18)
+
+    return c.json({
+      prompt: promptText,
+      output: outputText,
+      goal: goalText,
+      modelTarget: modelTarget || '',
+      issues,
+      improvements,
+      score,
+      improvedPrompt: `${optimizeSeed}\n\n---\n\n${improvedPrompt}`,
+      nextAction,
+    })
+  } catch (err: any) {
+    return c.json({ error: err?.message || 'Optimize failed.' }, 500)
+  }
+})
+
 // ── POST /api/generate ────────────────────────────────────────────
 apiRouter.post('/generate', async (c) => {
   try {
@@ -499,7 +635,7 @@ apiRouter.post('/generate', async (c) => {
       prompt = `[바이브 코딩 프로젝트]\n프로젝트 유형: ${purposeInfo?.label || purpose}\n핵심 키워드: ${keyword}\n\n` + prompt
     }
 
-    const qualityReport = analyzePromptQuality(prompt, fields)
+    const qualityReport = analyzePromptQualityEnhanced(prompt, fields)
 
     // 체이닝 단계 데이터
     let chainData = null

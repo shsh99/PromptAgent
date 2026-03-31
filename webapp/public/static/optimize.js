@@ -1,0 +1,752 @@
+// ===== optimize.js - mode switch + optimize loop =====
+
+const OPTIMIZE_HISTORY_KEY = 'pf_optimize_history';
+const OPTIMIZE_SESSION_KEY = 'pf_optimize_session';
+const OPTIMIZE_COMPARE_KEY = 'pf_optimize_compare';
+const OPTIMIZE_EXAMPLES = [
+  {
+    title: 'Problem Framing',
+    prompt: 'You are helping improve a marketing prompt. The issue is low conversion among 20s male users. Define the problem, the target audience, the KPI, and the expected output format before giving the final answer.',
+    output: 'The result should be a short campaign brief with a clear angle, target audience, measurable KPI, and 3 action items.',
+    goal: 'Make the prompt start from the problem, not from the task only.',
+  },
+  {
+    title: 'Structured Output',
+    prompt: 'Act as a product manager. Analyze the feature request and return the result as JSON with title, summary, risks, and action_items.',
+    output: 'Return valid JSON only. Do not add commentary outside the schema.',
+    goal: 'Force strict output structure and reduce drift.',
+  },
+  {
+    title: 'Reasoning + Constraints',
+    prompt: 'Review the bug report, think step by step, identify the root cause, and propose a fix plan. Keep the final answer under 8 bullets.',
+    output: 'Provide the diagnosis first, then the fix plan, then the verification steps.',
+    goal: 'Add reasoning and hard constraints to the prompt.',
+  },
+  {
+    title: 'Code Review',
+    prompt: 'You are a senior engineer reviewing this pull request. Identify correctness issues, maintainability risks, and missing tests. Return the result in a table.',
+    output: 'Return only 3 sections: issues, impact, fix suggestion.',
+    goal: 'Make the review actionable and structured.',
+  },
+  {
+    title: 'Meeting Summary',
+    prompt: 'Summarize the meeting notes into decisions, open questions, and next actions. Keep the tone concise and practical.',
+    output: 'Return a 3-part summary with clear action items and owners.',
+    goal: 'Convert raw notes into a reusable summary format.',
+  },
+  {
+    title: 'Marketing Draft',
+    prompt: 'Write a campaign draft for a product launch. Start with the audience problem, define the offer, then produce 3 headline options and 3 CTA options.',
+    output: 'Include audience, problem, hook, headlines, and CTA in a structured format.',
+    goal: 'Improve conversion-oriented structure and output schema.',
+  },
+];
+
+const BUILDER_STARTERS = [
+  {
+    title: 'Marketing Brief',
+    purpose: 'content',
+    keyword: 'Product launch brief',
+    technique: 'harness',
+    description: 'Start with audience, problem, and output schema for marketing work.',
+  },
+  {
+    title: 'Code Review',
+    purpose: 'web-app',
+    keyword: 'Pull request review',
+    technique: 'harness',
+    description: 'Set up a review prompt with risks, checks, and fix suggestions.',
+  },
+  {
+    title: 'Meeting Notes',
+    purpose: 'custom',
+    keyword: 'Meeting summary',
+    technique: 'few-shot',
+    description: 'Turn notes into decisions, action items, and owners.',
+  },
+  {
+    title: 'Bug Triage',
+    purpose: 'web-app',
+    keyword: 'Bug triage brief',
+    technique: 'chain-of-thought',
+    description: 'Frame the problem, reason through causes, and create an action plan.',
+  },
+];
+
+function getOptimizeHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(OPTIMIZE_HISTORY_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveOptimizeHistory(items) {
+  localStorage.setItem(OPTIMIZE_HISTORY_KEY, JSON.stringify(items.slice(0, 30)));
+}
+
+function setOptimizeSession(session) {
+  localStorage.setItem(OPTIMIZE_SESSION_KEY, JSON.stringify(session || {}));
+  window.__optimizeSession = session || {};
+}
+
+function getOptimizeSession() {
+  if (window.__optimizeSession) return window.__optimizeSession;
+  try {
+    return JSON.parse(localStorage.getItem(OPTIMIZE_SESSION_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function normalizeVersionText(text) {
+  return String(text || '')
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .map((line) => line.trimEnd());
+}
+
+function buildInlineDiff(before, after) {
+  const left = normalizeVersionText(before);
+  const right = normalizeVersionText(after);
+  const max = Math.max(left.length, right.length);
+  const rows = [];
+
+  for (let i = 0; i < max; i += 1) {
+    const prevLine = left[i];
+    const nextLine = right[i];
+    if (prevLine === nextLine) {
+      if (!prevLine && !nextLine) continue;
+      rows.push(`<div class="grid grid-cols-[24px_1fr_1fr] gap-2 text-xs text-gray-500">
+        <div class="font-mono text-right">${i + 1}</div>
+        <div class="rounded-lg bg-gray-50 px-2 py-1 font-mono">${escapeHtml(prevLine || '')}</div>
+        <div class="rounded-lg bg-gray-50 px-2 py-1 font-mono">${escapeHtml(nextLine || '')}</div>
+      </div>`);
+      continue;
+    }
+    rows.push(`<div class="grid grid-cols-[24px_1fr_1fr] gap-2 text-xs">
+      <div class="font-mono text-right text-gray-400">${i + 1}</div>
+      <div class="rounded-lg border border-red-100 bg-red-50 px-2 py-1 font-mono text-red-700">${escapeHtml(prevLine || '∅')}</div>
+      <div class="rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1 font-mono text-emerald-700">${escapeHtml(nextLine || '∅')}</div>
+    </div>`);
+  }
+
+  return rows.join('');
+}
+
+function getCurrentCompareId() {
+  return Number(localStorage.getItem(OPTIMIZE_COMPARE_KEY) || 0);
+}
+
+function setCurrentCompareId(id) {
+  localStorage.setItem(OPTIMIZE_COMPARE_KEY, String(id || 0));
+}
+
+function injectOptimizeUI() {
+  if (document.getElementById('optimize-tabs')) return;
+  const firstBuilderSection = document.getElementById('step-purpose');
+  if (!firstBuilderSection) return;
+
+  const tabs = document.createElement('section');
+  tabs.id = 'optimize-tabs';
+  tabs.className = 'mb-8';
+  tabs.innerHTML = `
+    <div class="flex justify-center">
+      <div class="inline-flex rounded-2xl border border-gray-200 bg-white p-1.5 shadow-sm">
+        <button onclick="switchMode('template')" id="tab-template" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
+          <i class="fas fa-th-large"></i>
+          <span>Template</span>
+        </button>
+        <button onclick="switchMode('builder')" id="tab-builder" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 active bg-brand-600 text-white">
+          <i class="fas fa-code"></i>
+          <span>Builder</span>
+        </button>
+        <button onclick="switchMode('optimize')" id="tab-optimize" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
+          <i class="fas fa-magic"></i>
+          <span>Optimize</span>
+        </button>
+      </div>
+    </div>
+  `;
+  firstBuilderSection.parentElement.insertBefore(tabs, firstBuilderSection);
+
+  const templatePanel = document.createElement('section');
+  templatePanel.id = 'template-workspace';
+  templatePanel.className = 'hidden mb-10';
+  templatePanel.innerHTML = `
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-3 text-brand-600">
+          <i class="fas fa-briefcase"></i>
+          <h3 class="font-semibold">Work Starter</h3>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed">Role, problem, and output schema are prefilled for office tasks.</p>
+      </div>
+      <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-3 text-brand-600">
+          <i class="fas fa-code"></i>
+          <h3 class="font-semibold">Builder Starter</h3>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed">Use harness fields when you need stronger constraints and structure.</p>
+      </div>
+      <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-3 text-brand-600">
+          <i class="fas fa-magic"></i>
+          <h3 class="font-semibold">Optimize Starter</h3>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed">Paste the prompt, paste the output, then improve the next version.</p>
+        <button onclick="switchMode('optimize')" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500">
+          Open Optimize
+        </button>
+      </div>
+    </div>
+  `;
+  firstBuilderSection.parentElement.insertBefore(templatePanel, firstBuilderSection);
+
+  const builderHelperPanel = document.createElement('section');
+  builderHelperPanel.id = 'builder-helper-panel';
+  builderHelperPanel.className = 'hidden mb-8';
+  builderHelperPanel.innerHTML = `
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <div class="xl:col-span-2 rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-semibold">Builder Starter Templates</h3>
+            <p class="text-sm text-gray-500">Pick a use case and jump straight into structured prompt building.</p>
+          </div>
+          <span class="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-700">Quick start</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${BUILDER_STARTERS.map((item, index) => `
+            <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+              <div class="flex items-center justify-between gap-3 mb-2">
+                <div class="font-semibold text-gray-900">${escapeHtml(item.title)}</div>
+                <button onclick="loadBuilderStarter(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">Use</button>
+              </div>
+              <div class="text-xs text-gray-500 leading-relaxed">${escapeHtml(item.description)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <i class="fas fa-clipboard-check text-brand-600"></i>
+          <h4 class="font-semibold">Builder Checklist</h4>
+        </div>
+        <ul class="space-y-2 text-sm text-gray-600 leading-relaxed">
+          <li>Describe the problem before the task.</li>
+          <li>Separate input data from instruction.</li>
+          <li>Specify the output schema.</li>
+          <li>Add a constraint for length and format.</li>
+          <li>Add one example if the task is unstable.</li>
+        </ul>
+      </div>
+    </div>
+  `;
+  firstBuilderSection.parentElement.insertBefore(builderHelperPanel, firstBuilderSection);
+
+  const optimizePanel = document.createElement('section');
+  optimizePanel.id = 'optimize-workspace';
+  optimizePanel.className = 'hidden mb-10';
+  optimizePanel.innerHTML = `
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <div class="xl:col-span-2 space-y-4">
+        <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-semibold">Optimize Mode</h3>
+              <p class="text-sm text-gray-500">Prompt -> Run -> Output -> Evaluate -> Improve -> Version</p>
+            </div>
+            <div class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              <span class="h-2 w-2 rounded-full bg-emerald-500"></span>loop ready
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">Prompt</label>
+              <textarea id="optimize-prompt" rows="12" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="Paste or draft the prompt to optimize."></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">Output</label>
+              <textarea id="optimize-output" rows="12" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="Paste the model output here."></textarea>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-2">Goal</label>
+            <input id="optimize-goal" type="text" class="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10" placeholder="What should the output have done better?" />
+          </div>
+          <div class="mt-5 flex flex-col sm:flex-row gap-3">
+            <button onclick="runOptimize()" id="optimize-run-btn" class="flex-1 rounded-2xl bg-brand-600 px-5 py-3 font-semibold text-white hover:bg-brand-500">
+              Run Optimize
+            </button>
+            <button onclick="saveOptimizeVersion()" class="rounded-2xl border border-gray-200 bg-white px-5 py-3 font-semibold text-gray-700 hover:bg-gray-50">
+              Save Version
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="font-semibold">Starter Templates</h4>
+              <p class="text-xs text-gray-500">Use these when you do not know where to start.</p>
+            </div>
+            <span class="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-700">Examples</span>
+          </div>
+          <div class="space-y-3" id="optimize-example-list">
+            ${OPTIMIZE_EXAMPLES.map((item, index) => `
+              <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                <div class="flex items-center justify-between gap-3 mb-2">
+                  <div class="font-semibold text-gray-900">${escapeHtml(item.title)}</div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="loadOptimizeExample(${index})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">Use</button>
+                    <button onclick="copyOptimizeExample(${index})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">Copy</button>
+                  </div>
+                </div>
+                <div class="text-xs text-gray-500 line-clamp-3">${escapeHtml(item.goal)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="font-semibold">Improved Prompt</h4>
+            <div class="flex items-center gap-2">
+              <button onclick="copyOptimizePrompt()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">Copy</button>
+              <button onclick="rollbackOptimizePrompt()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">Rollback</button>
+            </div>
+          </div>
+          <pre id="optimize-improved-prompt" class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4 text-sm leading-relaxed text-gray-800 min-h-[220px]"></pre>
+        </div>
+
+        <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h4 class="font-semibold">Version Diff</h4>
+              <p class="text-xs text-gray-500">Compare the selected version against the current session.</p>
+            </div>
+            <button onclick="clearOptimizeCompare()" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50">Clear</button>
+          </div>
+          <div id="optimize-diff" class="space-y-3">
+            <div class="rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">Select a version to compare.</div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <i class="fas fa-chart-simple text-brand-600"></i>
+            <h4 class="font-semibold">Optimize Summary</h4>
+          </div>
+          <div class="flex items-center gap-4 mb-4">
+            <div id="optimize-score" class="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-50 text-2xl font-black text-brand-700">0</div>
+            <div>
+              <div class="text-sm text-gray-500">Iteration Score</div>
+              <div id="optimize-status" class="font-semibold text-gray-900">Waiting</div>
+            </div>
+          </div>
+          <div id="optimize-issues" class="space-y-2 text-sm text-gray-700"></div>
+        </div>
+
+        <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <i class="fas fa-clipboard-check text-brand-600"></i>
+            <h4 class="font-semibold">Prompt Checklist</h4>
+          </div>
+          <ul class="space-y-2 text-sm text-gray-600 leading-relaxed">
+            <li>Define the problem before the task.</li>
+            <li>Separate input data from instructions.</li>
+            <li>Add format and length constraints.</li>
+            <li>Show the expected output schema.</li>
+            <li>Add one example when the task is unstable.</li>
+          </ul>
+        </div>
+
+        <div class="rounded-3xl border border-gray-200 bg-white text-gray-900 shadow-sm p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <i class="fas fa-link text-brand-600"></i>
+            <h4 class="font-semibold">Loop History</h4>
+          </div>
+          <div id="optimize-history" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  firstBuilderSection.parentElement.insertBefore(optimizePanel, document.getElementById('result-section'));
+
+  renderOptimizeHistory();
+}
+
+function setActiveModeTab(mode) {
+  document.querySelectorAll('.mode-btn').forEach((btn) => {
+    btn.classList.remove('active', 'bg-brand-600', 'text-white');
+    btn.classList.add('text-gray-700', 'hover:bg-gray-50');
+  });
+  const active = document.getElementById(`tab-${mode}`);
+  if (active) {
+    active.classList.add('active', 'bg-brand-600', 'text-white');
+    active.classList.remove('text-gray-700', 'hover:bg-gray-50');
+  }
+}
+
+function toggleSections(mode) {
+  const builderIds = ['step-purpose', 'recommendation-section', 'step-technique', 'step-fields', 'result-section'];
+  const templatePanel = document.getElementById('template-workspace');
+  const builderHelperPanel = document.getElementById('builder-helper-panel');
+  const optimizePanel = document.getElementById('optimize-workspace');
+  const showBuilder = mode === 'builder';
+  const showTemplate = mode === 'template';
+  const showOptimize = mode === 'optimize';
+
+  builderIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (id === 'result-section') {
+      if (!showBuilder) el.classList.add('hidden');
+      return;
+    }
+    el.classList.toggle('hidden', !showBuilder);
+  });
+  if (builderHelperPanel) builderHelperPanel.classList.toggle('hidden', !showBuilder);
+  if (templatePanel) templatePanel.classList.toggle('hidden', !showTemplate);
+  if (optimizePanel) optimizePanel.classList.toggle('hidden', !showOptimize);
+}
+
+function switchMode(mode) {
+  const nextMode = mode || 'builder';
+  if (typeof state !== 'undefined') state.mode = nextMode;
+  localStorage.setItem('pf_mode', nextMode);
+  setActiveModeTab(nextMode);
+  toggleSections(nextMode);
+
+  if (nextMode === 'template') {
+    const keywordInput = document.getElementById('keyword-input');
+    if (keywordInput) keywordInput.value = 'Product launch brief';
+  }
+}
+
+function initializeMode(mode) {
+  injectOptimizeUI();
+  switchMode(mode || localStorage.getItem('pf_mode') || 'builder');
+}
+
+function getOptimizeDraft() {
+  return getOptimizeSession();
+}
+
+async function runOptimize() {
+  const prompt = document.getElementById('optimize-prompt')?.value.trim() || '';
+  const output = document.getElementById('optimize-output')?.value.trim() || '';
+  const goal = document.getElementById('optimize-goal')?.value.trim() || '';
+  const btn = document.getElementById('optimize-run-btn');
+  if (!prompt || !output) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Optimizing...';
+
+  try {
+    const res = await fetch('/api/optimize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, output, goal }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    const session = {
+      prompt,
+      output,
+      goal,
+      result: data,
+      createdAt: new Date().toISOString(),
+    };
+    setOptimizeSession(session);
+    renderOptimizeResult(data);
+    if (typeof recordActivity === 'function') {
+      recordActivity('OPTIMIZE_RUN', {
+        score: data.score,
+        issues: data.issues || [],
+      });
+    }
+  } catch (error) {
+    document.getElementById('optimize-status').textContent = error.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Run Optimize';
+  }
+}
+
+function renderOptimizeResult(data) {
+  document.getElementById('optimize-score').textContent = data.score ?? 0;
+  document.getElementById('optimize-status').textContent = data.issues?.length ? 'Needs improvement' : 'Ready to iterate';
+  document.getElementById('optimize-improved-prompt').textContent = data.improvedPrompt || '';
+  const issues = data.issues || [];
+  const improvements = data.improvements || [];
+  const issueHtml = `
+    <div class="rounded-2xl bg-gray-50 p-3">
+      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">Issues</div>
+      <div class="space-y-1">
+        ${issues.length ? issues.map((issue) => `<div class="flex items-start gap-2 text-sm text-gray-700"><i class="fas fa-circle-xmark mt-0.5 text-red-500"></i><span>${escapeHtml(issue)}</span></div>`).join('') : '<div class="text-sm text-gray-500">No issues detected.</div>'}
+      </div>
+    </div>
+    <div class="rounded-2xl bg-gray-50 p-3">
+      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">Improvements</div>
+      <div class="space-y-1">
+        ${improvements.length ? improvements.map((item) => `<div class="flex items-start gap-2 text-sm text-gray-700"><i class="fas fa-arrow-right mt-0.5 text-brand-600"></i><span>${escapeHtml(item)}</span></div>`).join('') : '<div class="text-sm text-gray-500">No improvements yet.</div>'}
+      </div>
+    </div>
+    <div class="rounded-2xl bg-brand-50 p-3">
+      <div class="text-[10px] uppercase tracking-[0.2em] text-brand-600 mb-2">Next Action</div>
+      <div class="text-sm text-brand-900">${escapeHtml(data.nextAction || 'Run the revised prompt again.')}</div>
+    </div>
+  `;
+  document.getElementById('optimize-issues').innerHTML = issueHtml;
+
+  const session = getOptimizeSession();
+  if (session?.prompt) {
+    renderOptimizeCurrentDiff(session, data);
+  }
+}
+
+function saveOptimizeVersion() {
+  const session = getOptimizeSession();
+  if (!session.prompt || !session.result) return;
+  const history = getOptimizeHistory();
+  const entry = {
+    id: Date.now(),
+    version: history.length + 1,
+    prompt: session.result.improvedPrompt || session.prompt,
+    basePrompt: session.prompt || '',
+    improvedPrompt: session.result.improvedPrompt || session.prompt || '',
+    goal: session.goal || '',
+    output: session.output || '',
+    issues: session.result.issues || [],
+    improvements: session.result.improvements || [],
+    score: session.result.score ?? 0,
+    createdAt: new Date().toLocaleString('ko-KR'),
+  };
+  history.unshift(entry);
+  saveOptimizeHistory(history);
+  renderOptimizeHistory();
+  setCurrentCompareId(entry.id);
+  renderOptimizeDiff(entry);
+}
+
+function renderOptimizeHistory() {
+  const container = document.getElementById('optimize-history');
+  if (!container) return;
+  const history = getOptimizeHistory();
+  if (!history.length) {
+    container.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">No optimize versions yet.</div>';
+    return;
+  }
+  container.innerHTML = history.slice(0, 5).map((item) => `
+    <div class="w-full text-left rounded-2xl border border-gray-200 bg-gray-50 p-4 transition hover:border-brand-300 hover:bg-white">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-semibold text-gray-900">v${item.version}</div>
+        <div class="text-xs text-gray-500">${item.score}%</div>
+      </div>
+      <div class="text-xs text-gray-500 mb-2">${escapeHtml(item.createdAt || '')}</div>
+      <div class="text-sm text-gray-700 line-clamp-2">${escapeHtml(item.prompt || '')}</div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button onclick="loadOptimizeVersion(${item.id})" class="rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-500">Load</button>
+        <button onclick="compareOptimizeVersion(${item.id})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">Compare</button>
+        <button onclick="rollbackOptimizeVersion(${item.id})" class="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-white">Rollback</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderOptimizeDiff(entry) {
+  const diffContainer = document.getElementById('optimize-diff');
+  if (!diffContainer || !entry) return;
+  const current = getOptimizeSession();
+  const beforeText = entry.basePrompt || entry.prompt || '';
+  const afterText = current?.result?.improvedPrompt || current?.prompt || entry.improvedPrompt || entry.prompt || '';
+  diffContainer.innerHTML = `
+    <div class="rounded-2xl bg-gray-50 p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Selected Version</div>
+        <div class="text-xs text-gray-500">v${entry.version}</div>
+      </div>
+      <div class="text-sm text-gray-700">${escapeHtml(entry.goal || 'No goal stored.')}</div>
+    </div>
+    <div class="rounded-2xl border border-gray-200 overflow-hidden">
+      <div class="grid grid-cols-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 bg-gray-50 border-b border-gray-200">
+        <div class="px-3 py-2">Before</div>
+        <div class="px-3 py-2">After</div>
+      </div>
+      <div class="p-3 space-y-2 max-h-[360px] overflow-auto">
+        ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">No diff available.</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function renderOptimizeCurrentDiff(session, data) {
+  const diffContainer = document.getElementById('optimize-diff');
+  if (!diffContainer) return;
+  const beforeText = session.prompt || '';
+  const afterText = data?.improvedPrompt || '';
+  diffContainer.innerHTML = `
+    <div class="rounded-2xl bg-gray-50 p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Current Session</div>
+        <div class="text-xs text-gray-500">live preview</div>
+      </div>
+      <div class="text-sm text-gray-700">${escapeHtml(session.goal || 'No goal stored.')}</div>
+    </div>
+    <div class="rounded-2xl border border-gray-200 overflow-hidden">
+      <div class="grid grid-cols-2 text-[10px] uppercase tracking-[0.2em] text-gray-500 bg-gray-50 border-b border-gray-200">
+        <div class="px-3 py-2">Before</div>
+        <div class="px-3 py-2">After</div>
+      </div>
+      <div class="p-3 space-y-2 max-h-[360px] overflow-auto">
+        ${buildInlineDiff(beforeText, afterText) || '<div class="text-sm text-gray-500">No diff available.</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function clearOptimizeCompare() {
+  localStorage.removeItem(OPTIMIZE_COMPARE_KEY);
+  const diffContainer = document.getElementById('optimize-diff');
+  if (!diffContainer) return;
+  diffContainer.innerHTML = '<div class="rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">Select a version to compare.</div>';
+}
+
+function loadOptimizeVersion(id) {
+  const entry = getOptimizeHistory().find((item) => item.id === id);
+  if (!entry) return;
+  document.getElementById('optimize-prompt').value = entry.basePrompt || entry.prompt || '';
+  document.getElementById('optimize-goal').value = entry.goal || '';
+  document.getElementById('optimize-output').value = entry.output || '';
+  document.getElementById('optimize-improved-prompt').textContent = entry.improvedPrompt || entry.prompt || '';
+  document.getElementById('optimize-score').textContent = entry.score ?? 0;
+  document.getElementById('optimize-status').textContent = 'Loaded from history';
+  setCurrentCompareId(id);
+  renderOptimizeDiff(entry);
+}
+
+function compareOptimizeVersion(id) {
+  const entry = getOptimizeHistory().find((item) => item.id === id);
+  if (!entry) return;
+  setCurrentCompareId(id);
+  renderOptimizeDiff(entry);
+}
+
+function rollbackOptimizePrompt() {
+  const session = getOptimizeSession();
+  if (!session?.prompt) return;
+  document.getElementById('optimize-prompt').value = session.prompt || '';
+  document.getElementById('optimize-output').value = session.output || '';
+  document.getElementById('optimize-goal').value = session.goal || '';
+  document.getElementById('optimize-status').textContent = 'Rolled back to current session';
+}
+
+function rollbackOptimizeVersion(id) {
+  const entry = getOptimizeHistory().find((item) => item.id === id);
+  if (!entry) return;
+  document.getElementById('optimize-prompt').value = entry.basePrompt || entry.prompt || '';
+  document.getElementById('optimize-output').value = entry.output || '';
+  document.getElementById('optimize-goal').value = entry.goal || '';
+  document.getElementById('optimize-improved-prompt').textContent = entry.improvedPrompt || entry.prompt || '';
+  document.getElementById('optimize-score').textContent = entry.score ?? 0;
+  document.getElementById('optimize-status').textContent = 'Rolled back to selected version';
+
+  const session = {
+    prompt: entry.basePrompt || entry.prompt || '',
+    output: entry.output || '',
+    goal: entry.goal || '',
+    result: {
+      score: entry.score ?? 0,
+      issues: entry.issues || [],
+      improvements: entry.improvements || [],
+      improvedPrompt: entry.improvedPrompt || entry.prompt || '',
+      nextAction: 'Run Optimize again after rollback.',
+    },
+    createdAt: new Date().toISOString(),
+  };
+  setOptimizeSession(session);
+  setCurrentCompareId(id);
+  renderOptimizeDiff(entry);
+}
+
+async function loadBuilderStarter(index) {
+  const item = BUILDER_STARTERS[index];
+  if (!item) return;
+  switchMode('builder');
+
+  if (typeof selectPurpose === 'function') {
+    selectPurpose(item.purpose);
+  } else {
+    state.purpose = item.purpose;
+    const keywordSection = document.getElementById('keyword-section');
+    if (keywordSection) keywordSection.classList.remove('hidden');
+  }
+
+  const keywordInput = document.getElementById('keyword-input');
+  if (keywordInput) keywordInput.value = item.keyword;
+
+  if (typeof selectTechniqueManual === 'function') {
+    await selectTechniqueManual(item.technique);
+  }
+
+  if (typeof state !== 'undefined') {
+    state.keyword = item.keyword;
+    state.techniqueId = item.technique;
+  }
+
+  const firstField = document.querySelector('.field-input');
+  if (firstField) firstField.focus();
+}
+
+function loadOptimizeExample(index) {
+  const item = OPTIMIZE_EXAMPLES[index];
+  if (!item) return;
+  switchMode('optimize');
+  const promptEl = document.getElementById('optimize-prompt');
+  const outputEl = document.getElementById('optimize-output');
+  const goalEl = document.getElementById('optimize-goal');
+  if (promptEl) promptEl.value = item.prompt;
+  if (outputEl) outputEl.value = item.output;
+  if (goalEl) goalEl.value = item.goal;
+  document.getElementById('optimize-status').textContent = 'Example loaded';
+}
+
+function copyOptimizeExample(index) {
+  const item = OPTIMIZE_EXAMPLES[index];
+  if (!item) return;
+  const text = [
+    'Prompt:',
+    item.prompt,
+    '',
+    'Output:',
+    item.output,
+    '',
+    'Goal:',
+    item.goal,
+  ].join('\n');
+  navigator.clipboard.writeText(text);
+}
+
+function copyOptimizePrompt() {
+  const text = document.getElementById('optimize-improved-prompt')?.textContent?.trim() || '';
+  if (!text) return;
+  navigator.clipboard.writeText(text);
+}
+
+window.switchMode = switchMode;
+window.initializeMode = initializeMode;
+window.runOptimize = runOptimize;
+window.saveOptimizeVersion = saveOptimizeVersion;
+window.copyOptimizePrompt = copyOptimizePrompt;
+window.loadOptimizeVersion = loadOptimizeVersion;
+window.compareOptimizeVersion = compareOptimizeVersion;
+window.rollbackOptimizeVersion = rollbackOptimizeVersion;
+window.clearOptimizeCompare = clearOptimizeCompare;
+window.rollbackOptimizePrompt = rollbackOptimizePrompt;
+window.loadBuilderStarter = loadBuilderStarter;
+window.loadOptimizeExample = loadOptimizeExample;
+window.copyOptimizeExample = copyOptimizeExample;

@@ -327,3 +327,156 @@ export function getPromptTips(techniqueId: string) {
   };
   return tipsMap[techniqueId] || [];
 }
+
+export function analyzePromptQualityEnhanced(prompt: string, fields: Record<string, string>) {
+  const text = String(prompt || '').trim();
+  const normalized = text.replace(/\s+/g, ' ');
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+
+  const checks: Array<{ key: string; label: string; passed: boolean; tip: string }> = [];
+  const suggestions: string[] = [];
+  const modelHints: Record<string, string[]> = { gpt: [], claude: [], gemini: [] };
+
+  let score = 0;
+  const total = 9;
+
+  const addCheck = (key: string, label: string, passed: boolean, tip: string, suggestion?: string) => {
+    checks.push({ key, label, passed, tip });
+    if (passed) score++;
+    else if (suggestion) suggestions.push(suggestion);
+  };
+
+  const hasRole = Boolean(fields.role || fields.role_detail || fields.project_name || /you are|as an?|role:/i.test(text));
+  addCheck(
+    'role',
+    'Role Definition',
+    hasRole,
+    hasRole ? 'Role is clearly defined.' : 'Role is missing or too generic.',
+    'Add a specific role or subject line.',
+  );
+
+  const taskText = String(fields.task || fields.project_goal || fields.goal || '').trim();
+  const hasTask = taskText.length > 30 || /output|analyze|generate|summarize|design|compare|evaluate|build|create|write/i.test(normalized);
+  addCheck(
+    'task',
+    'Task Specificity',
+    hasTask,
+    hasTask ? 'Task is specific enough.' : 'Task is too generic.',
+    'Rewrite the task with a clear objective and expected action.',
+  );
+
+  const hasOutput = Boolean(fields.output_format || /json|markdown|table|bullet|steps?|schema|format/i.test(text));
+  addCheck(
+    'output_format',
+    'Output Contract',
+    hasOutput,
+    hasOutput ? 'Output format is defined.' : 'Output format is missing.',
+    'Specify the output format explicitly.',
+  );
+
+  const hasConstraints = Boolean(fields.constraints || fields.input_guardrails || fields.output_guardrails || /must|should|avoid|do not|limit|at least|under|over/i.test(normalized));
+  addCheck(
+    'constraints',
+    'Constraints',
+    hasConstraints,
+    hasConstraints ? 'Constraints are present.' : 'Constraints are missing.',
+    'Add length, style, and exclusion rules.',
+  );
+
+  const hasContext = Boolean(fields.context || fields.expertise || fields.core_features || fields.project_goal || fields.project_name || lines.length > 4);
+  addCheck(
+    'context',
+    'Context Depth',
+    hasContext,
+    hasContext ? 'Context exists.' : 'Context is too thin.',
+    'Add background, examples, or project context.',
+  );
+
+  const ambiguous = [
+    /\b(something|someone|stuff|things|etc|whatever|good|nice|appropriate|maybe|possibly)\b/i,
+    /\b(적절|알아서|대충|등|기타|필요시|가능하면|아무거나)\b/i,
+  ].some((pattern) => pattern.test(normalized));
+  addCheck(
+    'ambiguity',
+    'Ambiguity',
+    !ambiguous,
+    ambiguous ? 'Ambiguous phrases detected.' : 'No obvious ambiguity detected.',
+    'Replace vague terms with concrete rules and examples.',
+  );
+
+  const repeatedLines = lines.filter((line, index) => lines.indexOf(line) !== index).length;
+  const tokenWaste = normalized.length > 1200 || repeatedLines > 0 || /very very|please please/i.test(normalized);
+  addCheck(
+    'token_waste',
+    'Token Efficiency',
+    !tokenWaste,
+    tokenWaste ? 'The prompt likely repeats itself or is too long.' : 'No major token waste detected.',
+    'Remove repeated text and compress redundant sections.',
+  );
+
+  const hasFailure = Boolean(fields.rollback_plan || fields.feedback_loop || /failure|rollback|fallback|retry|if .* fails/i.test(normalized));
+  addCheck(
+    'failure_boundaries',
+    'Failure Boundaries',
+    hasFailure,
+    hasFailure ? 'Failure handling exists.' : 'Failure handling is missing.',
+    'Add what should happen when the first attempt fails.',
+  );
+
+  const hasTone = Boolean(fields.tone);
+  addCheck(
+    'tone',
+    'Tone',
+    hasTone,
+    hasTone ? 'Tone is defined.' : 'Tone is not defined.',
+    'Add tone only if it affects output quality.',
+  );
+
+  const hasModelTarget = Boolean(fields.model_target);
+  addCheck(
+    'model_target',
+    'Model Targeting',
+    hasModelTarget,
+    hasModelTarget ? 'A model target is set.' : 'No model target is set.',
+    'Set a target model when you want a model-specific rewrite.',
+  );
+
+  if (!hasRole) {
+    modelHints.gpt.push('Start with a clear role or subject line.');
+    modelHints.claude.push('Add role plus a fuller context block.');
+    modelHints.gemini.push('Use a direct instruction with a defined role.');
+  }
+  if (!hasOutput) {
+    modelHints.gpt.push('Use bullets or steps for the output shape.');
+    modelHints.claude.push('Describe the output shape in natural language.');
+    modelHints.gemini.push('State the output contract explicitly.');
+  }
+  if (!hasConstraints) {
+    modelHints.gpt.push('Add guardrails and a length limit.');
+    modelHints.claude.push('Keep constraints separate from context.');
+    modelHints.gemini.push("Use concise do/don't rules.");
+  }
+
+  const percentage = Math.round((score / total) * 100);
+  let grade: 'S' | 'A' | 'B' | 'C' | 'D' = 'D';
+  if (percentage >= 85) grade = 'S';
+  else if (percentage >= 70) grade = 'A';
+  else if (percentage >= 55) grade = 'B';
+  else if (percentage >= 40) grade = 'C';
+
+  const failedLabels = checks.filter((check) => !check.passed).map((check) => check.label);
+  const summary = failedLabels.length
+    ? `Weak points: ${failedLabels.slice(0, 3).join(', ')}${failedLabels.length > 3 ? ' and more' : ''}.`
+    : 'Prompt structure looks solid.';
+
+  return {
+    checks,
+    score,
+    total,
+    percentage,
+    grade,
+    summary,
+    suggestions,
+    modelHints,
+  };
+}

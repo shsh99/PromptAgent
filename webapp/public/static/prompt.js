@@ -63,7 +63,23 @@ function displayResult(data) {
   document.getElementById('quality-score').textContent = qr.percentage;
   const labels = { S: '최상급 프롬프트!', A: '매우 좋은 프롬프트', B: '보통 이상의 프롬프트', C: '개선 필요', D: '많은 개선 필요' };
   document.getElementById('quality-label').textContent = labels[qr.grade] || '';
-  document.getElementById('quality-checks').innerHTML = qr.checks.map(c => `
+  const qualityChecksHtml = `
+    <div class="mb-3 rounded-xl border border-gray-800 bg-gray-950/60 p-3">
+      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-1">Summary</div>
+      <div class="text-xs text-gray-300 leading-relaxed">${escapeHtml(qr.summary || 'No summary available.')}</div>
+      ${(qr.suggestions || []).length ? `
+        <div class="mt-2 text-[10px] uppercase tracking-[0.2em] text-gray-500">Next Fixes</div>
+        <ul class="mt-1 space-y-1 text-xs text-gray-400">
+          ${(qr.suggestions || []).slice(0, 4).map((s) => `
+            <li class="flex items-start gap-2">
+              <i class="fas fa-arrow-right text-brand-500 mt-0.5 flex-shrink-0"></i>
+              <span>${escapeHtml(s)}</span>
+            </li>`).join('')}
+        </ul>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('quality-checks').innerHTML = qualityChecksHtml + qr.checks.map(c => `
     <div class="flex items-start gap-2 text-xs">
       <div class="mt-0.5 flex-shrink-0">${c.passed ? '<i class="fas fa-circle-check text-green-400"></i>' : '<i class="fas fa-circle-xmark text-gray-600"></i>'}</div>
       <div>
@@ -71,7 +87,10 @@ function displayResult(data) {
         <span class="text-gray-600 ml-1">- ${c.tip}</span>
       </div>
     </div>`).join('');
-  document.getElementById('tips-list').innerHTML = data.tips.map(t => `
+  const modelHints = qr.modelHints || {};
+  const modelHintItems = Object.entries(modelHints)
+    .flatMap(([model, hints]) => (hints || []).slice(0, 2).map((hint) => `${model.toUpperCase()}: ${hint}`));
+  document.getElementById('tips-list').innerHTML = [...data.tips, ...modelHintItems].map(t => `
     <li class="flex items-start gap-2">
       <i class="fas fa-angle-right text-brand-500 mt-0.5 flex-shrink-0"></i><span>${t}</span>
     </li>`).join('');
