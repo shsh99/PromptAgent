@@ -18,6 +18,7 @@ This file tells future agents how to work in this repository without needing to 
 3. Prefer reusable helper functions over duplicated prompt logic.
 4. If a new feature needs persistence, define the storage model first.
 5. Keep UI copy short and actionable.
+6. Before each deployment, prepend a release note entry in `webapp/public/static/changelog.js`.
 
 ## Product Rules
 

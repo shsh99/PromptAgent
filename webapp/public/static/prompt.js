@@ -47,7 +47,7 @@ function displayResult(data) {
   const section = document.getElementById('result-section');
   section.classList.remove('hidden');
   document.getElementById('result-prompt').textContent = data.prompt;
-  document.getElementById('result-technique-name').textContent = `${data.technique.name} (${data.technique.nameEn})`;
+  document.getElementById('result-technique-name').textContent = data.technique.name;
 
   const qr = data.qualityReport;
   const gradeEl = document.getElementById('quality-grade');
@@ -65,10 +65,10 @@ function displayResult(data) {
   document.getElementById('quality-label').textContent = labels[qr.grade] || '';
   const qualityChecksHtml = `
     <div class="mb-3 rounded-xl border border-gray-800 bg-gray-950/60 p-3">
-      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-1">Summary</div>
-      <div class="text-xs text-gray-300 leading-relaxed">${escapeHtml(qr.summary || 'No summary available.')}</div>
+      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-1">요약</div>
+      <div class="text-xs text-gray-300 leading-relaxed">${escapeHtml(qr.summary || '요약이 없습니다.')}</div>
       ${(qr.suggestions || []).length ? `
-        <div class="mt-2 text-[10px] uppercase tracking-[0.2em] text-gray-500">Next Fixes</div>
+        <div class="mt-2 text-[10px] uppercase tracking-[0.2em] text-gray-500">다음 개선점</div>
         <ul class="mt-1 space-y-1 text-xs text-gray-400">
           ${(qr.suggestions || []).slice(0, 4).map((s) => `
             <li class="flex items-start gap-2">

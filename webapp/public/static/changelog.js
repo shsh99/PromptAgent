@@ -6,6 +6,16 @@
 
 const CHANGELOG_ITEMS = [
   {
+    date: '26.03.31',
+    version: 'v2.4',
+    items: [
+      { tag: 'new',      text: '한국어 기본 UI와 라이트/다크 테마 전환을 추가.' },
+      { tag: 'new',      text: '프로젝트 설계용과 진행 중 질문용 시작 템플릿을 분리.' },
+      { tag: 'improve',  text: '예시, 도움말, 최적화 화면을 더 단순하고 읽기 쉽게 정리.' },
+      { tag: 'fix',      text: '라이트 모드 색상과 그림자 톤을 더 자연스럽게 조정.' },
+    ],
+  },
+  {
     date: '26.03.30',
     version: 'v2.3',
     items: [

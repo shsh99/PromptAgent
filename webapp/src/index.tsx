@@ -49,14 +49,14 @@ app.get('/', (c) => {
           <div class="space-y-4">
             <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">
               <i class="fas fa-wand-magic-sparkles"></i>
-              프롬프트를 몰라도 AI를 잘 쓰게 만드는 플랫폼
+              프롬프트를 몰라도 AI를 잘 쓰게 만드는 구조 설계 플랫폼
             </div>
             <h2 class="text-4xl font-black leading-tight text-white sm:text-5xl">
               업무 템플릿으로 쉽게 시작하고, <br class="hidden sm:block" />
               <span class="bg-gradient-to-r from-brand-300 to-cyan-300 bg-clip-text text-transparent">빌더로 직접 설계하고 최적화로 품질을 높이세요</span>
             </h2>
             <p class="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-              복잡한 프롬프트를 외울 필요 없이 시작할 수 있고, 빌더로 직접 설계한 뒤 최적화 루프로 품질을 계속 높일 수 있습니다.
+              프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
             </p>
             <div class="flex flex-wrap gap-3">
               <button onclick="switchMode('template')" class="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10 hover:bg-slate-100">
@@ -71,21 +71,34 @@ app.get('/', (c) => {
             </div>
           </div>
 
-          <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">시작</div>
-              <div class="mt-2 text-sm font-semibold text-white">업무 템플릿</div>
-              <p class="mt-1 text-xs leading-6 text-slate-300">자주 쓰는 일을 바로 시작할 수 있게 도와줍니다.</p>
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">바로 시작</div>
+                <div class="mt-2 text-lg font-semibold text-white">무엇을 먼저 하시나요?</div>
+                <p class="mt-1 text-sm leading-6 text-slate-300">처음이면 템플릿, 새 프로젝트면 설계, 진행 중이면 질문부터 시작하세요.</p>
+              </div>
+              <div class="hidden h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-300 sm:flex">
+                <i class="fas fa-compass text-xl"></i>
+              </div>
             </div>
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">설계</div>
-              <div class="mt-2 text-sm font-semibold text-white">빌더</div>
-              <p class="mt-1 text-xs leading-6 text-slate-300">문제, 입력, 구조, 출력까지 직접 설계합니다.</p>
-            </div>
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">개선</div>
-              <div class="mt-2 text-sm font-semibold text-white">최적화</div>
-              <p class="mt-1 text-xs leading-6 text-slate-300">결과를 보고 다음 버전을 더 좋게 만듭니다.</p>
+            <div class="mt-5 grid gap-3">
+              <button onclick="switchMode('template')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/10">
+                <div class="text-sm font-semibold text-white">업무 템플릿으로 시작</div>
+                <div class="mt-1 text-xs leading-5 text-slate-400">자소서, 회의 요약, 코드 리뷰처럼 자주 쓰는 작업을 빠르게 시작합니다.</div>
+              </button>
+              <button onclick="loadBuilderStarter(0)" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/10">
+                <div class="text-sm font-semibold text-white">새 프로젝트 설계</div>
+                <div class="mt-1 text-xs leading-5 text-slate-400">문제 정의, 목표, 산출물, 구조를 먼저 잡는 프롬프트로 바로 들어갑니다.</div>
+              </button>
+              <button onclick="loadBuilderStarter(1)" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/10">
+                <div class="text-sm font-semibold text-white">진행 중 질문 정리</div>
+                <div class="mt-1 text-xs leading-5 text-slate-400">프로젝트를 하다가 여러 번 묻는 질문을 구조화해서 바로 사용할 수 있습니다.</div>
+              </button>
+              <button onclick="switchMode('optimize')" class="rounded-2xl border border-brand-400/20 bg-brand-500/10 px-4 py-3 text-left transition hover:bg-brand-500/15">
+                <div class="text-sm font-semibold text-brand-200">이미 만든 프롬프트 개선</div>
+                <div class="mt-1 text-xs leading-5 text-brand-100/80">결과를 넣고 문제를 분석해 다음 버전으로 고칩니다.</div>
+              </button>
             </div>
           </div>
         </section>

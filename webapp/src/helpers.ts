@@ -61,7 +61,7 @@ export function getTargetUser(purpose: string): string {
 export function getTechStack(purpose: string): string {
   const map: Record<string, string> = {
     'web-app':       'React, TypeScript, Hono, Tailwind CSS, Cloudflare Pages, D1(SQLite)',
-    'mobile-app':    'React Native (또는 Flutter), TypeScript, Expo, Firebase',
+    'mobile-app':    'React Native 또는 Flutter, TypeScript, Expo, Firebase',
     'ai-tool':       'Python, FastAPI, LangChain, OpenAI API, React 프론트엔드',
     'data-analysis': 'Python, Pandas, Matplotlib, Streamlit, SQL',
     'automation':    'Node.js, GitHub Actions, Docker, REST API',
@@ -442,19 +442,19 @@ export function analyzePromptQualityEnhanced(prompt: string, fields: Record<stri
   );
 
   if (!hasRole) {
-    modelHints.gpt.push('Start with a clear role or subject line.');
-    modelHints.claude.push('Add role plus a fuller context block.');
-    modelHints.gemini.push('Use a direct instruction with a defined role.');
+    modelHints.gpt.push('명확한 역할이나 주제 문장으로 시작하세요.');
+    modelHints.claude.push('역할과 충분한 맥락 블록을 함께 넣으세요.');
+    modelHints.gemini.push('역할이 분명한 직접 지시문을 사용하세요.');
   }
   if (!hasOutput) {
-    modelHints.gpt.push('Use bullets or steps for the output shape.');
-    modelHints.claude.push('Describe the output shape in natural language.');
-    modelHints.gemini.push('State the output contract explicitly.');
+    modelHints.gpt.push('출력 형태를 글머리표나 단계로 정리하세요.');
+    modelHints.claude.push('출력 형태를 자연스러운 문장으로 설명하세요.');
+    modelHints.gemini.push('출력 규칙을 명시적으로 적으세요.');
   }
   if (!hasConstraints) {
-    modelHints.gpt.push('Add guardrails and a length limit.');
-    modelHints.claude.push('Keep constraints separate from context.');
-    modelHints.gemini.push("Use concise do/don't rules.");
+    modelHints.gpt.push('가드레일과 길이 제한을 추가하세요.');
+    modelHints.claude.push('제약 조건은 맥락과 분리해서 적으세요.');
+    modelHints.gemini.push('짧은 해야 할 것/하지 말아야 할 것을 쓰세요.');
   }
 
   const percentage = Math.round((score / total) * 100);
@@ -466,8 +466,8 @@ export function analyzePromptQualityEnhanced(prompt: string, fields: Record<stri
 
   const failedLabels = checks.filter((check) => !check.passed).map((check) => check.label);
   const summary = failedLabels.length
-    ? `Weak points: ${failedLabels.slice(0, 3).join(', ')}${failedLabels.length > 3 ? ' and more' : ''}.`
-    : 'Prompt structure looks solid.';
+    ? `약한 부분: ${failedLabels.slice(0, 3).join(', ')}${failedLabels.length > 3 ? ' 외' : ''}`
+    : '프롬프트 구조가 안정적입니다.';
 
   return {
     checks,

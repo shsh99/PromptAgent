@@ -5,71 +5,85 @@ const OPTIMIZE_SESSION_KEY = 'pf_optimize_session';
 const OPTIMIZE_COMPARE_KEY = 'pf_optimize_compare';
 const OPTIMIZE_EXAMPLES = [
   {
-    title: '문제 정의',
-    prompt: 'You are helping improve a marketing prompt. The issue is low conversion among 20s male users. Define the problem, the target audience, the KPI, and the expected output format before giving the final answer.',
-    output: 'The result should be a short campaign brief with a clear angle, target audience, measurable KPI, and 3 action items.',
-    goal: '작업이 아니라 문제 정의부터 시작하도록 바꾸기.',
+    title: '프로젝트 설계',
+    prompt: '신규 서비스를 기획하는 프로젝트입니다. 먼저 문제를 정의하고, 대상 사용자, 목표 KPI, 필요한 산출물, 출력 형식을 정리한 뒤 최종 답변을 작성하세요.',
+    output: '문제 정의, 대상 사용자, KPI, 핵심 기능, 실행 계획이 포함된 프로젝트 브리프로 출력하세요.',
+    goal: '처음 만드는 프롬프트에서 문제와 목표를 먼저 보이게 하기.',
+  },
+  {
+    title: '진행 중 질문',
+    prompt: '현재 프로젝트 진행 상황을 바탕으로 다음에 확인해야 할 질문을 3개만 정리하세요. 각 질문은 맥락, 필요한 정보, 기대 답변 형식까지 포함해야 합니다.',
+    output: '질문 3개를 목록으로 출력하고, 각 질문마다 왜 필요한지 한 줄로 설명하세요.',
+    goal: '프로젝트 진행 중 여러 번 묻는 질문을 빠르게 정리하기.',
   },
   {
     title: '구조화 출력',
-    prompt: 'Act as a product manager. Analyze the feature request and return the result as JSON with title, summary, risks, and action_items.',
-    output: 'Return valid JSON only. Do not add commentary outside the schema.',
-    goal: '출력 구조를 고정해 결과 흔들림을 줄이기.',
-  },
-  {
-    title: '사고 과정과 제약',
-    prompt: 'Review the bug report, think step by step, identify the root cause, and propose a fix plan. Keep the final answer under 8 bullets.',
-    output: 'Provide the diagnosis first, then the fix plan, then the verification steps.',
-    goal: '사고 과정과 강한 제약을 넣기.',
+    prompt: '기획 요청을 분석하고, 결과를 title, summary, risks, action_items가 있는 JSON 형태로만 반환하세요.',
+    output: 'JSON 외의 설명은 넣지 마세요.',
+    goal: '출력 구조를 고정해 결과가 흔들리지 않게 만들기.',
   },
   {
     title: '코드 리뷰',
-    prompt: 'You are a senior engineer reviewing this pull request. Identify correctness issues, maintainability risks, and missing tests. Return the result in a table.',
-    output: 'Return only 3 sections: issues, impact, fix suggestion.',
-    goal: '리뷰를 실행 가능한 구조로 바꾸기.',
+    prompt: '시니어 엔지니어 관점에서 이 PR을 리뷰하세요. 정확성 문제, 유지보수 위험, 누락된 테스트를 먼저 찾고 표 형식으로 정리하세요.',
+    output: '문제, 영향, 수정 제안을 3개 섹션으로 나눠서 출력하세요.',
+    goal: '리뷰를 바로 실행 가능한 구조로 바꾸기.',
   },
   {
     title: '회의 요약',
-    prompt: 'Summarize the meeting notes into decisions, open questions, and next actions. Keep the tone concise and practical.',
-    output: 'Return a 3-part summary with clear action items and owners.',
+    prompt: '회의 메모를 결정 사항, 남은 질문, 다음 행동으로 정리하세요. 문장은 짧고 실무적으로 유지하세요.',
+    output: '결정 사항, 질문, 다음 행동을 각각 나눠서 출력하세요.',
     goal: '원본 메모를 재사용 가능한 요약 형식으로 바꾸기.',
   },
   {
     title: '마케팅 초안',
-    prompt: 'Write a campaign draft for a product launch. Start with the audience problem, define the offer, then produce 3 headline options and 3 CTA options.',
-    output: 'Include audience, problem, hook, headlines, and CTA in a structured format.',
+    prompt: '신제품 런칭용 캠페인 초안을 작성하세요. 먼저 대상의 문제를 정의하고, 제안 가치와 문구 후보를 구조적으로 정리하세요.',
+    output: '대상, 문제, 핵심 메시지, 헤드라인, CTA를 구조화된 형태로 출력하세요.',
     goal: '전환 중심 구조와 출력 형식을 강화하기.',
   },
 ];
 
 const BUILDER_STARTERS = [
   {
-    title: '마케팅 브리프',
+    title: '프로젝트 설계',
     purpose: 'content',
-    keyword: 'Product launch brief',
+    keyword: '신규 서비스 기획',
     technique: 'harness',
-    description: '대상, 문제, 출력 형식을 먼저 채워 마케팅 작업을 시작합니다.',
+    description: '문제, 대상, KPI, 산출물을 먼저 채워 새 프로젝트의 골격을 잡습니다.',
+  },
+  {
+    title: '진행 중 질문',
+    purpose: 'web-app',
+    keyword: '프로젝트 진행 중 확인 질문',
+    technique: 'context-engineering',
+    description: '이미 진행 중인 프로젝트에서 다음에 물어볼 질문을 정리합니다.',
   },
   {
     title: '코드 리뷰',
     purpose: 'web-app',
-    keyword: 'Pull request review',
+    keyword: '풀 리퀘스트 리뷰',
     technique: 'harness',
     description: '리스크, 확인 항목, 수정 제안을 포함한 리뷰 프롬프트입니다.',
   },
   {
     title: '회의 메모',
     purpose: 'custom',
-    keyword: 'Meeting summary',
+    keyword: '회의 요약',
     technique: 'few-shot',
     description: '메모를 결정 사항, 실행 항목, 담당자로 정리합니다.',
   },
   {
     title: '버그 분류',
     purpose: 'web-app',
-    keyword: 'Bug triage brief',
+    keyword: '버그 분류 브리프',
     technique: 'chain-of-thought',
     description: '문제를 정의하고 원인을 추론한 뒤 실행 계획을 만듭니다.',
+  },
+  {
+    title: '마케팅 브리프',
+    purpose: 'content',
+    keyword: '신제품 런칭 브리프',
+    technique: 'role-prompting',
+    description: '전환을 목표로 하는 마케팅용 하네스를 빠르게 시작합니다.',
   },
 ];
 
@@ -422,7 +436,7 @@ function switchMode(mode) {
 
   if (nextMode === 'template') {
     const keywordInput = document.getElementById('keyword-input');
-    if (keywordInput) keywordInput.value = 'Product launch brief';
+    if (keywordInput) keywordInput.value = '신제품 런칭 브리프';
   }
 }
 

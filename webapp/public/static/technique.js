@@ -100,7 +100,7 @@ function displayRecommendation(data) {
         </div>
         <div>
           <div class="text-sm font-semibold text-white group-hover:text-brand-300">${p.name}</div>
-          <div class="text-[10px] text-gray-500 font-mono">${p.nameEn}</div>
+          <div class="text-[10px] text-gray-500">${p.description}</div>
         </div>
       </div>
       <div class="mt-2 text-[10px] text-brand-400 flex items-center gap-1">
@@ -170,7 +170,6 @@ async function loadTechniques() {
               <span class="text-[10px] px-1.5 py-0.5 rounded-full ${dc}">${t.difficulty}</span>
             </div>
             <div class="flex items-center gap-2 mb-1.5">
-              <span class="text-[10px] text-gray-600 font-mono">${t.nameEn}</span>
               <span class="text-[10px] px-1.5 py-0.5 rounded-full ${cc}">${catLabels[t.category] || ''}</span>
             </div>
             <div class="text-xs text-gray-500 line-clamp-2">${t.description}</div>

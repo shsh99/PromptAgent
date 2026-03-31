@@ -39,20 +39,22 @@ This folder is the working documentation for the PromptBuilder project.
 
 ## Current Product Shape
 
-PromptBuilder already has:
-- prompt generation
-- prompt improvement
+PromptBuilder is a structure-first platform for users who do not know how to write prompts well.
+
+It already has:
+- template-based starting points
+- harness-style prompt construction
+- result-driven prompt optimization
 - quality scoring
 - history and library storage
-- technique presets
-- optimize mode
+- version comparison and rollback
 - starter examples and helper guidance
 
 The next work should focus on:
-- deeper prompt analysis
+- better default Korean prompts
+- simpler onboarding for non-developers
+- more complete example input filling
 - model-specific rewriting
-- version comparison
 - feedback-driven improvement
 - reusable templates
-- better starter templates
 - inline examples and guidance
