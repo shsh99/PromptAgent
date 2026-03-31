@@ -1,42 +1,56 @@
 # PromptBuilder
 
-PromptBuilder는 프롬프트 생성, 개선, 최적화, 버전 관리를 한곳에서 다루는 무료 우선형 워크플로 도구입니다.
+프롬프트 생성, 개선, 최적화, 히스토리 관리, 관리자 분석까지 한 곳에서 다루는 PromptBuilder입니다.
 
-## 최신 배포
-
-- https://promptbuilder-df6.pages.dev/
-
-## 핵심 기능
+## 주요 기능
 
 - 템플릿 모드로 빠르게 시작
-- 빌더 모드로 세부 구조 직접 설계
+- 빌더 모드로 직접 프롬프트 설계
 - 최적화 모드로 기존 프롬프트 개선
 - 생성 결과 히스토리 저장
-- 버전 비교 및 재사용
-- 라이트 / 다크 모드 지원
-- 자유 건의 게시판
-- 관리자 로그 및 통계 확인
+- 건의사항 게시판
+- 관리자 전체화면 대시보드
+- 라이트/다크 테마
+- 모바일 드로어 메뉴
 
-## 관리자 페이지 접속 방법
+## 관리자 접속
 
-관리자 페이지는 별도 전용 URL이 아니라, 앱 상단의 `관리자` 버튼으로 전체화면 오버레이를 엽니다.
-
-접속 절차:
-
-1. 앱 상단의 `관리자` 버튼을 클릭합니다.
+1. 상단의 `관리자` 버튼을 누릅니다.
 2. 관리자 토큰을 입력합니다.
-3. 토큰이 유효하면 전체화면 관리자 대시보드가 열리고, 서버 로그와 통계를 볼 수 있습니다.
-4. `히스토리` 버튼은 사용자용 로컬 기록 확인용입니다.
-5. `건의` 버튼은 사용자 피드백과 개선 요청을 남기는 게시판입니다.
+3. 전체화면 관리자 대시보드가 열립니다.
 
-관리자 토큰은 서버 환경변수 `ADMIN_TOKEN`이 우선이며, 설정이 없으면 기본값 `promptbuilder-admin`을 사용합니다.
+기본 토큰은 `promptbuilder-admin`입니다.  
+서버 환경변수 `ADMIN_TOKEN`이 있으면 그 값이 우선됩니다.
 
-## 무료 운영 구조
+## 무료 영구 저장
 
-- 사용자 식별은 로그인 대신 UUID + 세션 기반으로 처리
-- 사용자 히스토리는 브라우저 localStorage에 저장
-- 활동 로그는 로컬 저장과 서버 로그를 함께 사용
-- 자동 배포는 끄고, 수동 배포만 사용
+무료 운영에서는 브라우저 `localStorage`와 Cloudflare D1을 함께 사용합니다.
+
+- 사용자 측 히스토리와 건의사항은 브라우저에 남습니다.
+- 서버 로그와 관리자 통계는 D1이 있으면 D1에 저장됩니다.
+
+### D1 연결 순서
+
+1. Cloudflare 대시보드에서 D1 데이터베이스를 생성합니다.
+2. Pages 프로젝트에 D1 바인딩을 추가합니다.
+3. 바인딩 이름은 `DB`를 사용합니다.
+4. `wrangler.toml`에 D1 정보를 넣습니다.
+5. 마이그레이션을 적용합니다.
+
+```bash
+npm run d1:migrate
+```
+
+또는 직접 실행할 수 있습니다.
+
+```bash
+wrangler d1 migrations apply DB --remote --config wrangler.toml
+```
+
+### 마이그레이션 파일
+
+- `migrations/0001_event_logs.sql`
+- `migrations/0002_prompt_history_and_suggestions.sql`
 
 ## 실행
 
@@ -52,40 +66,12 @@ npm run dev
 npm run deploy
 ```
 
-## 프로젝트 구조
+## 설정 파일
 
-```text
-webapp/
-  src/
-  public/static/
-docs/
-scripts/
-```
+- `wrangler.toml`
+- `wrangler.jsonc`는 기존 호환용으로 남겨둘 수 있습니다.
 
 ## 업데이트 로그
 
-배포 전에는 `webapp/public/static/changelog.js`의 최상단 항목을 최신 상태로 유지합니다.
-## 무료 영구 저장 설정
+최근 변경 내용은 `webapp/public/static/changelog.js`에서 확인할 수 있습니다.
 
-PromptBuilder는 브라우저 `localStorage`와 Cloudflare D1을 함께 사용할 수 있습니다.
-
-### 연결 순서
-
-1. Cloudflare 대시보드에서 D1 데이터베이스를 생성합니다.
-2. Pages 프로젝트 설정에서 D1 바인딩을 추가합니다.
-3. 바인딩 이름은 `DB`를 사용합니다.
-4. `migrations/0001_event_logs.sql`와 `migrations/0002_prompt_history_and_suggestions.sql`을 적용합니다.
-5. 배포 후 관리자 대시보드에서 히스토리 스레드와 건의사항이 보이는지 확인합니다.
-
-### 저장되는 데이터
-
-- 프롬프트 생성 / 개선 / 최적화 로그
-- 프롬프트 히스토리 스레드와 버전
-- 건의사항
-- 다운로드 / 복사 / 열람 같은 행동 로그
-
-### 동작 방식
-
-- `DB` 바인딩이 있으면 D1이 우선입니다.
-- D1 연결이 실패하면 메모리 fallback으로 동작합니다.
-- 사용자 브라우저 기록은 계속 `localStorage`에 남습니다.
