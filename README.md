@@ -9,7 +9,7 @@
 
 ## 최신 배포
 
-- [https://c8ed0096.promptbuilder-df6.pages.dev](https://c8ed0096.promptbuilder-df6.pages.dev)
+- [https://e23ccfc5.promptbuilder-df6.pages.dev](https://e23ccfc5.promptbuilder-df6.pages.dev)
 
 ## 프로젝트 개요
 
@@ -150,7 +150,7 @@ It is not an automatic prompt generator. It is a structure-first prompt platform
 
 ## Latest Deployment
 
-- [https://c8ed0096.promptbuilder-df6.pages.dev](https://c8ed0096.promptbuilder-df6.pages.dev)
+- [https://e23ccfc5.promptbuilder-df6.pages.dev](https://e23ccfc5.promptbuilder-df6.pages.dev)
 
 ## What It Does
 
