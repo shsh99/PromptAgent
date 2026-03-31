@@ -520,6 +520,13 @@ function closeHistory() {
   document.getElementById('history-modal').classList.add('hidden');
 }
 
+async function promptAdminToken() {
+  const token = prompt('관리자 토큰을 입력하세요.') || '';
+  if (!token.trim()) return;
+  setAdminToken(token.trim());
+  await showHistory();
+}
+
 function copyHistoryItem(threadId) {
   const item = loadHistoryThread(threadId);
   if (!item) return;
