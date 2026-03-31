@@ -5,6 +5,14 @@
   "pages_build_output_dir": "./dist",
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "promptbuilder-db",
+      "database_id": "2c5f96bc-d3ab-425b-95bf-ca834ec01d50",
+      "migrations_dir": "migrations"
+    }
   ]
   // "vars": {
   //   "MY_VAR": "my-variable"
