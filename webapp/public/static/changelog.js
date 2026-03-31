@@ -7,6 +7,33 @@
 const CHANGELOG_ITEMS = [
   {
     date: '26.03.31',
+    version: 'v3.5',
+    items: [
+      { tag: 'improve', text: '관리자 통계에 생성 수, 조회수, 복사 수, 다운로드 수, 주요 활동 패턴이 추가되었습니다.' },
+      { tag: 'improve', text: '히스토리 화면이 한국어 기준으로 다시 정리되어 로그와 통계를 더 쉽게 확인할 수 있습니다.' },
+      { tag: 'fix', text: '최신 배포가 README와 changelog의 상단 기준으로 반영되도록 정리했습니다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
+    version: 'v3.4',
+    items: [
+      { tag: 'improve', text: '관리자 통계가 생성, 조회, 최적화, 인기 유형까지 한 번에 보이도록 확장되었습니다.' },
+      { tag: 'improve', text: 'Template / Builder / Optimize 모드 전환도 활동 로그에 남기도록 보강했습니다.' },
+      { tag: 'improve', text: '프롬프트 등급, 복사, 다운로드 같은 운영 지표도 함께 확인할 수 있게 했습니다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
+    version: 'v3.3',
+    items: [
+      { tag: 'improve', text: '관리자 화면에 생성 수, 조회수, 최적화 수, 인기 유형 통계를 더 자세히 보여주도록 확장했습니다.' },
+      { tag: 'improve', text: '프롬프트 로그와 활동 로그의 상위 항목을 바로 볼 수 있게 정리했습니다.' },
+      { tag: 'improve', text: '로그 패널을 한국어 중심으로 재구성해 관리자가 기록을 더 쉽게 확인할 수 있게 했습니다.' },
+    ],
+  },
+  {
+    date: '26.03.31',
     version: 'v3.2',
     items: [
       { tag: 'improve', text: '선택 입력을 개별 삭제할 수 있게 해서 입력 흐름을 더 유연하게 만들었습니다.' },

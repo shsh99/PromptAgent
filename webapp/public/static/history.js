@@ -1,4 +1,4 @@
-// ===== history.js - 관리자 전용 서버 로그 =====
+// ===== history.js - 관리자 로그 / 활동 추적 =====
 
 const VISITOR_ID_KEY = 'pf_visitor_id';
 const ADMIN_TOKEN_KEY = 'pf_admin_token';
@@ -51,7 +51,7 @@ function sendLogEvent(kind, payload) {
       navigator.sendBeacon(url, blob);
       return;
     } catch {
-      // sendBeacon 실패 시 fetch로 폴백
+      // fallback to fetch
     }
   }
   fetch(url, {
@@ -122,6 +122,28 @@ async function fetchAdminLogs() {
   return res.json();
 }
 
+function renderStatCard(label, value, accent = '') {
+  return `
+    <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
+      <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">${label}</div>
+      <div class="mt-2 text-2xl font-bold ${accent || 'text-white'}">${value}</div>
+    </div>
+  `;
+}
+
+function renderListBlock(title, items) {
+  return `
+    <div class="rounded-2xl border border-gray-800 bg-gray-950/60 p-4">
+      <div class="mb-2 text-sm font-semibold text-white">${title}</div>
+      <div class="space-y-2 text-sm text-gray-300">
+        ${items.length
+          ? items.map((item) => `<div class="flex items-center justify-between"><span>${escapeHtml(item.key)}</span><span class="text-gray-500">${item.count}</span></div>`).join('')
+          : '<div class="text-gray-500">데이터 없음</div>'}
+      </div>
+    </div>
+  `;
+}
+
 function renderAdminPanel(data) {
   const promptLogs = data?.promptLogs || [];
   const activityLogs = data?.activityLogs || [];
@@ -162,27 +184,36 @@ function renderAdminPanel(data) {
         <div class="text-[10px] text-gray-600">${formatTime(entry.createdAt)}</div>
       </div>
     `).join('')
-    : '<div class="text-center py-8 text-gray-600 text-sm">활동 로그가 없습니다.</div>';
+    : '<div class="text-center py-8 text-gray-600 text-sm">수집된 활동 로그가 없습니다.</div>';
+
+  const topTechniques = (stats.topPromptTechniques || []).slice(0, 5);
+  const topPurposes = (stats.topPromptPurposes || []).slice(0, 5);
+  const topActivityTypes = (stats.topActivityTypes || []).slice(0, 5);
+  const gradeCounts = (stats.promptGradeCounts || []).map((item) => ({ key: item.key, count: item.count }));
 
   return `
-    <div class="grid grid-cols-2 gap-3 mb-5 sm:grid-cols-4">
-      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
-        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Prompt Logs</div>
-        <div class="mt-2 text-2xl font-bold text-white">${stats.promptCount || 0}</div>
-      </div>
-      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
-        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Activity Logs</div>
-        <div class="mt-2 text-2xl font-bold text-white">${stats.activityCount || 0}</div>
-      </div>
-      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
-        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Visitors</div>
-        <div class="mt-2 text-2xl font-bold text-white">${stats.visitorCount || 0}</div>
-      </div>
-      <div class="rounded-xl border border-gray-800 bg-gray-950/70 p-4">
-        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Token</div>
-        <div class="mt-2 text-sm font-semibold text-white">${tokenState}</div>
-      </div>
+    <div class="grid grid-cols-2 gap-3 mb-5 sm:grid-cols-3 xl:grid-cols-6">
+      ${renderStatCard('생성 수', stats.promptCount || 0)}
+      ${renderStatCard('조회수', stats.pageViewCount || 0)}
+      ${renderStatCard('최적화 수', stats.optimizeRunCount || 0)}
+      ${renderStatCard('활동 수', stats.activityCount || 0)}
+      ${renderStatCard('사용자 수', stats.visitorCount || 0)}
+      ${renderStatCard('Token', tokenState, 'text-white')}
     </div>
+
+    <div class="grid grid-cols-1 gap-3 mb-5 lg:grid-cols-3">
+      ${renderListBlock('인기 프롬프트 유형', topTechniques)}
+      ${renderListBlock('자주 쓰는 목적', topPurposes)}
+      ${renderListBlock('활동 패턴', topActivityTypes)}
+    </div>
+
+    <div class="grid grid-cols-1 gap-3 mb-5 lg:grid-cols-4">
+      ${renderListBlock('프롬프트 등급 분포', gradeCounts)}
+      ${renderStatCard('복사 수', stats.copyCount || 0)}
+      ${renderStatCard('다운로드 수', stats.downloadCount || 0)}
+      ${renderStatCard('생성 이벤트', stats.promptGenerateCount || 0)}
+    </div>
+
     <div class="grid grid-cols-1 gap-4">
       <section class="rounded-2xl border border-gray-800 bg-gray-950/60 p-4">
         <div class="mb-3 flex items-center justify-between">
@@ -203,7 +234,7 @@ function renderAdminPanel(data) {
 }
 
 async function showHistory() {
-  const token = getAdminToken() || prompt('관리자 토큰을 입력하세요') || '';
+  const token = getAdminToken() || prompt('관리자 토큰을 입력하세요.') || '';
   if (!token) return;
   setAdminToken(token);
 

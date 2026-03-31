@@ -47,10 +47,37 @@ function buildStats(store: LogStore) {
     ...store.promptLogs.map((log: any) => log.visitorId).filter(Boolean),
     ...store.activityLogs.map((log: any) => log.visitorId).filter(Boolean),
   ])
+
+  const countBy = (items: any[], keyFn: (item: any) => string) => {
+    const map = new Map<string, number>()
+    items.forEach((item) => {
+      const key = keyFn(item)
+      if (!key) return
+      map.set(key, (map.get(key) || 0) + 1)
+    })
+    return Array.from(map.entries())
+      .map(([key, count]) => ({ key, count }))
+      .sort((a, b) => b.count - a.count)
+  }
+
+  const activityByType = countBy(store.activityLogs, (log: any) => String(log.actionType || '').toUpperCase())
+  const promptByTechnique = countBy(store.promptLogs, (log: any) => String(log.technique || log.techniqueId || 'UNKNOWN'))
+  const promptByPurpose = countBy(store.promptLogs, (log: any) => String(log.purpose || 'custom'))
+  const promptByGrade = countBy(store.promptLogs, (log: any) => String(log.grade || 'C'))
+
   return {
     promptCount: store.promptLogs.length,
     activityCount: store.activityLogs.length,
     visitorCount: visitors.size,
+    pageViewCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PAGE_VIEW').length,
+    promptGenerateCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PROMPT_GENERATE').length,
+    optimizeRunCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'OPTIMIZE_RUN').length,
+    copyCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase().includes('COPY')).length,
+    downloadCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase().includes('DOWNLOAD')).length,
+    topActivityTypes: activityByType.slice(0, 5),
+    topPromptTechniques: promptByTechnique.slice(0, 5),
+    topPromptPurposes: promptByPurpose.slice(0, 5),
+    promptGradeCounts: promptByGrade,
   }
 }
 

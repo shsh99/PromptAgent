@@ -577,6 +577,11 @@ function switchMode(mode) {
   }
   setActiveModeTab(nextMode);
   toggleSections(nextMode);
+  if (typeof recordActivity === 'function') {
+    recordActivity('MODE_SWITCH', {
+      mode: nextMode,
+    });
+  }
 
   if (nextMode === 'template') {
     const keywordInput = document.getElementById('keyword-input');
