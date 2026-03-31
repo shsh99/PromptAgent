@@ -881,7 +881,7 @@ async function loadBuilderStarter(index) {
 async function loadQuickStart(index) {
   const item = QUICK_STARTS[index];
   if (!item) return;
-  switchMode('builder');
+  switchMode('template');
 
   if (typeof selectPurpose === 'function') {
     selectPurpose(item.purpose);
