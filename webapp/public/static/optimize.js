@@ -703,6 +703,21 @@ function saveOptimizeVersion() {
   };
   history.unshift(entry);
   saveOptimizeHistory(history);
+  if (typeof upsertPromptHistoryVersion === 'function') {
+    upsertPromptHistoryVersion({
+      kind: 'optimize',
+      title: session.goal || '프롬프트 최적화',
+      prompt: entry.improvedPrompt || entry.prompt || '',
+      inputRaw: session.prompt || '',
+      resultMode: 'optimize',
+      techniqueId: state?.techniqueId || '',
+      techniqueName: state?.techniqueData?.name || state?.techniqueId || 'Prompt',
+      purpose: state?.purpose || '',
+      keyword: state?.keyword || '',
+      workflowState: state?.workflowState || 'new',
+      score: entry.score || 0,
+    });
+  }
   renderOptimizeHistory();
   setCurrentCompareId(entry.id);
   renderOptimizeDiff(entry);

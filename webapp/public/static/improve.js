@@ -107,6 +107,21 @@ async function improvePrompt() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     output.textContent = data.improvedPrompt || '';
+    if (typeof upsertPromptHistoryVersion === 'function') {
+      upsertPromptHistoryVersion({
+        kind: 'improve',
+        title: goal || '프롬프트 개선',
+        prompt: data.improvedPrompt || input,
+        inputRaw: input,
+        resultMode: 'improve',
+        techniqueId: state.techniqueId || '',
+        techniqueName: state.techniqueData?.name || state.techniqueId || 'Prompt',
+        purpose: state.purpose || '',
+        keyword: state.keyword || '',
+        workflowState: state.workflowState || 'new',
+        score: 0,
+      });
+    }
     if (typeof recordActivity === 'function') {
       recordActivity('PROMPT_IMPROVE', {
         techniqueId: state.techniqueId,
