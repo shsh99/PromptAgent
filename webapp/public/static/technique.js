@@ -32,6 +32,7 @@ function selectPurpose(id) {
   document.getElementById('keyword-section').classList.remove('hidden');
   document.getElementById('keyword-input').focus();
   activateStep2();
+  renderRecommendationPlaceholder();
   // 하위 단계 초기화
   document.getElementById('recommendation-section').classList.add('hidden');
   document.getElementById('step-fields').classList.add('hidden');
@@ -44,6 +45,25 @@ function activateStep2() {
   const b = document.getElementById('step2-badge');
   b.classList.remove('bg-gray-700', 'text-gray-400');
   b.classList.add('bg-brand-500', 'text-white');
+}
+
+function renderRecommendationPlaceholder() {
+  const reason = document.getElementById('rec-reason');
+  const primary = document.getElementById('rec-primary');
+  const secondary = document.getElementById('rec-secondary');
+  if (reason) reason.textContent = '목적과 키워드를 선택하면 여기서 추천 이유를 보여줍니다.';
+  if (primary) {
+    primary.innerHTML = `
+      <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm leading-6 text-slate-400">
+        추천 결과가 나오면 가장 적합한 방식이 여기에 표시됩니다.
+      </div>`;
+  }
+  if (secondary) {
+    secondary.innerHTML = `
+      <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-xs leading-6 text-slate-400">
+        아직 보조 추천이 없습니다. 목적을 먼저 선택한 뒤 추천을 눌러보세요.
+      </div>`;
+  }
 }
 
 // ── 추천 ───────────────────────────────────────────────────────────
@@ -69,9 +89,10 @@ async function requestRecommendation() {
     return data;
   } catch (e) {
     console.error(e);
+    renderRecommendationPlaceholder();
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-magic"></i> 추천 받기';
+    btn.innerHTML = '<i class="fas fa-magic"></i> 추천 경로 보기';
   }
 }
 

@@ -154,6 +154,23 @@ app.get('/', (c) => {
                   최적화 열기
                 </button>
               </div>
+              <div class="grid gap-3 md:grid-cols-3">
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-300">
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">1. 처음 시작</div>
+                  <div class="mt-2 font-semibold text-white">템플릿 모드</div>
+                  <div class="mt-1">예시가 자동으로 채워지는 가장 쉬운 시작점입니다.</div>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-300">
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">2. 직접 설계</div>
+                  <div class="mt-2 font-semibold text-white">빌더 모드</div>
+                  <div class="mt-1">문제 정의부터 직접 입력해서 세밀하게 만듭니다.</div>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-slate-300">
+                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">3. 결과 개선</div>
+                  <div class="mt-2 font-semibold text-white">최적화 모드</div>
+                  <div class="mt-1">이미 만든 프롬프트를 결과 기준으로 다듬습니다.</div>
+                </div>
+              </div>
             </div>
           <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
             <div class="mb-4 flex items-center justify-between gap-3">
@@ -245,9 +262,10 @@ app.get('/', (c) => {
                 id="recommend-btn"
                 class="rounded-2xl bg-brand-600 px-5 py-3 font-semibold text-white shadow-lg shadow-brand-500/20 hover:bg-brand-500"
               >
-                추천 받기
+                추천 경로 보기
               </button>
             </div>
+            <p class="mt-2 text-xs leading-5 text-slate-400">키워드를 넣으면 어떤 방식이 맞는지 먼저 추천해줍니다.</p>
           </div>
         </section>
 
@@ -258,10 +276,18 @@ app.get('/', (c) => {
               <h4 class="text-sm font-semibold text-white">AI 추천 결과</h4>
               <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-200">자동 분석</span>
             </div>
-            <p id="rec-reason" class="mb-4 text-sm leading-7 text-slate-300"></p>
+            <p id="rec-reason" class="mb-4 text-sm leading-7 text-slate-300">목적과 키워드를 선택하면 여기서 추천 이유를 보여줍니다.</p>
             <div class="grid gap-3 lg:grid-cols-2">
-              <div id="rec-primary"></div>
-              <div id="rec-secondary" class="space-y-2"></div>
+              <div id="rec-primary">
+                <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm leading-6 text-slate-400">
+                  추천 결과가 나오면 가장 적합한 방식이 여기에 표시됩니다.
+                </div>
+              </div>
+              <div id="rec-secondary" class="space-y-2">
+                <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-xs leading-6 text-slate-400">
+                  아직 보조 추천이 없습니다. 목적을 먼저 선택한 뒤 추천을 눌러보세요.
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -274,7 +300,11 @@ app.get('/', (c) => {
               <p class="text-sm text-slate-400">추천 결과를 쓰거나, 직접 방식까지 고를 수 있습니다.</p>
             </div>
           </div>
-          <div id="technique-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+          <div id="technique-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm leading-6 text-slate-400 sm:col-span-2 lg:col-span-3">
+              목적을 먼저 선택하면 여기에 추천 방식과 직접 선택 카드가 나타납니다.
+            </div>
+          </div>
         </section>
 
           <section id="step-fields" class="mb-6 hidden">
@@ -286,7 +316,11 @@ app.get('/', (c) => {
             </div>
           </div>
           <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-            <div id="fields-container" class="space-y-5"></div>
+            <div id="fields-container" class="space-y-5">
+              <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm leading-6 text-slate-400">
+                방식이 선택되면 입력칸이 이곳에 나타납니다.
+              </div>
+            </div>
             <div class="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
                 id="generate-btn"
@@ -427,7 +461,11 @@ app.get('/', (c) => {
               <button onclick="closeHistory()" class="text-slate-400 hover:text-white"><i class="fas fa-xmark text-lg"></i></button>
             </div>
           </div>
-          <div id="history-content" class="p-6"></div>
+          <div id="history-content" class="p-6">
+            <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-sm leading-7 text-slate-400">
+              아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 최근 작업이 표시됩니다.
+            </div>
+          </div>
         </div>
       </div>
 
