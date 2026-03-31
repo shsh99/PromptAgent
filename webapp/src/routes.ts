@@ -1,4 +1,4 @@
-﻿// ===== routes.ts ??API ?붾뱶?ъ씤??=====
+﻿// ===== routes.ts API routing =====
 import { Hono } from 'hono'
 import {
   TECHNIQUES, FIELD_DEFINITIONS, PURPOSE_PRESETS, PURPOSE_RECOMMENDATIONS,
