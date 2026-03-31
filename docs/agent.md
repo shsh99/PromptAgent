@@ -19,6 +19,7 @@ This file tells future agents how to work in this repository without needing to 
 4. If a new feature needs persistence, define the storage model first.
 5. Keep UI copy short and actionable.
 6. Before each deployment, prepend a release note entry in `webapp/public/static/changelog.js`.
+7. Before each deployment, keep the agent instructions in sync and add the same update-log reminder to `AGENT.md`.
 
 ## Product Rules
 
