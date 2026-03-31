@@ -26,6 +26,30 @@ type LogStore = {
 const MAX_PROMPT_LOGS = 1000
 const MAX_ACTIVITY_LOGS = 2000
 const ADMIN_TOKEN_FALLBACK = 'promptbuilder-admin'
+const EVENT_LOGS_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS event_logs (
+  id TEXT PRIMARY KEY,
+  kind TEXT NOT NULL,
+  log_id TEXT,
+  visitor_id TEXT,
+  session_id TEXT,
+  action_type TEXT,
+  prompt_id TEXT,
+  thread_id TEXT,
+  version_number INTEGER,
+  technique_id TEXT,
+  technique TEXT,
+  prompt TEXT,
+  grade TEXT,
+  score INTEGER,
+  purpose TEXT,
+  keyword TEXT,
+  model TEXT,
+  workflow_state TEXT,
+  meta_json TEXT,
+  created_at TEXT NOT NULL
+);
+`
 
 function getLogStore(): LogStore {
   const g = globalThis as any
@@ -37,6 +61,152 @@ function getLogStore(): LogStore {
 
 function getExpectedAdminToken(c: any): string {
   return c.env?.ADMIN_TOKEN || ADMIN_TOKEN_FALLBACK
+}
+
+function getPersistentDb(c: any) {
+  return c.env?.DB || c.env?.PERSIST_DB || null
+}
+
+async function ensureEventLogSchema(c: any) {
+  const db = getPersistentDb(c)
+  if (!db || typeof db.prepare !== 'function') return
+  const g = globalThis as any
+  if (!g.__promptAgentEventLogSchemaPromise) {
+    g.__promptAgentEventLogSchemaPromise = Promise.all([
+      db.prepare(EVENT_LOGS_SCHEMA_SQL).run(),
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_event_logs_created_at ON event_logs(created_at DESC)').run(),
+      db.prepare('CREATE INDEX IF NOT EXISTS idx_event_logs_kind_created_at ON event_logs(kind, created_at DESC)').run(),
+    ]).catch((error) => {
+      g.__promptAgentEventLogSchemaPromise = null
+      throw error
+    })
+  }
+  return g.__promptAgentEventLogSchemaPromise
+}
+
+function normalizeEventLog(row: any) {
+  return {
+    id: row.id || row.log_id || `${Date.now()}`,
+    logId: row.log_id || row.id || `${Date.now()}`,
+    visitorId: row.visitor_id || 'anonymous',
+    sessionId: row.session_id || '',
+    actionType: row.action_type || row.kind?.toUpperCase() || 'UNKNOWN',
+    promptId: row.prompt_id || null,
+    threadId: row.thread_id || '',
+    versionNumber: Number(row.version_number || 0),
+    techniqueId: row.technique_id || '',
+    technique: row.technique || '',
+    prompt: row.prompt || '',
+    grade: row.grade || 'C',
+    score: Number(row.score || 0),
+    purpose: row.purpose || '',
+    keyword: row.keyword || '',
+    model: row.model || '',
+    workflowState: row.workflow_state || '',
+    meta: (() => {
+      try {
+        return row.meta_json ? JSON.parse(row.meta_json) : {}
+      } catch {
+        return {}
+      }
+    })(),
+    createdAt: row.created_at || new Date().toISOString(),
+  }
+}
+
+async function persistEventLog(c: any, kind: 'activity' | 'prompt', entry: any) {
+  const db = getPersistentDb(c)
+  if (!db || typeof db.prepare !== 'function') {
+    const store = getLogStore()
+    if (kind === 'activity') {
+      store.activityLogs.unshift(entry)
+      trimStore(store)
+      return
+    }
+    store.promptLogs.unshift(entry)
+    trimStore(store)
+    return
+  }
+
+  try {
+    await ensureEventLogSchema(c)
+    await db.prepare(`
+      INSERT INTO event_logs (
+        id, kind, log_id, visitor_id, session_id, action_type, prompt_id,
+        thread_id, version_number, technique_id, technique, prompt, grade, score,
+        purpose, keyword, model, workflow_state, meta_json, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      String(entry.id || entry.logId || `${Date.now()}`),
+      kind,
+      String(entry.logId || entry.id || `${Date.now()}`),
+      String(entry.visitorId || 'anonymous'),
+      String(entry.sessionId || ''),
+      String(entry.actionType || 'UNKNOWN'),
+      entry.promptId ? String(entry.promptId) : null,
+      entry.threadId ? String(entry.threadId) : null,
+      Number(entry.versionNumber || 0) || null,
+      String(entry.techniqueId || ''),
+      String(entry.technique || ''),
+      String(entry.prompt || ''),
+      String(entry.grade || 'C'),
+      Number(entry.score || 0),
+      String(entry.purpose || ''),
+      String(entry.keyword || ''),
+      String(entry.model || ''),
+      String(entry.workflowState || ''),
+      JSON.stringify(entry.meta || {}),
+      String(entry.createdAt || new Date().toISOString()),
+    ).run()
+    return
+  } catch {
+    const store = getLogStore()
+    if (kind === 'activity') {
+      store.activityLogs.unshift(entry)
+      trimStore(store)
+      return
+    }
+    store.promptLogs.unshift(entry)
+    trimStore(store)
+  }
+}
+
+async function readEventLogs(c: any, kind: 'activity' | 'prompt', limit: number) {
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureEventLogSchema(c)
+      const result = await db.prepare(
+        'SELECT * FROM event_logs WHERE kind = ? ORDER BY created_at DESC LIMIT ?'
+      ).bind(kind, limit).all()
+      const rows = Array.isArray(result?.results) ? result.results : []
+      return rows.map(normalizeEventLog)
+    } catch {
+      const store = getLogStore()
+      const source = kind === 'activity' ? store.activityLogs : store.promptLogs
+      return source.slice(0, limit)
+    }
+  }
+
+  const store = getLogStore()
+  const source = kind === 'activity' ? store.activityLogs : store.promptLogs
+  return source.slice(0, limit)
+}
+
+async function clearEventLogs(c: any) {
+  const db = getPersistentDb(c)
+  if (db && typeof db.prepare === 'function') {
+    try {
+      await ensureEventLogSchema(c)
+      await db.prepare('DELETE FROM event_logs').run()
+      return
+    } catch {
+      // fallback to memory below
+    }
+  }
+  const store = getLogStore()
+  store.promptLogs = []
+  store.activityLogs = []
 }
 
 function isAdminRequest(c: any): boolean {
@@ -240,13 +410,15 @@ function getPromptStyleProfile(modelTarget: string, language: string) {
 apiRouter.post('/logs', async (c) => {
   try {
     const payload = await c.req.json()
-    const store = getLogStore()
     const entry = {
       id: payload.id || Date.now(),
       logId: payload.logId || `${Date.now()}-${Math.random()}`,
       visitorId: payload.visitorId || 'anonymous',
+      sessionId: payload.sessionId || '',
       actionType: payload.actionType || payload.kind?.toUpperCase() || 'UNKNOWN',
       promptId: payload.promptId || null,
+      threadId: payload.threadId || null,
+      versionNumber: Number(payload.versionNumber || 0) || null,
       techniqueId: payload.techniqueId || '',
       technique: payload.technique || '',
       prompt: payload.prompt || '',
@@ -255,27 +427,25 @@ apiRouter.post('/logs', async (c) => {
       purpose: payload.purpose || '',
       keyword: payload.keyword || '',
       model: payload.model || '',
+      workflowState: payload.workflowState || '',
       meta: payload.meta || {},
       createdAt: payload.createdAt || new Date().toISOString(),
     }
 
-    if (payload.kind === 'activity') {
-      store.activityLogs.unshift(entry)
-      trimStore(store)
-      return c.json({ ok: true })
-    }
-
-    store.promptLogs.unshift(entry)
-    trimStore(store)
+    await persistEventLog(c, payload.kind === 'activity' ? 'activity' : 'prompt', entry)
     return c.json({ ok: true })
   } catch {
     return c.json({ error: '濡쒓렇 ??μ뿉 ?ㅽ뙣?덉뒿?덈떎.' }, 400)
   }
 })
 
-apiRouter.get('/admin/logs', (c) => {
+apiRouter.get('/admin/logs', async (c) => {
   if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
-  const store = getLogStore()
+  const [promptLogs, activityLogs] = await Promise.all([
+    readEventLogs(c, 'prompt', MAX_PROMPT_LOGS),
+    readEventLogs(c, 'activity', MAX_ACTIVITY_LOGS),
+  ])
+  const store = { promptLogs, activityLogs }
   return c.json({
     promptLogs: store.promptLogs,
     activityLogs: store.activityLogs,
@@ -283,11 +453,9 @@ apiRouter.get('/admin/logs', (c) => {
   })
 })
 
-apiRouter.delete('/admin/logs', (c) => {
+apiRouter.delete('/admin/logs', async (c) => {
   if (!isAdminRequest(c)) return c.json({ error: 'Unauthorized' }, 401)
-  const store = getLogStore()
-  store.promptLogs = []
-  store.activityLogs = []
+  await clearEventLogs(c)
   return c.json({ ok: true })
 })
 

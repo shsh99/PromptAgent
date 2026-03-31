@@ -216,6 +216,74 @@
   color: #0f172a !important;
 }
 
+.prompt-shell.theme-light #admin-dashboard .bg-gray-950\/70,
+.prompt-shell.theme-light #admin-dashboard .bg-gray-950\/60,
+.prompt-shell.theme-light #admin-dashboard .bg-gray-950\/50,
+.prompt-shell.theme-light #admin-dashboard .bg-gray-950\/40,
+.prompt-shell.theme-light #admin-dashboard .bg-gray-900\/80,
+.prompt-shell.theme-light #admin-dashboard .bg-gray-900\/60,
+.prompt-shell.theme-light #admin-dashboard .bg-gray-900\/50,
+.prompt-shell.theme-light #admin-dashboard .bg-slate-950\/96,
+.prompt-shell.theme-light #admin-dashboard .bg-slate-950\/90,
+.prompt-shell.theme-light #admin-dashboard .bg-slate-950\/80,
+.prompt-shell.theme-light #admin-dashboard .bg-slate-950\/70,
+.prompt-shell.theme-light #admin-dashboard .bg-slate-950\/50,
+.prompt-shell.theme-light #admin-dashboard .bg-slate-950\/40,
+.prompt-shell.theme-light #admin-dashboard .bg-white\/5,
+.prompt-shell.theme-light #admin-dashboard .bg-white\/10,
+.prompt-shell.theme-light #admin-dashboard .bg-white\/20 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  color: #0f172a !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard .border-gray-800,
+.prompt-shell.theme-light #admin-dashboard .border-gray-700,
+.prompt-shell.theme-light #admin-dashboard .border-white\/10,
+.prompt-shell.theme-light #admin-dashboard .border-white\/20 {
+  border-color: rgba(203, 213, 225, 0.92) !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard .text-white,
+.prompt-shell.theme-light #admin-dashboard .text-gray-100 {
+  color: #0f172a !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard .text-gray-300,
+.prompt-shell.theme-light #admin-dashboard .text-gray-400,
+.prompt-shell.theme-light #admin-dashboard .text-slate-200,
+.prompt-shell.theme-light #admin-dashboard .text-slate-300,
+.prompt-shell.theme-light #admin-dashboard .text-slate-400,
+.prompt-shell.theme-light #admin-dashboard .text-gray-500 {
+  color: #475569 !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard .rounded-2xl.border,
+.prompt-shell.theme-light #admin-dashboard .rounded-3xl.border {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06) !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard pre {
+  background-color: rgba(248, 250, 252, 0.98) !important;
+  color: #0f172a !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard button {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(148, 163, 184, 0.72) !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06) !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard button:hover {
+  background-color: rgba(248, 250, 252, 1) !important;
+  border-color: rgba(92, 124, 250, 0.58) !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard button i,
+.prompt-shell.theme-light #admin-dashboard button * {
+  color: inherit !important;
+}
+
 .prompt-shell.theme-light .bg-brand-500\/10,
 .prompt-shell.theme-light .bg-brand-500\/15,
 .prompt-shell.theme-light .bg-brand-500\/20,

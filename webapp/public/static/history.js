@@ -312,7 +312,10 @@ function saveToHistory(data) {
   });
   const logEntry = {
     promptId: data.id || Date.now(),
+    threadId: entry.id,
+    versionNumber: entry.promptCount,
     visitorId: ensureVisitorId(),
+    sessionId: ensureSessionId(),
     actionType: 'RUN',
     techniqueId: data.techniqueId || state.techniqueId || '',
     technique: data.technique?.name || state.techniqueData?.name || state.techniqueId || '',
@@ -322,6 +325,7 @@ function saveToHistory(data) {
     purpose: data.purpose || state.purpose || '',
     keyword: data.keyword || state.keyword || '',
     model: data.model || data.technique?.nameEn || '',
+    workflowState: data.workflowState || state.workflowState || 'new',
     createdAt: new Date().toISOString(),
   };
 
