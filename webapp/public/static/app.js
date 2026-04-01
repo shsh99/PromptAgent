@@ -35,6 +35,7 @@ function setTheme(theme) {
   document.body.classList.toggle('theme-light', nextTheme === 'light');
   document.body.classList.toggle('theme-dark', nextTheme === 'dark');
   localStorage.setItem('pf_mode', state.mode || 'builder');
+  syncHeaderToggleState();
 }
 
 function setPromptLanguage(language) {
@@ -49,6 +50,28 @@ function setPromptLanguage(language) {
     button.classList.toggle('text-white', active);
     button.classList.toggle('bg-white/5', !active);
     button.classList.toggle('text-slate-200', !active);
+  });
+  syncHeaderToggleState();
+}
+
+function toggleTheme() {
+  setTheme(state.theme === 'light' ? 'dark' : 'light');
+}
+
+function togglePromptLanguage() {
+  setPromptLanguage(state.promptLanguage === 'ko' ? 'en' : 'ko');
+}
+
+function syncHeaderToggleState() {
+  document.querySelectorAll('[data-theme-switch]').forEach((button) => {
+    const active = state.theme === 'dark';
+    button.setAttribute('aria-pressed', String(active));
+    button.dataset.active = active ? 'true' : 'false';
+  });
+  document.querySelectorAll('[data-lang-switch]').forEach((button) => {
+    const active = state.promptLanguage === 'en';
+    button.setAttribute('aria-pressed', String(active));
+    button.dataset.active = active ? 'true' : 'false';
   });
 }
 
@@ -149,6 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setTheme(state.theme);
   setPromptLanguage(state.promptLanguage);
+  syncHeaderToggleState();
   setPromptStyle(state.promptStyle);
   setWorkflowState(state.workflowState);
   setModeSelection(state.mode);
@@ -174,7 +198,9 @@ document.addEventListener('keydown', (event) => {
 });
 
 window.setTheme = setTheme;
+window.toggleTheme = toggleTheme;
 window.setPromptLanguage = setPromptLanguage;
+window.togglePromptLanguage = togglePromptLanguage;
 window.setPromptStyle = setPromptStyle;
 window.setWorkflowState = setWorkflowState;
 window.setModeSelection = setModeSelection;

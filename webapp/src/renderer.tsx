@@ -1,4 +1,4 @@
-/** @jsxImportSource hono/jsx */
+﻿/** @jsxImportSource hono/jsx */
 import { jsxRenderer } from 'hono/jsx-renderer'
 
 export const renderer = jsxRenderer(({ children }) => {
@@ -56,7 +56,9 @@ export const renderer = jsxRenderer(({ children }) => {
         <script src="/static/guide.js"></script>
         <script src="/static/optimize.js"></script>
         <script src="/static/app.js"></script>
+        <script src="/static/ui-fixes.js"></script>
       </body>
     </html>
   )
 })
+

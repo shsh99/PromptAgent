@@ -1,4 +1,4 @@
-// ===== optimize.js - mode switch + optimize loop =====
+﻿// ===== optimize.js - mode switch + optimize loop =====
 
 const OPTIMIZE_HISTORY_KEY = 'pf_optimize_history';
 const OPTIMIZE_SESSION_KEY = 'pf_optimize_session';
@@ -228,32 +228,9 @@ function setOptimizeValue(id, value) {
 }
 
 function injectOptimizeUI() {
-  if (document.getElementById('optimize-tabs')) return;
+  if (document.getElementById('template-workspace')) return;
   const firstBuilderSection = document.getElementById('step-purpose');
   if (!firstBuilderSection) return;
-
-  const tabs = document.createElement('section');
-  tabs.id = 'optimize-tabs';
-  tabs.className = 'mb-8';
-  tabs.innerHTML = `
-    <div class="flex justify-center">
-      <div class="inline-flex rounded-2xl border border-gray-200 bg-white p-1.5 shadow-sm">
-        <button onclick="switchMode('template')" id="tab-template" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
-          <i class="fas fa-th-large"></i>
-          <span>템플릿</span>
-        </button>
-        <button onclick="switchMode('builder')" id="tab-builder" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 active bg-brand-600 text-white">
-          <i class="fas fa-code"></i>
-          <span>빌더</span>
-        </button>
-        <button onclick="switchMode('optimize')" id="tab-optimize" class="mode-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
-          <i class="fas fa-magic"></i>
-          <span>최적화</span>
-        </button>
-      </div>
-    </div>
-  `;
-  firstBuilderSection.parentElement.insertBefore(tabs, firstBuilderSection);
 
   const templatePanel = document.createElement('section');
   templatePanel.id = 'template-workspace';
