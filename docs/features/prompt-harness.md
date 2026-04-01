@@ -141,16 +141,35 @@ Paid dependencies should remain optional.
 
 ## File Mapping
 
-- `webapp/src/helpers.ts`
+- `webapp/src/features/prompt/helpers.ts`
+  - public helper entry point
+  - compatibility re-exports
+- `webapp/src/features/prompt/helpers-config.ts`
+  - purpose config
+  - cache-backed lookup helpers
+- `webapp/src/features/prompt/helpers-fields.ts`
+  - auto field generation
+  - field composition for techniques
+- `webapp/src/features/prompt/quality.ts`
   - quality analysis
-  - harness generation
-  - model transforms
-- `webapp/src/routes.ts`
+  - model hints
+  - localized summary blocks
+- `webapp/src/features/prompt/prompt-services.ts`
+  - prompt generation
+  - strategic guidance blocks
+  - final verification blocks
+- `webapp/src/app/routes.ts`
   - API contracts
   - log storage
   - improve endpoint
-- `webapp/public/static/*.js`
+- `webapp/public/static/features/prompt/*.js`
   - modals
   - prompt history
   - version UI
   - feedback UI
+
+## Current Implementation Notes
+
+- The prompt layer is now split into `System / Template / User Input` instead of one long mixed contract.
+- The analyzer adds problem framing, input data, reasoning guidance, examples, and recovery checks.
+- The current free path can still run end to end without mandatory paid APIs.

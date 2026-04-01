@@ -11,6 +11,12 @@
 7. Save version
 8. Repeat
 
+## Current Flow Notes
+
+- The current product also exposes three generated result variants before the optimization loop starts.
+- History and compare are part of the same repeat cycle, not a separate dead-end screen.
+- The optimize loop should preserve the selected variant so the next step can reuse the same context.
+
 ## What The Workflow Must Capture
 
 - original prompt
@@ -26,4 +32,3 @@
 Without output feedback, optimization becomes guesswork.
 
 This workflow makes improvement measurable and repeatable.
-

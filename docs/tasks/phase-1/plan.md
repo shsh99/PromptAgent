@@ -16,7 +16,9 @@ Turn the existing quality score into a real prompt diagnostic feature.
 
 ### 1. Analyzer Core
 
-- expand the rule set in `webapp/src/helpers.ts`
+- expand the rule set in `webapp/src/features/prompt/quality.ts`
+- keep shared config lookups in `webapp/src/features/prompt/helpers-config.ts`
+- keep field generation in `webapp/src/features/prompt/helpers-fields.ts`
 - add explicit checks for ambiguity and token waste
 - make the summary explain why the prompt is weak
 

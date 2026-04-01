@@ -15,6 +15,12 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - version save and compare
 - loop history
 
+## Current Implementation Notes
+
+- The UI now favors tab switching and compact cards over long vertical scrolling.
+- The result screen can branch into three variants before the user enters the optimize loop.
+- History should remain usable as a comparison surface, not just a log dump.
+
 ## Execution Items
 
 ### 1. Mode Switch
@@ -73,3 +79,4 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - the free flow works without mandatory paid APIs
 - the user can start from an example instead of a blank form
 - the generated result can branch into three usable variants
+- the layout stays readable on light and dark themes

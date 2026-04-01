@@ -73,3 +73,8 @@ The free version should support:
 
 Runner integration with external LLMs can remain optional.
 
+## Current Implementation Notes
+
+- The workspace now leans on result variants, history tabs, and compare-friendly review instead of a single vertical flow.
+- Optimize entry is meant to stay one click away from the result screen.
+- The current UI direction is lighter, card-based, and more compact so long scrolling is reduced.

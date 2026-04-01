@@ -43,3 +43,7 @@ Make Optimize Mode easier for first-time users by providing starter examples, qu
 - users can load a working example with one click
 - helper guidance is visible without leaving the page
 
+## Current Implementation Notes
+
+- The home screen template cards already act as the main shortcut layer for common tasks.
+- Builder and Optimize should share example data when possible so the user sees the same starter patterns in both places.

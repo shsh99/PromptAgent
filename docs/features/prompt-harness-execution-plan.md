@@ -13,6 +13,16 @@ Upgrade PromptBuilder into a prompt harness tool that can analyze, optimize, ver
 - feedback loop
 - template library
 
+## Current Priority Order
+
+1. result 3 variants
+2. Optimize entry
+3. Compare and history
+4. Intent engine
+5. explanation layer
+6. quality analyzer refinements
+7. admin analytics
+
 ## Phase 1. Analyzer Foundation
 
 Deliver:
@@ -79,8 +89,12 @@ Deliver:
 Exit criteria:
 - prompt assets become reusable across people
 
+## Current Implementation Notes
+
+- The harness work is now split across prompt generation, quality analysis, optimize loop, history, and admin analytics instead of one monolithic page.
+- The docs should stay in sync with the current phase order and the recent work log.
+
 ## Implementation Rule
 
 Do not build this as a second parallel product.
 Extend the existing generate/improve/library flows.
-

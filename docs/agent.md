@@ -41,7 +41,10 @@ When uncertain, prioritize:
 
 ## Suggested File Areas
 
-- `webapp/src/helpers.ts` for prompt analysis and prompt builders
+- `webapp/src/features/prompt/helpers.ts` for prompt analysis entry points and compatibility re-exports
+- `webapp/src/features/prompt/helpers-config.ts` for purpose config and cache-backed lookups
+- `webapp/src/features/prompt/helpers-fields.ts` for field generation and technique composition
+- `webapp/src/features/prompt/quality.ts` for prompt analysis and scoring
 - `webapp/src/routes.ts` for API endpoints
 - `webapp/public/static/*.js` for UI flow and client-side persistence
 - `docs/plan.md` for task sequencing

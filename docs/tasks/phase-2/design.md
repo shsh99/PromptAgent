@@ -10,6 +10,7 @@ Add Optimize Mode so the user can run, evaluate, and improve prompts in a loop.
 - center panel: output input or runner result
 - right panel: issues and improvements
 - bottom area: versions and loop history
+- when space is tight, collapse the layout into tabs or stacked cards
 
 ## Data Shape
 
@@ -45,4 +46,4 @@ The optimizer should produce:
 - the loop is obvious to the user
 - optimization depends on output, not just the prompt
 - version history is visible
-
+- the interface stays readable in both light and dark modes

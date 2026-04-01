@@ -73,3 +73,8 @@ Add lightweight helpers that remind the user to include:
 - reuse the same examples in Builder and Optimize when possible
 - surface the checklist near the input area, not hidden in docs
 
+## Current Implementation Notes
+
+- The template cards in the home surface now act as the fastest entry point for common tasks.
+- Example content should stay short enough to load into the current form without extra cleanup.
+- Helper text should remain concise so advanced users can scan it quickly, but the checklist should still cover framing, data, constraints, schema, and recovery.
