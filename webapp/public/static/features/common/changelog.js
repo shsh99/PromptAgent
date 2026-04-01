@@ -6,6 +6,14 @@
 const CHANGELOG_ITEMS = [
   {
     date: '2026-04-01',
+    version: 'v4.7',
+    items: [
+      { tag: 'improve', text: '프롬프트 생성 레이어를 System, Template, User Input으로 분리했습니다.' },
+      { tag: 'improve', text: '복잡도에 따라 간단 템플릿과 확장 템플릿을 나누어 토큰 사용량을 줄였습니다.' },
+      { tag: 'improve', text: '최종 검증을 복잡도에 맞게 축약형과 확장형으로 나누어 출력 비용을 줄였습니다.' },
+    ],
+  },  {
+    date: '2026-04-01',
     version: 'v4.6',
     items: [
       { tag: 'improve', text: '공통 surface 토큰을 적용해 라이트/다크 모드 홈 카드의 톤을 일관되게 맞췄습니다.' },
@@ -170,4 +178,5 @@ window.showUpdates = showUpdates
 window.closeUpdates = closeUpdates
 window.renderUpdatesBadge = renderUpdatesBadge
 window.markUpdatesSeen = markUpdatesSeen
+
 

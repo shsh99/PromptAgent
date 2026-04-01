@@ -64,6 +64,53 @@ assert.ok(generateResult.prompt.includes('Input data'), 'Generated prompt should
 assert.ok(generateResult.qualityReport.percentage >= 0)
 assert.ok(Array.isArray(generateResult.variants))
 
+const lowComplexityResult = buildGenerateResult({
+  techniqueId: 'context-engineering',
+  inputFields: {
+    complexity: 'low',
+    project_name: 'Prompt Builder',
+    project_goal: 'Improve prompt quality workflows.',
+    target_user: 'Product teams',
+    tech_stack: 'TypeScript, Hono, Vite',
+    core_features: 'Prompt generation\nQuality analysis',
+    data_model: 'PromptTemplate, PromptRun',
+    constraints: 'Keep the explanation concise.',
+    tone: 'Clear and practical',
+  },
+  purpose: 'web-app',
+  keyword: 'onboarding',
+  language: 'en',
+  promptStyle: 'gpt',
+  workflowState: 'new',
+})
+
+const highComplexityResult = buildGenerateResult({
+  techniqueId: 'context-engineering',
+  inputFields: {
+    complexity: 'high',
+    project_name: 'Prompt Builder',
+    project_goal: 'Improve prompt quality workflows.',
+    target_user: 'Product teams',
+    tech_stack: 'TypeScript, Hono, Vite',
+    core_features: 'Prompt generation\nQuality analysis',
+    data_model: 'PromptTemplate, PromptRun',
+    constraints: 'Keep the explanation concise.',
+    tone: 'Clear and practical',
+  },
+  purpose: 'web-app',
+  keyword: 'onboarding',
+  language: 'en',
+  promptStyle: 'gpt',
+  workflowState: 'new',
+})
+
+assert.ok(lowComplexityResult.prompt.includes('## System'))
+assert.ok(lowComplexityResult.prompt.includes('## Template'))
+assert.ok(lowComplexityResult.prompt.includes('## User Input'))
+assert.ok(lowComplexityResult.prompt.includes('Quick verification'))
+assert.ok(highComplexityResult.prompt.includes('Final verification'))
+assert.ok(highComplexityResult.prompt.length > lowComplexityResult.prompt.length)
+
 const improveResult = buildImproveResult({
   prompt: 'Write a better prompt for onboarding.',
   goal: 'Make the prompt more actionable.',

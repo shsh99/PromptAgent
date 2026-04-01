@@ -273,6 +273,190 @@ function buildStrategicGuidanceBlock(fields: Record<string, string>, language: s
     .join('\n\n')
 }
 
+type PromptComplexity = 'low' | 'high'
+
+function countFilledValues(values: Array<string | undefined | null>) {
+  return values.filter((value) => String(value || '').trim().length > 0).length
+}
+
+function resolvePromptComplexity(args: {
+  techniqueId: string
+  inputFields: Record<string, string>
+  selectedAdvancedFields?: any[]
+  customBlankFields?: any[]
+}) {
+  const explicit = String(args.inputFields?.complexity || args.inputFields?.prompt_complexity || '').toLowerCase().trim()
+  if (explicit === 'low' || explicit === 'high') return explicit as PromptComplexity
+
+  const activeInputs = countFilledValues(Object.values(args.inputFields || {}))
+  const supplementalInputs = (args.selectedAdvancedFields?.length || 0) + (args.customBlankFields?.length || 0)
+  const complexTechniques = new Set(['context-engineering', 'harness', 'prompt-chaining', 'chain-of-thought', 'tree-of-thought', 'meta-prompting'])
+  if (complexTechniques.has(args.techniqueId)) return 'high'
+  if (activeInputs + supplementalInputs >= 8) return 'high'
+  return 'low'
+}
+
+function buildCompactVerificationBlock(language: string) {
+  const english = language === 'en'
+  return english
+    ? [
+        '## Quick verification',
+        '- Is the goal explicit?',
+        '- Is the output format explicit?',
+        '- Are the constraints explicit?',
+        '- If anything is missing, fill it in before answering.',
+      ].join('\n')
+    : [
+        '## 간단 검증',
+        '- 목표가 분명한가?',
+        '- 출력 형식이 분명한가?',
+        '- 제약 조건이 분명한가?',
+        '- 빠진 내용이 있으면 답변 전에 채웠는가?',
+      ].join('\n')
+}
+
+function buildSystemLayer(promptStyle: string, workflowState: string, language: string, complexity: PromptComplexity) {
+  const styleProfile = getPromptStyleProfile(promptStyle || 'gpt', language)
+  const workflowProfile = getWorkflowStateProfile(workflowState)
+  const english = language === 'en'
+  const heading = english ? '## System' : '## 시스템'
+  const labels = english
+    ? [
+        `- Style: ${styleProfile.label}`,
+        ...styleProfile.lines.slice(0, complexity === 'low' ? 2 : 3).map((line) => line.replace(/^- /, '- ')),
+        complexity === 'low'
+          ? '- Keep the response concise and directly usable.'
+          : '- Keep the response structured, concise, and execution-ready.',
+      ]
+    : [
+        `- 스타일: ${styleProfile.label}`,
+        ...styleProfile.lines.slice(0, complexity === 'low' ? 2 : 3),
+        complexity === 'low'
+          ? '- 답변은 짧고 바로 쓸 수 있게 유지하세요.'
+          : '- 답변은 구조적으로, 간결하게, 실행 가능하게 유지하세요.',
+      ]
+  const workflowLines = complexity === 'low'
+    ? english
+      ? [
+          `- State: ${workflowProfile.title}`,
+          `- Summary: ${workflowProfile.summary}`,
+        ]
+      : [
+          `- 상태: ${workflowProfile.title}`,
+          `- 요약: ${workflowProfile.summary}`,
+        ]
+    : english
+      ? [
+          `- State: ${workflowProfile.title}`,
+          `- Summary: ${workflowProfile.summary}`,
+          `- Step guidance: ${workflowProfile.sectionTitle}`,
+          ...workflowProfile.bullets.slice(0, 2).map((line) => `- ${line}`),
+        ]
+      : [
+          `- 상태: ${workflowProfile.title}`,
+          `- 요약: ${workflowProfile.summary}`,
+          `- 단계 안내: ${workflowProfile.sectionTitle}`,
+          ...workflowProfile.bullets.slice(0, 2).map((line) => `- ${line}`),
+        ]
+
+  return [heading, ...labels, ...workflowLines].join('\n')
+}
+
+function buildTemplateLayer(templatePrompt: string, language: string, complexity: PromptComplexity) {
+  const english = language === 'en'
+  const heading = english ? '## Template' : '## 템플릿'
+  if (complexity === 'low') {
+    return [
+      heading,
+      english ? '- Use the shortest structure that still solves the task.' : '- 작업을 해결할 수 있는 최소 구조만 사용하세요.',
+      templatePrompt.trim(),
+    ].join('\n')
+  }
+  return [heading, templatePrompt.trim()].join('\n')
+}
+
+function buildUserInputLayer(
+  args: {
+    purpose: string
+    keyword: string
+    selectedAdvancedFields?: any[]
+    customBlankFields?: any[]
+    fields?: Record<string, string>
+  },
+  language: string,
+  complexity: PromptComplexity,
+) {
+  const english = language === 'en'
+  const heading = english ? '## User Input' : '## 사용자 입력'
+  const lines: string[] = []
+  if (args.purpose) {
+    lines.push(english ? `- Purpose: ${args.purpose}` : `- 목적: ${args.purpose}`)
+  }
+  if (args.keyword) {
+    lines.push(english ? `- Keyword: ${args.keyword}` : `- 키워드: ${args.keyword}`)
+  }
+  const supplemental: string[] = []
+  args.selectedAdvancedFields?.forEach((item: any, index: number) => {
+    const label = item?.label || item?.id || `field_${index + 1}`
+    const value = String(item?.value || '').trim()
+    if (value) supplemental.push(`${label}: ${value}`)
+  })
+  args.customBlankFields?.forEach((item: any, index: number) => {
+    const label = item?.label || item?.id || `custom_${index + 1}`
+    const value = String(item?.value || '').trim()
+    if (value) supplemental.push(`${label}: ${value}`)
+  })
+  if (supplemental.length) {
+    lines.push(english ? '- Additional inputs:' : '- 추가 입력:')
+    supplemental.slice(0, complexity === 'low' ? 3 : 8).forEach((item) => lines.push(`  - ${item}`))
+  }
+  const legacyNotes = Object.entries(args.fields || {})
+    .filter(([key, value]) => key.startsWith('custom_note_') && String(value || '').trim())
+    .map(([, value]) => String(value).trim())
+    .filter(Boolean)
+  if (legacyNotes.length) {
+    lines.push(english ? '- Legacy notes:' : '- 이전 메모:')
+    legacyNotes.slice(0, complexity === 'low' ? 2 : 5).forEach((note) => lines.push(`  - ${note}`))
+  }
+  if (complexity === 'low') {
+    lines.push(english ? '- Keep the user input compact and focused.' : '- 사용자 입력은 핵심만 간단히 유지하세요.')
+  }
+  return [heading, ...lines].join('\n')
+}
+
+function buildLayeredPrompt(args: {
+  templatePrompt: string
+  purpose: string
+  keyword: string
+  promptStyle: string
+  workflowState: string
+  language: string
+  complexity: PromptComplexity
+  selectedAdvancedFields?: any[]
+  customBlankFields?: any[]
+  fields: Record<string, string>
+}) {
+  const systemLayer = buildSystemLayer(args.promptStyle, args.workflowState, args.language, args.complexity)
+  const templateLayer = buildTemplateLayer(args.templatePrompt, args.language, args.complexity)
+  const userLayer = buildUserInputLayer(
+    {
+      purpose: args.purpose,
+      keyword: args.keyword,
+      selectedAdvancedFields: args.selectedAdvancedFields,
+      customBlankFields: args.customBlankFields,
+    },
+    args.language,
+    args.complexity,
+  )
+
+  const guidanceLayer =
+    args.complexity === 'high'
+      ? `${buildStrategicGuidanceBlock(args.fields, args.language)}\n\n${buildPromptVerificationBlock(args.language)}`
+      : buildCompactVerificationBlock(args.language)
+
+  return [systemLayer, templateLayer, userLayer, guidanceLayer].join('\n\n')
+}
+
 type GenerateArgs = {
   techniqueId: string
   inputFields: Record<string, string>
@@ -306,6 +490,12 @@ export function buildGenerateResult(args: GenerateArgs) {
   }
 
   let prompt = ''
+  const promptComplexity = resolvePromptComplexity({
+    techniqueId,
+    inputFields,
+    selectedAdvancedFields,
+    customBlankFields,
+  })
 
   if (techniqueId === 'context-engineering') {
     const sections: string[] = []
@@ -434,6 +624,7 @@ export function buildGenerateResult(args: GenerateArgs) {
     prompt = parts.join('\n')
   }
 
+  const templatePrompt = prompt.trim()
   const additionalInputs: string[] = []
   selectedAdvancedFields.forEach((item: any, index: number) => {
     const fieldId = item?.id || item?.fieldId || ''
@@ -490,6 +681,19 @@ export function buildGenerateResult(args: GenerateArgs) {
 
   prompt += `\n\n${buildStrategicGuidanceBlock(fields, language || 'ko')}`
   prompt += `\n\n${buildPromptVerificationBlock(language || 'ko')}`
+
+  prompt = buildLayeredPrompt({
+    templatePrompt,
+    purpose: purpose || 'custom',
+    keyword,
+    promptStyle,
+    workflowState,
+    language: language || 'ko',
+    complexity: promptComplexity,
+    selectedAdvancedFields,
+    customBlankFields,
+    fields,
+  })
 
   const qualityReport = analyzePromptQualityEnhanced(prompt, fields, language || 'ko')
   const variants = buildPromptVariants(prompt, qualityReport, language || 'ko')
