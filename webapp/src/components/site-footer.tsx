@@ -4,12 +4,14 @@ type SiteFooterProps = {
   contactHref?: string
   contactLabel?: string
   onSuggestion?: boolean
+  onAdmin?: boolean
 }
 
 export function SiteFooter({
   contactHref = 'mailto:ggg9905@naver.com',
-  contactLabel = '메일 문의',
+  contactLabel = '이메일 문의',
   onSuggestion = true,
+  onAdmin = true,
 }: SiteFooterProps) {
   return (
     <footer class="px-4 pb-8 sm:px-6 lg:px-8">
@@ -24,6 +26,12 @@ export function SiteFooter({
             <>
               <span class="text-slate-300">|</span>
               <button type="button" onclick="showSuggestionBoard()" class="transition hover:text-brand-600">건의하기</button>
+            </>
+          ) : null}
+          {onAdmin ? (
+            <>
+              <span class="text-slate-300">|</span>
+              <button type="button" onclick="promptAdminToken()" class="transition hover:text-brand-600">관리자 모드</button>
             </>
           ) : null}
           <span class="text-slate-300">|</span>

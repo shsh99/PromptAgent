@@ -6,6 +6,15 @@
 const CHANGELOG_ITEMS = [
   {
     date: '2026-04-02',
+    version: 'v4.12',
+    items: [
+      { tag: 'improve', text: '상단 헤더 버튼을 줄이고 라이트/다크, 한글/English 전환은 아이콘 버튼으로 바꿨습니다.' },
+      { tag: 'improve', text: '관리자 모드는 상단에서 내려 푸터에서 접근하도록 정리했습니다.' },
+      { tag: 'fix', text: '헤더가 복잡해 보이던 문제를 줄여 첫 화면 가독성을 높였습니다.' },
+    ],
+  },
+  {
+    date: '2026-04-02',
     version: 'v4.11',
     items: [
       { tag: 'new', text: '검색엔진 인덱싱을 위해 robots.txt, sitemap.xml, 홈 메타 태그를 추가했습니다.' },

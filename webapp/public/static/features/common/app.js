@@ -67,11 +67,21 @@ function syncHeaderToggleState() {
     const active = state.theme === 'dark';
     button.setAttribute('aria-pressed', String(active));
     button.dataset.active = active ? 'true' : 'false';
+    button.setAttribute('title', active ? '라이트 모드로 전환' : '다크 모드로 전환');
+    button.setAttribute('aria-label', active ? '라이트 모드로 전환' : '다크 모드로 전환');
   });
   document.querySelectorAll('[data-lang-switch]').forEach((button) => {
     const active = state.promptLanguage === 'en';
     button.setAttribute('aria-pressed', String(active));
     button.dataset.active = active ? 'true' : 'false';
+    button.setAttribute('title', active ? '한국어로 전환' : 'English로 전환');
+    button.setAttribute('aria-label', active ? '한국어로 전환' : 'English로 전환');
+  });
+  document.querySelectorAll('[data-theme-icon]').forEach((icon) => {
+    icon.className = state.theme === 'dark' ? 'fas fa-sun text-sm' : 'fas fa-moon text-sm';
+  });
+  document.querySelectorAll('[data-lang-icon]').forEach((icon) => {
+    icon.className = state.promptLanguage === 'en' ? 'fas fa-globe text-sm' : 'fas fa-language text-sm';
   });
 }
 

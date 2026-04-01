@@ -25,11 +25,11 @@ export function HomeScreen() {
                 data-theme-switch
                 onclick="toggleTheme()"
                 aria-pressed="false"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-white"
+                aria-label="테마 전환"
+                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-700 shadow-sm hover:bg-white"
               >
-                <span class="toggle-switch-label toggle-switch-label-left">라이트</span>
-                <span class="toggle-switch-track"><span class="toggle-switch-knob"></span></span>
-                <span class="toggle-switch-label toggle-switch-label-right">다크</span>
+                <i data-theme-icon class="fas fa-moon text-sm"></i>
+                <span class="sr-only">라이트/다크 모드 전환</span>
               </button>
 
               <button
@@ -37,20 +37,17 @@ export function HomeScreen() {
                 data-lang-switch
                 onclick="togglePromptLanguage()"
                 aria-pressed="false"
-                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-white"
+                aria-label="언어 전환"
+                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-700 shadow-sm hover:bg-white"
               >
-                <span class="toggle-switch-label toggle-switch-label-left">한국어</span>
-                <span class="toggle-switch-track"><span class="toggle-switch-knob"></span></span>
-                <span class="toggle-switch-label toggle-switch-label-right">English</span>
+                <i data-lang-icon class="fas fa-language text-sm"></i>
+                <span class="sr-only">한국어/English 전환</span>
               </button>
               <button onclick="showGuide()" class="hidden rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 md:inline-flex">
                 가이드
               </button>
               <button onclick="showHistory()" class="hidden rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 md:inline-flex">
                 히스토리
-              </button>
-              <button onclick="promptAdminToken()" class="inline-flex rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 shadow-sm hover:bg-brand-100">
-                관리자 모드
               </button>
               <button onclick="toggleMobileSidebar()" class="inline-flex rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 xl:hidden">
                 <i class="fas fa-bars"></i>
