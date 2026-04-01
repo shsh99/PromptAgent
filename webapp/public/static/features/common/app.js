@@ -91,6 +91,8 @@ function setPromptStyle(style) {
   localStorage.setItem('pf_prompt_style', nextStyle);
   document.querySelectorAll('[data-prompt-style]').forEach((button) => {
     const active = button.dataset.promptStyle === nextStyle;
+    button.dataset.active = active ? 'true' : 'false';
+    button.setAttribute('aria-pressed', String(active));
     button.classList.toggle('bg-brand-600', active);
     button.classList.toggle('text-white', active);
     button.classList.toggle('bg-white/5', !active);

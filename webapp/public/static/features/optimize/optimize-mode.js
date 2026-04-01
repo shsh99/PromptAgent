@@ -231,41 +231,6 @@ function injectOptimizeUI() {
   const firstBuilderSection = document.getElementById('step-purpose');
   if (!firstBuilderSection) return;
 
-  if (!document.getElementById('template-workspace')) {
-    const templatePanel = document.createElement('section');
-    templatePanel.id = 'template-workspace';
-    templatePanel.className = 'hidden mb-10';
-    templatePanel.innerHTML = `
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
-          <div class="flex items-center gap-2 mb-3 text-brand-600">
-            <i class="fas fa-briefcase"></i>
-            <h3 class="font-semibold">업무 시작 카드</h3>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">역할, 문제, 출력 형식이 미리 채워져 있어 바로 시작할 수 있습니다.</p>
-        </div>
-        <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
-          <div class="flex items-center gap-2 mb-3 text-brand-600">
-            <i class="fas fa-code"></i>
-            <h3 class="font-semibold">빌더 시작 카드</h3>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">강한 제약과 구조가 필요할 때 하네스 필드를 바로 사용할 수 있습니다.</p>
-        </div>
-        <div class="bg-white text-gray-900 border border-gray-200 rounded-3xl p-5 shadow-sm">
-          <div class="flex items-center gap-2 mb-3 text-brand-600">
-            <i class="fas fa-magic"></i>
-            <h3 class="font-semibold">최적화 시작 카드</h3>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">프롬프트와 결과를 넣고, 다음 버전을 더 좋게 개선할 수 있습니다.</p>
-          <button onclick="switchMode('optimize')" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500">
-            최적화 열기
-          </button>
-        </div>
-      </div>
-    `;
-    firstBuilderSection.parentElement.insertBefore(templatePanel, firstBuilderSection);
-  }
-
   if (!document.getElementById('quick-start-panel')) {
     const quickStartPanel = document.createElement('section');
     quickStartPanel.id = 'quick-start-panel';

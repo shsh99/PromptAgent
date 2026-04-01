@@ -38,9 +38,10 @@ export function HomeScreen() {
                 onclick="togglePromptLanguage()"
                 aria-pressed="false"
                 aria-label="언어 전환"
-                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-700 shadow-sm hover:bg-white"
+                class="inline-flex h-10 w-12 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-700 shadow-sm hover:bg-white"
               >
-                <i data-lang-icon class="fas fa-language text-sm"></i>
+                <span class="lang-label-ko text-sm font-bold tracking-tight">한</span>
+                <span class="lang-label-en text-sm font-bold tracking-tight">en</span>
                 <span class="sr-only">한국어/English 전환</span>
               </button>
               <button onclick="showGuide()" class="hidden rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 md:inline-flex">
@@ -60,143 +61,169 @@ export function HomeScreen() {
       <main class="mx-auto max-w-7xl px-4 pb-12 pt-20 sm:px-6 lg:px-8">
         <div class="min-w-0">
           <section class="mb-6 space-y-4">
-            <div class="space-y-3">
-              <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">
-                <i class="fas fa-wand-magic-sparkles"></i>
-                프롬프트를 몰라도 AI를 잘 쓰게 만드는 구조 설계 플랫폼
-              </div>
-              <h2 class="text-3xl font-black leading-tight text-white sm:text-4xl lg:text-5xl">
-                프롬프트를 몰라도 AI를 잘 쓰게 만드는
-                <span class="block bg-gradient-to-r from-brand-300 to-cyan-300 bg-clip-text text-transparent">업무 템플릿, 빌더, 최적화를 한 화면에서</span>
-              </h2>
-              <p class="max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
-                프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
-              </p>
-              <div class="hero-actions flex flex-wrap gap-2">
-                <button onclick="switchMode('template')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
-                  템플릿 모드로 시작
-                </button>
-                <button onclick="switchMode('builder')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
-                  고급자 모드
-                </button>
-                <button onclick="switchMode('optimize')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
-                  최적화 열기
-                </button>
-              </div>
-              <div class="density-stack grid gap-2 lg:grid-cols-3">
-                <div class="surface-card rounded-2xl p-3.5">
-                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 생성 프롬프트</div>
-                  <div class="mt-1.5 text-3xl font-black text-white"><span id="site-prompt-count">0</span></div>
-                  <div class="mt-1 text-xs leading-5 text-slate-400">지금까지 생성된 프롬프트 누적 수</div>
+            <div class="grid gap-6 xl:grid-cols-[minmax(0,1.38fr)_minmax(260px,0.62fr)] xl:items-start">
+              <div class="space-y-3 xl:max-w-none xl:text-center">
+                <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">
+                  <i class="fas fa-wand-magic-sparkles"></i>
+                  프롬프트를 몰라도 AI를 잘 쓰게 만드는 구조 설계 플랫폼
                 </div>
-                <div class="surface-card rounded-2xl p-3.5">
-                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 활동 로그</div>
-                  <div class="mt-1.5 text-3xl font-black text-white"><span id="site-activity-count">0</span></div>
-                  <div class="mt-1 text-xs leading-5 text-slate-400">페이지뷰를 제외한 생성, 복사, 다운로드 활동 수</div>
-                </div>
-                <div class="surface-card rounded-2xl p-3.5">
-                  <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 방문자 수</div>
-                  <div class="mt-1.5 text-3xl font-black text-white"><span id="site-visitor-count">0</span></div>
-                  <div class="mt-1 text-xs leading-5 text-slate-400">고유 사용자를 기준으로 집계된 방문자 수</div>
+                <h2 class="break-keep text-3xl font-black leading-tight tracking-[-0.03em] text-white sm:text-4xl lg:text-5xl xl:max-w-[52rem]">
+                  프롬프트를 몰라도 AI를 잘 쓰게 만드는
+                  <span class="block bg-gradient-to-r from-brand-300 to-cyan-300 bg-clip-text text-transparent">업무 템플릿, 빌더, 최적화를 한 화면에서</span>
+                </h2>
+                <p class="max-w-3xl text-sm leading-6 text-slate-300 sm:text-base xl:max-w-[58rem]">
+                  프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
+                </p>
+                <div class="hero-actions flex flex-wrap gap-2 pt-4 xl:justify-start">
+                  <button onclick="switchMode('template')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
+                    템플릿 모드로 시작
+                  </button>
+                  <button onclick="switchMode('builder')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
+                    고급자 모드
+                  </button>
+                  <button onclick="switchMode('optimize')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
+                    최적화 열기
+                  </button>
                 </div>
               </div>
-            </div>
-          <div class="grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
-            <div class="surface-panel rounded-3xl p-4 backdrop-blur-xl">
-              <div class="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">모드 선택</div>
-                  <h3 class="mt-1.5 text-lg font-semibold text-white">가장 쉬운 방식부터 시작하세요</h3>
-                </div>
-                <div class="text-xs text-slate-400">한 번만 고르면 됩니다</div>
-              </div>
-              <div class="density-stack grid gap-2.5 sm:grid-cols-2 md:grid-cols-3">
-                <button onclick="switchMode('template')" class="surface-card rounded-3xl px-4 py-3.5 text-left transition hover:bg-white/10">
-                  <div class="flex items-center justify-between">
-                    <div class="text-sm font-semibold text-white">템플릿 모드</div>
-                    <span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-200">사무직</span>
-                  </div>
-                  <div class="mt-2 text-xs leading-5 text-slate-300">메일, 보고서, 회의록 같은 일상 업무를 빠르게 고릅니다.</div>
-                </button>
-                <button onclick="switchMode('builder')" class="surface-card rounded-3xl px-4 py-3.5 text-left transition hover:bg-white/10">
-                  <div class="flex items-center justify-between">
-                    <div class="text-sm font-semibold text-white">빌더 모드</div>
-                    <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200">개발자</span>
-                  </div>
-                  <div class="mt-2 text-xs leading-5 text-slate-300">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
-                </button>
-                <button onclick="switchMode('optimize')" class="surface-card-strong rounded-3xl px-4 py-3.5 text-left transition hover:bg-brand-500/15">
-                  <div class="flex items-center justify-between">
-                    <div class="text-sm font-semibold text-brand-100">최적화 모드</div>
-                    <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-100">개선</span>
-                  </div>
-                  <div class="mt-2 text-xs leading-5 text-brand-100/80">이미 만든 프롬프트를 결과 기준으로 다듬습니다.</div>
-                </button>
-              </div>
-            </div>
 
-            <div class="surface-panel rounded-3xl p-4 backdrop-blur-xl xl:sticky xl:top-20 self-start">
-              <div class="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">AI 스타일</div>
-                  <h3 class="mt-1.5 text-lg font-semibold text-white">어떤 AI 말투로 맞출지 고르세요</h3>
+              <div class="grid max-w-[300px] gap-2.5 xl:ml-auto">
+                  <div class="surface-card rounded-2xl px-3 py-3 text-center">
+                    <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 생성 프롬프트</div>
+                    <div class="mt-1.5 flex flex-col items-center gap-1.5">
+                      <div class="min-w-0">
+                        <div class="text-2xl font-black leading-none text-white"><span id="site-prompt-count">0</span></div>
+                        <div class="mt-1 text-xs leading-5 text-slate-400">지금까지 생성된 프롬프트 누적 수</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="surface-card rounded-2xl px-3 py-3 text-center">
+                    <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 활동 로그</div>
+                    <div class="mt-1.5 flex flex-col items-center gap-1.5">
+                      <div class="min-w-0">
+                        <div class="text-2xl font-black leading-none text-white"><span id="site-activity-count">0</span></div>
+                        <div class="mt-1 text-xs leading-5 text-slate-400">페이지뷰를 제외한 생성, 복사, 다운로드 활동 수</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="surface-card rounded-2xl px-3 py-3 text-center">
+                    <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 방문자 수</div>
+                    <div class="mt-1.5 flex flex-col items-center gap-1.5">
+                      <div class="min-w-0">
+                        <div class="text-2xl font-black leading-none text-white"><span id="site-visitor-count">0</span></div>
+                        <div class="mt-1 text-xs leading-5 text-slate-400">고유 사용자를 기준으로 집계된 방문자 수</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="text-xs text-slate-300">기본은 GPT 스타일</div>
               </div>
-              <div class="density-stack grid gap-2.5 grid-cols-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="surface-card-strong rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
-                  GPT
-                  <div class="mt-1 text-[11px] font-normal text-brand-100/80">구조적이고 간결한 스타일</div>
-                </button>
-                <button data-prompt-style="claude" onclick="setPromptStyle('claude')" class="surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10">
-                  Claude
-                  <div class="mt-1 text-[11px] font-normal text-slate-300">맥락이 풍부한 스타일</div>
-                </button>
-                <button data-prompt-style="gemini" onclick="setPromptStyle('gemini')" class="surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10">
-                  Gemini
-                  <div class="mt-1 text-[11px] font-normal text-slate-300">짧고 직접적인 스타일</div>
-                </button>
-                <button data-prompt-style="genspark" onclick="setPromptStyle('genspark')" class="surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10">
-                  Genspark
-                  <div class="mt-1 text-[11px] font-normal text-slate-300">실행 순서가 분명한 스타일</div>
-                </button>
-                <button data-prompt-style="custom" onclick="setPromptStyle('custom')" class="surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10 sm:col-span-2 xl:col-span-1 2xl:col-span-2">
-                  직접 지정
-                  <div class="mt-1 text-[11px] font-normal text-slate-300">기본 구조 유지, 수동 조정</div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        <section id="template-workspace" class="hidden mb-6">
-          <div class="density-stack grid grid-cols-1 gap-3 lg:grid-cols-3">
-            <div class="surface-card rounded-3xl p-4">
-              <div class="mb-3 flex items-center gap-2 text-brand-600">
-                <i class="fas fa-briefcase"></i>
-                <h3 class="font-semibold text-slate-900">업무 시작 카드</h3>
+          <section class="mb-6">
+            <div class="grid gap-4 xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+              <div class="surface-panel rounded-3xl p-4 backdrop-blur-xl">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">모드 선택</div>
+                    <h3 class="mt-1.5 text-lg font-semibold text-white">가장 쉬운 방식부터 시작하세요</h3>
+                  </div>
+                  <div class="text-xs text-slate-400">한 번만 고르면 됩니다</div>
+                </div>
+                <div class="density-stack grid gap-2.5 sm:grid-cols-2 md:grid-cols-3">
+                  <button onclick="switchMode('template')" class="surface-card rounded-3xl px-4 py-3.5 text-left transition hover:bg-white/10">
+                    <div class="flex items-center justify-between">
+                      <div class="text-sm font-semibold text-white">템플릿 모드</div>
+                      <span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-200">사무직</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-300">메일, 보고서, 회의록 같은 일상 업무를 빠르게 고릅니다.</div>
+                  </button>
+                  <button onclick="switchMode('builder')" class="surface-card rounded-3xl px-4 py-3.5 text-left transition hover:bg-white/10">
+                    <div class="flex items-center justify-between">
+                      <div class="text-sm font-semibold text-white">빌더 모드</div>
+                      <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200">개발자</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-300">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
+                  </button>
+                  <button onclick="switchMode('optimize')" class="surface-card-strong rounded-3xl px-4 py-3.5 text-left transition hover:bg-brand-500/15">
+                    <div class="flex items-center justify-between">
+                      <div class="text-sm font-semibold text-brand-100">최적화 모드</div>
+                      <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-100">개선</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-brand-100/80">이미 만든 프롬프트를 결과 기준으로 다듬습니다.</div>
+                  </button>
+                </div>
+
+                <div class="mt-4 rounded-3xl border border-white/10 bg-white/5 p-4">
+                  <div class="mb-3 flex items-center justify-between gap-3">
+                    <div>
+                      <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">빠른 흐름</div>
+                      <h4 class="mt-1 text-sm font-semibold text-white">이 순서대로 따라가면 됩니다</h4>
+                    </div>
+                    <div class="text-xs text-slate-400">처음 쓰는 사람도 쉽게</div>
+                  </div>
+                  <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                    <div class="flow-step-card rounded-2xl px-3 py-3 text-center">
+                      <div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">STEP 1</div>
+                      <div class="mt-1 text-sm font-semibold text-white">목적 선택</div>
+                      <div class="mt-1 text-xs leading-5 text-slate-400">템플릿, 빌더, 최적화 중 하나를 고릅니다.</div>
+                    </div>
+                    <div class="flow-step-card rounded-2xl px-3 py-3 text-center">
+                      <div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">STEP 2</div>
+                      <div class="mt-1 text-sm font-semibold text-white">방식 선택</div>
+                      <div class="mt-1 text-xs leading-5 text-slate-400">추천 또는 직접 선택으로 방향을 정합니다.</div>
+                    </div>
+                    <div class="flow-step-card rounded-2xl px-3 py-3 text-center">
+                      <div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">STEP 3</div>
+                      <div class="mt-1 text-sm font-semibold text-white">정보 입력</div>
+                      <div class="mt-1 text-xs leading-5 text-slate-400">빈칸을 채우고 필요한 조건을 보완합니다.</div>
+                    </div>
+                    <div class="flow-step-card rounded-2xl px-3 py-3 text-center">
+                      <div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">STEP 4</div>
+                      <div class="mt-1 text-sm font-semibold text-white">생성 및 개선</div>
+                      <div class="mt-1 text-xs leading-5 text-slate-400">결과를 보고 복사하거나 최적화합니다.</div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <p class="text-sm leading-relaxed text-slate-600">역할, 문제, 출력 형식이 미리 채워져 있어 바로 시작할 수 있습니다.</p>
-            </div>
-            <div class="surface-card rounded-3xl p-4">
-              <div class="mb-3 flex items-center gap-2 text-brand-600">
-                <i class="fas fa-code"></i>
-                <h3 class="font-semibold text-slate-900">빌더 시작 카드</h3>
+
+              <div class="surface-panel rounded-3xl p-4 backdrop-blur-xl xl:sticky xl:top-20 xl:self-stretch flex h-full flex-col">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">AI 스타일</div>
+                    <h3 class="mt-1.5 text-lg font-semibold text-white">어떤 AI 말투로 맞출지 고르세요</h3>
+                  </div>
+                  <div class="text-xs text-slate-300">기본은 GPT 스타일</div>
+                </div>
+                <div class="density-stack grid gap-2.5 grid-cols-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                  <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="prompt-style-option surface-card-strong rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
+                    GPT
+                    <div class="mt-1 text-[11px] font-normal text-brand-100/80">구조적이고 간결한 스타일</div>
+                  </button>
+                  <button data-prompt-style="claude" onclick="setPromptStyle('claude')" class="prompt-style-option surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10">
+                    Claude
+                    <div class="mt-1 text-[11px] font-normal text-slate-300">맥락이 풍부한 스타일</div>
+                  </button>
+                  <button data-prompt-style="gemini" onclick="setPromptStyle('gemini')" class="prompt-style-option surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10">
+                    Gemini
+                    <div class="mt-1 text-[11px] font-normal text-slate-300">짧고 직접적인 스타일</div>
+                  </button>
+                  <button data-prompt-style="genspark" onclick="setPromptStyle('genspark')" class="prompt-style-option surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10">
+                    Genspark
+                    <div class="mt-1 text-[11px] font-normal text-slate-300">실행 순서가 분명한 스타일</div>
+                  </button>
+                  <button data-prompt-style="custom" onclick="setPromptStyle('custom')" class="prompt-style-option surface-card rounded-2xl px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-white/10 sm:col-span-2 xl:col-span-1 2xl:col-span-2">
+                    직접 지정
+                    <div class="mt-1 text-[11px] font-normal text-slate-300">기본 구조 유지, 수동 조정</div>
+                  </button>
+                </div>
+                <div class="mt-auto pt-4">
+                  <div class="rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-xs leading-5 text-slate-300">
+                    선택한 스타일은 이후 생성되는 프롬프트의 말투와 구조 힌트에 반영됩니다.
+                  </div>
+                </div>
               </div>
-              <p class="text-sm leading-relaxed text-slate-600">강한 제약과 구조가 필요할 때 하네스 필드를 바로 사용할 수 있습니다.</p>
             </div>
-            <div class="surface-card rounded-3xl p-4">
-              <div class="mb-3 flex items-center gap-2 text-brand-600">
-                <i class="fas fa-magic"></i>
-                <h3 class="font-semibold text-slate-900">최적화 시작 카드</h3>
-              </div>
-              <p class="text-sm leading-relaxed text-slate-600">프롬프트와 결과를 넣고, 다음 버전을 더 좋게 개선할 수 있습니다.</p>
-              <button onclick="switchMode('optimize')" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500">
-                최적화 열기
-              </button>
-            </div>
-          </div>
-        </section>
+          </section>
 
         <section id="quick-start-panel" class="hidden mb-10">
           <div class="surface-panel rounded-3xl p-4">

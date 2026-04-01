@@ -114,7 +114,7 @@ Done when:
 
 ## Phase 4. Admin And Analytics
 
-Status: `pending`
+Status: pending
 
 Goal:
 - analyze usage and prompt quality from a management view
@@ -132,6 +132,9 @@ Includes:
 - readable sidebar navigation for tab switching
 
 Recent work:
+- 홈 히어로의 버튼 정렬과 문단 폭을 조정해 첫 화면 가독성을 개선했습니다.
+- 모드 선택 패널 하단에 빠른 흐름 안내를 넣어 빈 공간을 자연스럽게 채웠습니다.
+- AI 스타일 패널의 높이와 토큰을 맞춰 좌우 균형과 다크/라이트 가시성을 정리했습니다.
 - admin dashboard was rewritten into a card-based workspace with a sidebar menu and top KPI cards
 - theme tokens for light and dark mode were separated so button text stays readable
 - section switching now happens by tab selection instead of long vertical scrolling

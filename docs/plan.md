@@ -89,6 +89,7 @@ Recently applied:
 - Reworked the admin dashboard into a project-specific card layout with sidebar tab switching.
 - Separated light and dark mode tokens for admin buttons, badges, and cards to improve readability.
 - Updated the history dashboard so tabs switch sections instead of relying on long scrolling.
+- Refined the home hero layout, moved the quick-flow guide into the mode panel, and aligned the AI style panel height with the left column.
 
 ## Phase Ownership
 

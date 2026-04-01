@@ -74,6 +74,23 @@
   backdrop-filter: blur(16px);
 }
 
+.prompt-shell .lang-label-ko,
+.prompt-shell .lang-label-en {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.prompt-shell.prompt-lang-ko .lang-label-ko,
+.prompt-shell.prompt-lang-en .lang-label-en {
+  display: inline-block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.prompt-shell.prompt-lang-ko .lang-label-en,
+.prompt-shell.prompt-lang-en .lang-label-ko {
+  display: none;
+}
+
 .prompt-shell .surface-panel {
   background: var(--surface-panel);
 }
@@ -84,6 +101,33 @@
 
 .prompt-shell .surface-card-strong {
   background: var(--surface-card-strong);
+}
+
+.prompt-shell .flow-step-card {
+  background: color-mix(in srgb, var(--surface-card) 86%, transparent);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.prompt-shell.theme-dark .flow-step-card {
+  background: rgba(15, 23, 42, 0.82);
+}
+
+.prompt-shell.theme-light .flow-step-card {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.prompt-shell.theme-light .flow-step-card .text-white {
+  color: #0f172a !important;
+}
+
+.prompt-shell.theme-light .flow-step-card .text-slate-400 {
+  color: #64748b !important;
+}
+
+.prompt-shell.theme-dark .flow-step-card .text-slate-400 {
+  color: #cbd5e1 !important;
 }
 
 .prompt-shell .surface-chip {
@@ -121,6 +165,41 @@
 .prompt-shell .surface-button-hero:hover {
   background: color-mix(in srgb, var(--surface-card-strong) 84%, var(--accent-soft));
   color: var(--text-primary);
+}
+
+.prompt-shell .prompt-style-option {
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.prompt-shell .prompt-style-option[data-active='true'] {
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  box-shadow:
+    0 16px 32px rgba(2, 6, 23, 0.16),
+    0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  transform: translateY(-1px);
+}
+
+.prompt-shell.theme-dark .prompt-style-option[data-active='true'] {
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.95), rgba(67, 56, 202, 0.95));
+  color: #ffffff;
+}
+
+.prompt-shell.theme-dark .prompt-style-option[data-active='true'] div {
+  color: rgba(224, 231, 255, 0.9) !important;
+}
+
+.prompt-shell.theme-light .prompt-style-option[data-active='true'] {
+  background: linear-gradient(180deg, rgba(224, 231, 255, 0.92), rgba(238, 242, 255, 0.98));
+  color: #0f172a;
+}
+
+.prompt-shell.theme-light .prompt-style-option[data-active='true'] div {
+  color: rgba(67, 56, 202, 0.82) !important;
 }
 
 .prompt-shell.theme-dark .surface-button-primary {
