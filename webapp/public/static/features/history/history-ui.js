@@ -146,6 +146,7 @@ window.closeHistory = closeHistory;
 window.clearHistory = clearHistory;
 window.showAdminHistory = showAdminHistory;
 window.promptAdminToken = promptAdminToken;
+window.selectHistoryVersion = selectHistoryVersion;
 window.openSuggestionBoard = openSuggestionBoard;
 window.showSuggestionBoard = showSuggestionBoard;
 window.closeSuggestionBoard = closeSuggestionBoard;
@@ -224,7 +225,10 @@ function submitSuggestion() {
 function copyHistoryItem(threadId) {
   const item = loadHistoryThread(threadId);
   if (!item) return;
-  navigator.clipboard.writeText(item.latestPrompt || '').then(() => {
+  const versions = Array.isArray(item.versions) ? item.versions : [];
+  const selectedIndex = typeof getHistoryVersionIndex === 'function' ? getHistoryVersionIndex(item.id, versions) : 0;
+  const selectedVersion = selectedIndex >= 0 ? versions[selectedIndex] : null;
+  navigator.clipboard.writeText(selectedVersion?.prompt || item.latestPrompt || '').then(() => {
     appendLocalActivity('HISTORY_COPY', { threadId, title: item.title || '' });
   });
 }
@@ -233,6 +237,9 @@ function loadHistoryItem(threadId) {
   const item = loadHistoryThread(threadId);
   if (!item) return;
   setCurrentHistoryThreadId(threadId);
+  const versions = Array.isArray(item.versions) ? item.versions : [];
+  const selectedIndex = typeof getHistoryVersionIndex === 'function' ? getHistoryVersionIndex(item.id, versions) : 0;
+  const selectedVersion = selectedIndex >= 0 ? versions[selectedIndex] : null;
   if (window.state) {
     state.purpose = item.purpose || state.purpose;
     state.keyword = item.keyword || state.keyword;
@@ -243,7 +250,7 @@ function loadHistoryItem(threadId) {
   const resultSection = document.getElementById('result-section');
   const promptEl = document.getElementById('result-prompt');
   const techniqueEl = document.getElementById('result-technique-name');
-  if (promptEl) promptEl.textContent = item.latestPrompt || '';
+  if (promptEl) promptEl.textContent = selectedVersion?.prompt || item.latestPrompt || '';
   if (techniqueEl) techniqueEl.textContent = item.techniqueName || item.title || 'Prompt';
   if (resultSection) {
     resultSection.classList.remove('hidden');
@@ -286,6 +293,11 @@ async function showHistory() {
   const search = document.getElementById('history-search');
   const localPanel = document.getElementById('local-history-panel');
   const updateLocalPanel = () => {
+    historyPanelSearchQuery = search.value || '';
+    if (typeof refreshLocalHistoryPanel === 'function') {
+      refreshLocalHistoryPanel();
+      return;
+    }
     localPanel.innerHTML = renderLocalHistoryPanel(loadLocalHistory(), search.value);
   };
   search?.addEventListener('input', updateLocalPanel);

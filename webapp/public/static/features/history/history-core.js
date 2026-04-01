@@ -8,9 +8,13 @@ const USER_ACTIVITY_KEY = 'pf_user_activity';
 const USER_SUGGESTION_KEY = 'pf_user_suggestions';
 const USER_SUGGESTION_DRAFT_KEY = 'pf_suggestion_draft';
 const ACTIVE_PROMPT_HISTORY_KEY = 'pf_active_prompt_history_id';
+const HISTORY_VERSION_SELECTION_KEY = 'pf_history_version_selection';
 const MAX_LOCAL_HISTORY = 120;
 const MAX_LOCAL_ACTIVITY = 300;
 const MAX_LOCAL_SUGGESTIONS = 60;
+
+let historyVersionSelection = safeJsonParse(localStorage.getItem(HISTORY_VERSION_SELECTION_KEY), {});
+let historyPanelSearchQuery = '';
 
 function safeJsonParse(value, fallback) {
   try {
@@ -82,6 +86,30 @@ function loadLocalSuggestions() {
 
 function saveLocalSuggestions(items) {
   saveLocalJson(USER_SUGGESTION_KEY, (Array.isArray(items) ? items : []).slice(0, MAX_LOCAL_SUGGESTIONS));
+}
+
+function saveHistoryVersionSelection() {
+  localStorage.setItem(HISTORY_VERSION_SELECTION_KEY, JSON.stringify(historyVersionSelection || {}));
+}
+
+function getHistoryVersionIndex(threadId, versions) {
+  if (!Array.isArray(versions) || !versions.length) return -1;
+  const selected = Number(historyVersionSelection?.[threadId]);
+  if (Number.isInteger(selected) && selected >= 0 && selected < versions.length) return selected;
+  return 0;
+}
+
+function refreshLocalHistoryPanel() {
+  const panel = document.getElementById('local-history-panel');
+  if (!panel) return;
+  panel.innerHTML = renderLocalHistoryPanel(loadLocalHistory(), historyPanelSearchQuery);
+}
+
+function selectHistoryVersion(threadId, versionIndex) {
+  if (!threadId) return;
+  historyVersionSelection = { ...(historyVersionSelection || {}), [threadId]: versionIndex };
+  saveHistoryVersionSelection();
+  refreshLocalHistoryPanel();
 }
 
 function getSuggestionDraft() {
@@ -506,13 +534,19 @@ function renderLocalHistoryPanel(items, query = '') {
       </div>
     </div>
     <div class="space-y-3">
-      ${filtered.length ? filtered.map((item) => `
+      ${filtered.length ? filtered.map((item) => {
+        const versions = Array.isArray(item.versions) ? item.versions : [];
+        const selectedIndex = getHistoryVersionIndex(item.id, versions);
+        const selectedVersion = selectedIndex >= 0 ? versions[selectedIndex] : null;
+        const previewPrompt = selectedVersion?.prompt || item.latestPrompt || '';
+        const previewTime = selectedVersion?.createdAt || item.updatedAt || item.createdAt;
+        return `
         <article class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <h4 class="truncate text-sm font-semibold text-white">${escapeHtml(item.title || 'Prompt')}</h4>
-                <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] text-brand-200">v${item.promptCount || (item.versions || []).length || 1}</span>
+                <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] text-brand-200">v${item.promptCount || versions.length || 1}</span>
                 ${item.techniqueName ? `<span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-slate-300">${escapeHtml(item.techniqueName)}</span>` : ''}
               </div>
               <div class="mt-1 text-xs leading-5 text-slate-400">
@@ -526,14 +560,23 @@ function renderLocalHistoryPanel(items, query = '') {
               <button onclick="copyHistoryItem('${escapeHtml(item.id)}')" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">복사</button>
             </div>
           </div>
-          <pre class="mt-3 whitespace-pre-wrap rounded-2xl border border-white/10 bg-slate-950/40 p-3 text-xs leading-6 text-slate-300">${escapeHtml((item.latestPrompt || '').slice(0, 600))}</pre>
-          ${(item.versions || []).length > 1 ? `
-            <div class="mt-3 flex flex-wrap gap-2 text-[10px] text-slate-400">
-              ${(item.versions || []).slice(0, 3).map((version) => `<span class="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">v${version.versionNumber || 1} · ${escapeHtml(version.kind || 'generate')}</span>`).join('')}
-            </div>
-          ` : ''}
+          <div class="mt-4 flex flex-wrap gap-2">
+            ${versions.length
+              ? versions.map((version, index) => {
+                  const active = index === selectedIndex;
+                  const label = `v${version.versionNumber || versions.length - index}`;
+                  const kind = version.kind || 'generate';
+                  return `<button type="button" onclick="selectHistoryVersion('${escapeHtml(item.id)}', ${index})" class="rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${active ? 'border-brand-400/40 bg-brand-500/20 text-brand-100' : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/10'}">${label} · ${escapeHtml(kind)}${active ? ' · 선택됨' : ''}</button>`;
+                }).join('')
+              : '<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-400">버전 없음</span>'}
+          </div>
+          <div class="mt-2 text-[11px] text-slate-500">
+            <span class="mr-3">선택 버전: ${escapeHtml(selectedVersion ? `v${selectedVersion.versionNumber || selectedIndex + 1}` : '없음')}</span>
+            <span>${escapeHtml(formatTime(previewTime || item.updatedAt || item.createdAt))}</span>
+          </div>
+          <pre class="mt-3 whitespace-pre-wrap rounded-2xl border border-white/10 bg-slate-950/40 p-3 text-xs leading-6 text-slate-300">${escapeHtml(String(previewPrompt || '').slice(0, 600))}</pre>
         </article>
-      `).join('') : '<div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm leading-7 text-slate-400">아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 자동 저장됩니다.</div>'}
+      `; }).join('') : '<div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm leading-7 text-slate-400">아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 자동 저장됩니다.</div>'}
     </div>
   `;
 }

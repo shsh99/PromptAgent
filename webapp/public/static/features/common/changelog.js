@@ -6,6 +6,14 @@
 const CHANGELOG_ITEMS = [
   {
     date: '2026-04-01',
+    version: 'v4.8',
+    items: [
+      { tag: 'improve', text: '히스토리 카드에서 이전 버전을 탭으로 전환하도록 바꿨습니다.' },
+      { tag: 'improve', text: '선택된 버전을 기준으로 불러오기와 복사가 동작하도록 정리했습니다.' },
+      { tag: 'improve', text: '세로 스크롤 대신 카드 내부 전환으로 이전 버전을 더 빠르게 확인할 수 있게 했습니다.' },
+    ],
+  },  {
+    date: '2026-04-01',
     version: 'v4.7',
     items: [
       { tag: 'improve', text: '프롬프트 생성 레이어를 System, Template, User Input으로 분리했습니다.' },
@@ -178,5 +186,6 @@ window.showUpdates = showUpdates
 window.closeUpdates = closeUpdates
 window.renderUpdatesBadge = renderUpdatesBadge
 window.markUpdatesSeen = markUpdatesSeen
+
 
 
