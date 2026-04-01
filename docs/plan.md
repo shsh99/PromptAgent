@@ -2,7 +2,7 @@
 
 ## Goal
 
-Turn PromptBuilder from a prompt generator into a prompt improvement tool that can be used for free.
+PromptBuilder를 단순한 프롬프트 생성기가 아니라, 결과를 비교하고 개선하는 도구로 발전시킵니다.
 
 ## Scope
 
@@ -12,13 +12,13 @@ Turn PromptBuilder from a prompt generator into a prompt improvement tool that c
 - version management
 - result feedback
 - template library
-- starter examples and prompt helpers
+- starter examples and helper templates
 - light collaboration support
 
 ## Execution Priority
 
-1. Result 3 variants
-2. Optimize entry
+1. 결과 3개 생성
+2. Optimize 진입
 3. Compare and history
 4. Intent engine
 5. Explanation layer
@@ -26,10 +26,10 @@ Turn PromptBuilder from a prompt generator into a prompt improvement tool that c
 
 ## Constraints
 
-- Free core must remain usable.
-- Avoid mandatory paid model calls.
-- Prefer local storage for MVP features.
-- Keep the UI simple enough to use immediately.
+- 무료 핵심 기능은 계속 사용 가능해야 합니다.
+- 유료 모델 호출은 필수 조건이 되면 안 됩니다.
+- MVP는 local-first 저장을 우선합니다.
+- UI는 바로 이해할 수 있을 만큼 단순해야 합니다.
 
 ## Current Baseline
 
@@ -70,8 +70,8 @@ Recently applied:
 
 ## Execution Order
 
-1. Result 3 variants
-2. Optimize entry
+1. 결과 3개 생성
+2. Optimize 진입
 3. Compare and history
 4. Intent engine
 5. Explanation layer
@@ -83,13 +83,13 @@ Recently applied:
 
 ## Recent Work
 
-- Strengthened the prompt quality analyzer with problem framing, input data, reasoning guidance, examples, and recovery-path checks.
-- Added a strategic guidance block to generated prompts before the final verification block.
-- Updated the docs and changelog so the current implementation state is recorded together.
-- Reworked the admin dashboard into a project-specific card layout with sidebar tab switching.
-- Separated light and dark mode tokens for admin buttons, badges, and cards to improve readability.
-- Updated the history dashboard so tabs switch sections instead of relying on long scrolling.
-- Refined the home hero layout, moved the quick-flow guide into the mode panel, and aligned the AI style panel height with the left column.
+- 프롬프트 품질 분석기에 문제 정의, 입력 데이터, 추론 방향, 예시, 복구 경로를 추가했습니다.
+- 생성 프롬프트에 전략적 안내 블록과 최종 검증 블록을 정리했습니다.
+- 문서와 changelog를 최신 구현 상태에 맞게 다시 정리했습니다.
+- 관리자 대시보드를 카드형 워크스페이스로 개편했습니다.
+- 라이트/다크 토큰을 분리해 버튼과 카드 가독성을 개선했습니다.
+- 히스토리를 탭 전환 중심으로 정리했습니다.
+- 홈 히어로 레이아웃, 빠른 흐름 안내, AI 스타일 패널 높이를 다듬었습니다.
 
 ## Phase Ownership
 
@@ -102,25 +102,26 @@ Recently applied:
 
 ## Definition Of Done
 
-- The feature is usable without manual explanation.
-- The free path works end to end.
-- The docs explain the behavior and storage model.
-- Existing flows still work after the change.
-- Phase and changelog notes are updated in the same change.
+- 기능을 따로 설명하지 않아도 사용할 수 있어야 합니다.
+- 무료 경로가 끝까지 동작해야 합니다.
+- 문서가 동작과 저장 구조를 설명해야 합니다.
+- 변경 이후 기존 흐름이 깨지지 않아야 합니다.
+- phase와 changelog가 같은 변경 세트에서 갱신되어야 합니다.
 
 ## UI / UX Update
 
-- 공통 surface 토큰을 홈 히어로, 템플릿 카드, 퀵 스타트 카드에 적용했습니다.
-- 반응형 밀도 규칙으로 작은 화면에서의 답답함을 줄이고 데스크톱 간격은 유지했습니다.
+- 공통 surface 토큰을 버튼과 카드에 적용했습니다.
+- 반응형 여백과 텍스트 밀도를 다시 맞췄습니다.
+- 상단 히어로, 모드 선택, AI 스타일, 통계 카드가 서로 더 자연스럽게 이어지도록 조정했습니다.
 
 ## Recent Prompt Layer Work
 
 - 프롬프트 생성 레이어를 `System / Template / User Input`으로 분리했습니다.
-- 복잡도에 따라 `low`는 간단 템플릿, `high`는 확장 템플릿을 사용하도록 정리했습니다.
-- 토큰 최적화를 위해 최종 검증과 추가 입력 구성을 복잡도별로 줄였습니다.
+- complexity에 따라 간단 템플릿과 확장 템플릿을 나눴습니다.
+- 최종 검증과 추가 입력 구조를 더 명확하게 맞췄습니다.
 
 ## Recent History UI Work
 
-- 히스토리 카드에서 버전을 탭으로 전환할 수 있도록 바꿨습니다.
-- 선택된 버전을 기준으로 불러오기와 복사가 동작하도록 정리했습니다.
-- 세로 스크롤 대신 카드 내부 탭으로 이전 버전을 보는 구조로 정리했습니다.
+- 히스토리 카드에서 이전 버전을 탭으로 바로 볼 수 있게 했습니다.
+- 선택한 버전을 기준으로 불러오기와 복사가 동작합니다.
+- 긴 스크롤 대신 카드 내부 전환으로 탐색하게 바꿨습니다.
