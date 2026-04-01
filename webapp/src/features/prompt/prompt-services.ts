@@ -248,6 +248,31 @@ function buildPromptVariants(prompt: string, qualityReport: any, language: strin
   return [balanced, ...variants]
 }
 
+function buildStrategicGuidanceBlock(fields: Record<string, string>, language: string) {
+  const english = language === 'en'
+  const sections = english
+    ? [
+        ['## Problem definition', fields.problem_definition || fields.project_goal || 'State the core problem the prompt is trying to solve.'],
+        ['## Input data', fields.input_data || fields.actual_input || 'Separate the input data from the task description.'],
+        ['## Reasoning guidance', fields.reasoning || fields.chain_steps || 'Explain the reasoning order or workflow the model should follow.'],
+        ['## Evaluation criteria', fields.evaluation_criteria || fields.success_criteria || 'Define how the answer will be judged or verified.'],
+        ['## Examples', fields.examples || fields.example || 'Add a short example if it helps the model understand the target shape.'],
+        ['## Recovery path', fields.failure_response || fields.rollback_plan || 'Describe what to do if the first answer is weak or incomplete.'],
+      ]
+    : [
+        ['## 문제 정의', fields.problem_definition || fields.project_goal || '이 프롬프트가 해결하려는 핵심 문제를 적어주세요.'],
+        ['## 입력 데이터', fields.input_data || fields.actual_input || '입력 데이터와 작업 지시를 분리해서 적어주세요.'],
+        ['## 추론 방향', fields.reasoning || fields.chain_steps || '모델이 따라야 할 추론 순서나 작업 흐름을 적어주세요.'],
+        ['## 평가 기준', fields.evaluation_criteria || fields.success_criteria || '결과를 어떻게 판단할지 기준을 적어주세요.'],
+        ['## 예시', fields.examples || fields.example || '목표 형태를 이해시키기 위한 짧은 예시를 추가하세요.'],
+        ['## 복구 경로', fields.failure_response || fields.rollback_plan || '첫 답변이 약할 때 어떻게 보완할지 적어주세요.'],
+      ]
+
+  return sections
+    .map(([title, body]) => `${title}\n${body}`)
+    .join('\n\n')
+}
+
 type GenerateArgs = {
   techniqueId: string
   inputFields: Record<string, string>
@@ -463,6 +488,7 @@ export function buildGenerateResult(args: GenerateArgs) {
     prompt = `[바이브 코딩 프로젝트]\n프로젝트 유형: ${purposeInfo?.label || purpose}\n작업 키워드: ${keyword}\n\n${prompt}`
   }
 
+  prompt += `\n\n${buildStrategicGuidanceBlock(fields, language || 'ko')}`
   prompt += `\n\n${buildPromptVerificationBlock(language || 'ko')}`
 
   const qualityReport = analyzePromptQualityEnhanced(prompt, fields, language || 'ko')

@@ -35,7 +35,7 @@ export function DocumentPage({
   intro,
   sections,
   footerNote,
-  contactHref = 'mailto:support@promptbuilder.co.kr',
+  contactHref = 'mailto:ggg9905@naver.com',
   contactLabel = '메일 문의',
 }: DocumentPageProps) {
   return (
@@ -194,7 +194,7 @@ export function buildPrivacySections(): Section[] {
     {
       title: '개인정보보호책임자',
       body: '개인정보 처리에 관한 문의, 열람 요청, 수정 요청 등은 아래 연락처를 통해 접수할 수 있습니다. 접수된 문의는 가능한 범위에서 신속하게 회신합니다.',
-      bullets: ['이메일: support@promptbuilder.co.kr', '업무 시간: 평일 10:00 ~ 18:00'],
+      bullets: ['이메일: ggg9905@naver.com', '업무 시간: 평일 10:00 ~ 18:00'],
     },
     {
       title: '방침 변경',
@@ -249,7 +249,7 @@ export function buildFaqSections(): Section[] {
     { title: '생성된 프롬프트의 저작권은 어떻게 되나요?', body: '프롬프트 템플릿과 서비스 구조는 운영자에게 귀속될 수 있지만, 사용자가 작성한 입력 내용과 생성 결과물의 사용 권한은 별도 정책과 법령에 따릅니다. 상업적 사용 전에는 반드시 검토해 주세요.' },
     { title: '자동화 도구나 크롤링을 사용해도 되나요?', body: '아니요. 서비스 안정성을 해치는 봇, 크롤러, 스크래퍼, 자동화된 대량 요청은 제한할 수 있습니다. 정상적인 브라우저를 통한 이용을 권장합니다.' },
     { title: '개인정보는 어떻게 관리되나요?', body: '서비스는 최소 수집, 목적 제한, 보관 기간 관리 원칙을 따르며, 불필요한 정보는 저장하지 않거나 일정 기간 후 삭제합니다. 자세한 내용은 개인정보처리방침을 확인해 주세요.' },
-    { title: '문제가 생기면 어디로 문의하나요?', body: '서비스 내 문의 기능 또는 support@promptbuilder.co.kr로 연락하시면 됩니다. 오류 제보, 개선 요청, 제휴 문의도 함께 접수할 수 있습니다.' },
+    { title: '문제가 생기면 어디로 문의하나요?', body: '서비스 내 문의 기능 또는 ggg9905@naver.com으로 연락하시면 됩니다. 오류 제보, 개선 요청, 제휴 문의도 함께 접수할 수 있습니다.' },
   ]
 }
 

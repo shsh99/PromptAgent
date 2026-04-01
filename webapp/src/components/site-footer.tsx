@@ -7,7 +7,7 @@ type SiteFooterProps = {
 }
 
 export function SiteFooter({
-  contactHref = 'mailto:support@promptbuilder.co.kr',
+  contactHref = 'mailto:ggg9905@naver.com',
   contactLabel = '메일 문의',
   onSuggestion = true,
 }: SiteFooterProps) {

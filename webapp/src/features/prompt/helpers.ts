@@ -1,8 +1,10 @@
 export {
   analyzeAndEnhancePrompt,
   analyzePromptQuality,
-  clearCache,
   generateAutoFields,
+} from './helpers-fields'
+export {
+  clearCache,
   getCacheStats,
   getChainSteps,
   getContextDetail,
@@ -20,5 +22,5 @@ export {
   normalizePurpose,
   registerPurposeConfig,
   validateInput,
-} from './helpers-fields'
+} from './helpers-config'
 export { analyzePromptQualityEnhanced, getPromptTips } from './quality'

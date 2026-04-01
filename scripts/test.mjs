@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
 
 const root = process.cwd()
-const testEntry = resolve(root, 'tests', 'prompt-quality.test.ts')
+const testEntry = resolve(root, 'tests', 'features', 'prompt', 'prompt-quality.test.ts')
 const tmpDir = resolve(root, '.tmp')
 const outFile = resolve(tmpDir, 'prompt-quality.test.mjs')
 const esbuildBin = process.platform === 'win32'

@@ -9,7 +9,7 @@ async function loadPurposes() {
     <button onclick="selectPurpose('${p.id}')" data-purpose="${p.id}"
       class="purpose-card group relative bg-gray-900/50 border border-gray-800 hover:border-brand-500/50 rounded-xl p-4 text-left transition-all duration-200 hover:bg-gray-900">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-gray-800 group-hover:bg-brand-500/10 rounded-lg flex items-center justify-center transition-colors">
+        <div class="w-10 h-10 bg-slate-100 group-hover:bg-brand-50 rounded-lg flex items-center justify-center transition-colors">
           <i class="fas ${p.icon} text-gray-500 group-hover:text-brand-400 transition-colors"></i>
         </div>
         <div>
@@ -54,13 +54,13 @@ function renderRecommendationPlaceholder() {
   if (reason) reason.textContent = '목적과 키워드를 선택하면 여기서 추천 이유를 보여줍니다.';
   if (primary) {
     primary.innerHTML = `
-      <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-sm leading-6 text-slate-400">
+      <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-500">
         추천 결과가 나오면 가장 적합한 방식이 여기에 표시됩니다.
       </div>`;
   }
   if (secondary) {
     secondary.innerHTML = `
-      <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-4 text-xs leading-6 text-slate-400">
+      <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs leading-6 text-slate-500">
         아직 보조 추천이 없습니다. 목적을 먼저 선택한 뒤 추천을 눌러보세요.
       </div>`;
   }
@@ -111,9 +111,9 @@ function displayRecommendation(data) {
   const p = data.primaryTechnique;
   document.getElementById('rec-primary').innerHTML = `
     <button onclick="selectRecommendedTechnique('${p.id}')"
-      class="w-full bg-brand-500/10 border-2 border-brand-500/40 hover:border-brand-500 rounded-xl p-4 text-left transition-all group">
+      class="w-full bg-brand-50 border-2 border-brand-300 hover:border-brand-500 rounded-xl p-4 text-left transition-all group">
       <div class="flex items-center gap-2 mb-2">
-        <span class="text-[10px] bg-brand-500/30 text-brand-300 px-2 py-0.5 rounded-full font-bold">1순위 추천</span>
+        <span class="text-[10px] bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-bold">1순위 추천</span>
         <span class="text-[10px] px-2 py-0.5 rounded-full ${catColors[p.category] || ''}">${catLabels[p.category] || ''}</span>
       </div>
       <div class="flex items-center gap-3">
@@ -121,7 +121,7 @@ function displayRecommendation(data) {
           <i class="fas ${p.icon} text-brand-400"></i>
         </div>
         <div>
-          <div class="text-sm font-semibold text-white group-hover:text-brand-300">${p.name}</div>
+          <div class="text-sm font-semibold text-slate-900 group-hover:text-brand-700">${p.name}</div>
           <div class="text-[10px] text-gray-500">${p.description}</div>
         </div>
       </div>
@@ -134,12 +134,12 @@ function displayRecommendation(data) {
     <div class="text-[10px] text-gray-500 mb-1">추가 추천</div>
     ${data.secondaryTechniques.map(t => `
       <button onclick="selectRecommendedTechnique('${t.id}')"
-        class="w-full bg-gray-800/50 border border-gray-700 hover:border-gray-500 rounded-lg p-3 text-left transition-all group flex items-center gap-3">
-        <div class="w-8 h-8 bg-gray-700/50 rounded-lg flex items-center justify-center flex-shrink-0">
-          <i class="fas ${t.icon} text-gray-400 group-hover:text-brand-400 text-sm"></i>
+        class="w-full bg-white border border-slate-200 hover:border-brand-300 rounded-lg p-3 text-left transition-all group flex items-center gap-3 shadow-sm">
+        <div class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+          <i class="fas ${t.icon} text-slate-400 group-hover:text-brand-500 text-sm"></i>
         </div>
         <div>
-          <div class="text-xs font-medium text-gray-300 group-hover:text-white">${t.name}</div>
+          <div class="text-xs font-medium text-slate-700 group-hover:text-slate-900">${t.name}</div>
           <div class="text-[10px] text-gray-600">${catLabels[t.category] || ''}</div>
         </div>
       </button>`).join('')}`;
@@ -294,20 +294,20 @@ function renderFields(data) {
   const renderField = (f) => renderFieldControl(f, state.fields?.[f.id] || '');
 
   container.innerHTML = `
-    <div class="mb-4 rounded-2xl border border-brand-500/20 bg-brand-500/5 px-4 py-3 text-sm text-gray-200">
+    <div class="mb-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
       <div class="flex items-center justify-between gap-3">
         <div>
           <div class="font-semibold text-white">${getFieldGroupTitle(state.techniqueId)}</div>
-          <div class="mt-1 text-xs text-gray-400">핵심 입력만 먼저 보이고, 필요할 때 선택 입력을 펼칠 수 있습니다.</div>
+          <div class="mt-1 text-xs text-slate-500">핵심 입력만 먼저 보이고, 필요할 때 선택 입력을 펼칠 수 있습니다.</div>
         </div>
-        ${advanced.length ? '<span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-300">선택 입력 숨김</span>' : ''}
+        ${advanced.length ? '<span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-700">선택 입력 숨김</span>' : ''}
       </div>
     </div>
     <div class="space-y-5">
       ${visible.map(renderField).join('')}
       ${advanced.length ? `
-        <details class="rounded-2xl border border-dashed border-gray-700 bg-gray-900/40 p-4">
-          <summary class="cursor-pointer list-none flex items-center justify-between gap-3 text-sm font-semibold text-gray-200">
+        <details class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
+          <summary class="cursor-pointer list-none flex items-center justify-between gap-3 text-sm font-semibold text-slate-900">
             <span>선택 입력</span>
             <span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-gray-400">${advanced.length}개</span>
           </summary>
@@ -390,24 +390,24 @@ function renderSelectedField(field) {
     return `
       <div class="mb-3 flex items-center justify-between gap-3">
         <div>
-          <div class="text-sm font-semibold text-gray-200">${field.label}${req}</div>
+          <div class="text-sm font-semibold text-slate-900">${field.label}${req}</div>
           ${help}
         </div>
       </div>
       <textarea id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}" rows="4"
-        class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+        class="field-input w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-200 transition-all resize-y"
         oninput="updateField('${field.id}', this.value)"></textarea>
     `;
   }
   return `
     <div class="mb-3 flex items-center justify-between gap-3">
       <div>
-        <div class="text-sm font-semibold text-gray-200">${field.label}${req}</div>
+        <div class="text-sm font-semibold text-slate-900">${field.label}${req}</div>
         ${help}
       </div>
     </div>
     <input type="text" id="field-${field.id}" data-field="${field.id}" placeholder="${field.placeholder}"
-      class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+      class="field-input w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-200 transition-all"
       oninput="updateField('${field.id}', this.value)" />
   `;
 }
@@ -424,7 +424,7 @@ function addSelectedAdvancedField(fieldId) {
   if (selected.querySelector(`[data-added-field="${fieldId}"]`)) return;
 
   const wrapper = document.createElement('div');
-  wrapper.className = 'rounded-2xl border border-gray-700 bg-gray-950/50 p-4';
+  wrapper.className = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm';
   wrapper.dataset.addedField = fieldId;
   wrapper.innerHTML = renderSelectedField(field);
   selected.appendChild(wrapper);
@@ -446,18 +446,18 @@ function addBlankInputField() {
   const fieldId = `custom_note_${index}`;
 
   const wrapper = document.createElement('div');
-  wrapper.className = 'rounded-2xl border border-gray-700 bg-gray-950/50 p-4';
+  wrapper.className = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm';
   wrapper.dataset.addedField = fieldId;
   wrapper.innerHTML = `
     <div class="mb-3 flex items-center justify-between gap-3">
       <div>
-        <div class="text-sm font-semibold text-gray-200">빈 입력 ${index}</div>
+        <div class="text-sm font-semibold text-slate-900">빈 입력 ${index}</div>
         <div class="mt-1 text-xs text-gray-500">원하는 내용을 자유롭게 적는 칸입니다.</div>
       </div>
-      <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-200">자유 입력</span>
+      <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-700">자유 입력</span>
     </div>
     <textarea id="${fieldId}" data-field="${fieldId}" rows="4" placeholder="여기에 자유롭게 입력하세요."
-      class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+      class="field-input w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-200 transition-all resize-y"
       oninput="updateField('${fieldId}', this.value)"></textarea>
   `;
   selected.appendChild(wrapper);
@@ -507,24 +507,24 @@ function renderFields(data) {
     const req = f.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
     if (f.type === 'textarea') {
       return `<div>
-        <label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>
+        <label class="block text-sm font-medium text-slate-700 mb-1.5">${f.label}${req}</label>
         <textarea id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder}" rows="4"
-          class="field-input w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+          class="field-input w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-200 transition-all resize-y"
           oninput="updateField('${f.id}', this.value)"
           onfocus="this.classList.remove('border-brand-500/30','bg-brand-500/5')"></textarea>
       </div>`;
     }
     return `<div>
-      <label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>
+      <label class="block text-sm font-medium text-slate-700 mb-1.5">${f.label}${req}</label>
       <input type="text" id="field-${f.id}" data-field="${f.id}" placeholder="${f.placeholder}"
-        class="field-input w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+        class="field-input w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-200 transition-all"
         oninput="updateField('${f.id}', this.value)"
         onfocus="this.classList.remove('border-brand-500/30','bg-brand-500/5')" />
     </div>`;
   };
 
   container.innerHTML = `
-    <div class="mb-4 rounded-2xl border border-brand-500/20 bg-brand-500/5 px-4 py-3 text-sm text-gray-200">
+    <div class="mb-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
       <div class="flex items-center justify-between gap-3">
         <div>
           <div class="font-semibold text-white">${getFieldGroupTitle(state.techniqueId)}</div>
@@ -536,7 +536,7 @@ function renderFields(data) {
     <div class="space-y-5">
       ${visible.map(renderField).join('')}
       ${advanced.length ? `
-        <div class="rounded-2xl border border-dashed border-gray-700 bg-gray-900/40 p-4">
+        <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
           <div class="flex items-center justify-between gap-3">
             <div>
               <div class="text-sm font-semibold text-gray-200">선택 입력 추가</div>
@@ -546,11 +546,11 @@ function renderFields(data) {
           </div>
           <div class="mt-4 flex flex-wrap gap-2" id="advanced-field-picker">
             ${advanced.map((field) => `
-              <button type="button" data-field-id="${field.id}" data-field-label="${field.label}" class="rounded-xl border border-gray-700 bg-gray-900/60 px-3 py-2 text-xs font-semibold text-gray-200 hover:border-brand-500 hover:bg-brand-500/10" onclick="addSelectedAdvancedField('${field.id}')">
+              <button type="button" data-field-id="${field.id}" data-field-label="${field.label}" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:border-brand-300 hover:bg-brand-50" onclick="addSelectedAdvancedField('${field.id}')">
                 ${field.label}
               </button>
             `).join('')}
-            <button type="button" class="rounded-xl border border-dashed border-brand-500/40 bg-brand-500/5 px-3 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/10" onclick="addBlankInputField()">
+            <button type="button" class="rounded-xl border border-dashed border-brand-300 bg-white px-3 py-2 text-xs font-semibold text-brand-700 shadow-sm hover:bg-brand-50" onclick="addBlankInputField()">
               빈 입력 추가
             </button>
           </div>
@@ -567,9 +567,9 @@ function syncAdvancedPickerButton(fieldId, active) {
   const label = button.dataset.fieldLabel || String(button.textContent || '').replace('선택됨 · ', '').trim() || fieldId;
   button.dataset.selected = active ? 'true' : 'false';
   button.classList.toggle('border-brand-500', active);
-  button.classList.toggle('bg-brand-500/15', active);
+  button.classList.toggle('bg-brand-50', active);
   button.classList.toggle('text-white', active);
-  button.classList.toggle('text-gray-200', !active);
+  button.classList.toggle('text-slate-700', !active);
   button.classList.toggle('opacity-40', active);
   button.classList.toggle('cursor-not-allowed', active);
   button.textContent = active ? `선택됨 · ${label}` : label;
@@ -578,8 +578,8 @@ function syncAdvancedPickerButton(fieldId, active) {
 
 function renderFieldControl(f, value = '', showLabel = true) {
   const req = f.required ? '<span class="text-red-400 ml-0.5">*</span>' : '';
-  const baseClass = 'field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all';
-  const labelBlock = showLabel ? `<label class="block text-sm font-medium text-gray-300 mb-1.5">${f.label}${req}</label>` : '';
+  const baseClass = 'field-input w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-200 transition-all';
+  const labelBlock = showLabel ? `<label class="block text-sm font-medium text-slate-700 mb-1.5">${f.label}${req}</label>` : '';
   if (f.type === 'select') {
     const options = (f.options || []).map((opt) => `
       <option value="${escapeHtml(opt.value)}" ${String(value || '').toLowerCase() === String(opt.value || '').toLowerCase() ? 'selected' : ''}>
@@ -614,7 +614,7 @@ function renderFieldControl(f, value = '', showLabel = true) {
 
 function buildAdvancedCardTitle(label, note) {
   return `
-    <div class="text-sm font-semibold text-gray-200">${label}</div>
+    <div class="text-sm font-semibold text-slate-900">${label}</div>
     ${note ? `<div class="mt-1 text-xs text-gray-500">${note}</div>` : ''}
   `;
 }
@@ -622,7 +622,7 @@ function buildAdvancedCardTitle(label, note) {
 function renderAdvancedRemoveButton(handlerName, id) {
   return `
     <button type="button"
-      class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-slate-300 hover:bg-white/10"
+      class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
       onclick="${handlerName}('${id}')">
       제거
     </button>
@@ -641,7 +641,7 @@ function addSelectedAdvancedField(fieldId) {
   if (!selected) return;
 
   const wrapper = document.createElement('div');
-  wrapper.className = 'rounded-2xl border border-brand-500/20 bg-gray-950/50 p-4';
+  wrapper.className = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm';
   wrapper.dataset.addedField = fieldId;
   wrapper.dataset.addedType = 'advanced';
   wrapper.innerHTML = `
@@ -650,7 +650,7 @@ function addSelectedAdvancedField(fieldId) {
         ${buildAdvancedCardTitle(field.label, field.description || '선택한 항목은 값이 비어 있어도 프롬프트에 포함됩니다.')}
       </div>
       <div class="flex items-center gap-2">
-        <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-200">선택 입력</span>
+        <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-700">선택 입력</span>
         ${renderAdvancedRemoveButton('removeSelectedAdvancedField', field.id)}
       </div>
     </div>
@@ -693,7 +693,7 @@ function addBlankInputField() {
   const label = `추가 입력 ${index}`;
 
   const wrapper = document.createElement('div');
-  wrapper.className = 'rounded-2xl border border-brand-500/20 bg-gray-950/50 p-4';
+  wrapper.className = 'rounded-2xl border border-slate-200 bg-white p-4 shadow-sm';
   wrapper.dataset.addedField = fieldId;
   wrapper.dataset.addedType = 'blank';
   wrapper.innerHTML = `
@@ -702,12 +702,12 @@ function addBlankInputField() {
         ${buildAdvancedCardTitle(label, '직접 적는 자유 입력입니다. 비어 있어도 생성 프롬프트에 반영됩니다.')}
       </div>
       <div class="flex items-center gap-2">
-        <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-200">빈 입력</span>
+        <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-brand-700">빈 입력</span>
         ${renderAdvancedRemoveButton('removeBlankInputField', fieldId)}
       </div>
     </div>
     <textarea id="${fieldId}" data-field="${fieldId}" rows="4" placeholder="자유롭게 적고 싶은 내용을 입력하세요."
-      class="field-input w-full rounded-xl border border-gray-700 bg-gray-900/60 px-4 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all resize-y"
+      class="field-input w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-200 transition-all resize-y"
       oninput="updateField('${fieldId}', this.value)"></textarea>
   `;
   selected.appendChild(wrapper);
@@ -745,7 +745,7 @@ function resetFields() {
     button.dataset.selected = 'false';
     button.disabled = false;
     button.classList.remove('border-brand-500', 'bg-brand-500/15', 'text-white', 'opacity-40', 'cursor-not-allowed');
-    button.classList.add('text-gray-200');
+    button.classList.add('text-slate-700');
     button.textContent = label;
   });
   const selected = document.getElementById('selected-advanced-fields');

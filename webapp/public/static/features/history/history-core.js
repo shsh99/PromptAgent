@@ -106,7 +106,7 @@ function buildHistoryTitle(data = {}) {
 }
 
 function upsertPromptHistoryVersion(data = {}) {
-  const threadId = String(data.threadId || getCurrentHistoryThreadId() || createLocalRecordId('ph'));
+  const threadId = String(data.threadId || createLocalRecordId('ph'));
   const history = loadLocalHistory();
   const createdAt = data.createdAt || new Date().toISOString();
   let thread = history.find((item) => item.id === threadId);
@@ -324,6 +324,7 @@ function recordActivity(actionType, meta = {}) {
 
 function saveToHistory(data) {
   const variants = Array.isArray(data.variants) ? data.variants : Array.isArray(state.generatedVariants) ? state.generatedVariants : [];
+  const threadId = data.threadId || createLocalRecordId('ph');
   const samplePayload = {
     id: data.versionId || createLocalRecordId('ts'),
     visitorId: ensureVisitorId(),
@@ -356,7 +357,7 @@ function saveToHistory(data) {
     createdAt: new Date().toISOString(),
   };
   const entry = upsertPromptHistoryVersion({
-    threadId: data.threadId || getCurrentHistoryThreadId(),
+    threadId,
     versionId: data.versionId,
     kind: data.kind || 'generate',
     title: data.title || buildHistoryTitle(data),
@@ -597,4 +598,3 @@ function renderSuggestionBoardContent() {
     </div>
   `;
 }
-

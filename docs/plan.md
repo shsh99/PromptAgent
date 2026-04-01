@@ -15,6 +15,15 @@ Turn PromptBuilder from a prompt generator into a prompt improvement tool that c
 - starter examples and prompt helpers
 - light collaboration support
 
+## Execution Priority
+
+1. Result 3 variants
+2. Optimize entry
+3. Compare and history
+4. Intent engine
+5. Explanation layer
+6. Admin analytics
+
 ## Constraints
 
 - Free core must remain usable.
@@ -39,13 +48,7 @@ Already present:
 Missing or incomplete:
 - ambiguity analysis
 - token waste analysis
-- problem framing
-- input data design
-- reasoning guidance
 - output schema
-- evaluation criteria
-- example-based learning
-- recovery prompts
 - model-aware rewriting
 - result compare workflow
 - full compare mode
@@ -56,6 +59,14 @@ Missing or incomplete:
 - result feedback ingestion
 - template library
 - starter examples and helper templates
+
+Recently applied:
+- problem framing
+- input data design
+- reasoning guidance
+- evaluation criteria
+- example-based learning
+- recovery prompts
 
 ## Execution Order
 
@@ -70,11 +81,19 @@ Missing or incomplete:
 9. Starter examples and helpers
 10. Sharing and collaboration
 
+## Recent Work
+
+- Strengthened the prompt quality analyzer with problem framing, input data, reasoning guidance, examples, and recovery-path checks.
+- Added a strategic guidance block to generated prompts before the final verification block.
+- Updated the docs and changelog so the current implementation state is recorded together.
+
 ## Phase Ownership
 
-- Product logic: `webapp/src/helpers.ts`
-- API behavior: `webapp/src/routes.ts`
-- UI flow: `webapp/public/static/*.js`
+- Product logic: `webapp/src/features/prompt/*`
+- API behavior: `webapp/src/app/routes.ts`
+- App bootstrap: `webapp/src/app/bootstrap.tsx`
+- Rendering: `webapp/src/app/renderer.tsx`
+- UI flow: `webapp/public/static/features/*`
 - Documentation: `docs/*.md`
 
 ## Definition Of Done
@@ -84,3 +103,8 @@ Missing or incomplete:
 - The docs explain the behavior and storage model.
 - Existing flows still work after the change.
 - Phase and changelog notes are updated in the same change.
+
+## UI / UX Update
+
+- 공통 surface 토큰을 홈 히어로, 템플릿 카드, 퀵 스타트 카드에 적용했습니다.
+- 반응형 밀도 규칙으로 작은 화면에서의 답답함을 줄이고 데스크톱 간격은 유지했습니다.

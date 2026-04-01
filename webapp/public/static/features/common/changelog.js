@@ -1,329 +1,173 @@
-// ===== changelog.js — 업데이트 로그 =====
+﻿// ?낅뜲?댄듃 濡쒓렇
 //
-// 새 버전 배포 시 CHANGELOG_ITEMS 맨 앞에 항목 추가
+// ??諛고룷留덈떎 CHANGELOG_ITEMS 留??꾩뿉 ??ぉ??異붽??⑸땲??
 // tag: 'new' | 'improve' | 'fix' | 'refactor'
-// ──────────────────────────────────────────
 
 const CHANGELOG_ITEMS = [
   {
-    date: '26.04.01',
+    date: '2026-04-01',
+    version: 'v4.6',
+    items: [
+      { tag: 'improve', text: '공통 surface 토큰을 적용해 라이트/다크 모드 홈 카드의 톤을 일관되게 맞췄습니다.' },
+      { tag: 'improve', text: '작은 화면에서 카드와 버튼이 너무 빽빽해지지 않도록 반응형 밀도 규칙을 추가했습니다.' },
+      { tag: 'improve', text: '템플릿 카드와 퀵 스타트 카드를 재사용 가능한 surface 클래스 기반으로 정리했습니다.' },
+    ],
+  },
+  {
+    date: '2026-04-01',
+    version: 'v4.5',
+    items: [
+      { tag: 'improve', text: '프롬프트 품질 분석에 문제 정의, 입력 데이터, 추론 방향, 예시, 복구 경로를 추가했습니다.' },
+      { tag: 'improve', text: '생성된 프롬프트에 최종 검증 블록 전에 전략 가이드 블록을 넣도록 했습니다.' },
+      { tag: 'improve', text: '최근 작업 내역이 문서와 변경 로그에 함께 기록되도록 정리했습니다.' },
+    ],
+  },
+  {
+    date: '2026-04-01',
+    version: 'v4.4',
+    items: [
+      { tag: 'refactor', text: 'src/app??bootstrap, routing, rendering?쇰줈 遺꾨━?덉뒿?덈떎.' },
+      { tag: 'refactor', text: 'tests瑜?features/prompt 湲곗??쇰줈 ?대뜑?뷀뻽?듬땲??' },
+      { tag: 'improve', text: 'prompt quality???쒓뎅???곸뼱 濡쒖뺄?쇱씠吏?臾몄옄?댁쓣 ?ㅼ떆 ?뺣━?덉뒿?덈떎.' },
+    ],
+  },
+  {
+    date: '2026-04-01',
     version: 'v4.3',
     items: [
-      { tag: 'fix', text: '전체 활동 로그는 페이지뷰를 제외한 실제 행동 기준으로 세어 1회 행동이 1씩 오르도록 정리했습니다.' },
-      { tag: 'fix', text: '생성 프롬프트 수는 프롬프트 실행 로그 기준으로 집계해 숫자가 바로 늘어나도록 수정했습니다.' },
-      { tag: 'improve', text: '생성 직후 메인 카운터가 바로 다시 읽히도록 갱신 흐름을 추가했습니다.' },
+      { tag: 'fix', text: '?쒖옉 ?붾㈃??以묐났 ?뚮뜑留?濡쒓렇瑜??뺣━?덉뒿?덈떎.' },
+      { tag: 'fix', text: '?앹꽦 ?꾨＼?꾪듃 寃利?釉붾줉???ㅽ뻾 濡쒓렇瑜??ㅼ떆 蹂댁씠?꾨줉 ?섏젙?덉뒿?덈떎.' },
+      { tag: 'improve', text: '?앹꽦 ?꾨즺 ???꾩껜 移댁슫?곌? ???덉젙?곸쑝濡?媛깆떊?섎룄濡?媛쒖꽑?덉뒿?덈떎.' },
     ],
   },
   {
-    date: '26.04.01',
+    date: '2026-04-01',
     version: 'v4.2',
     items: [
-      { tag: 'improve', text: '메인 화면을 단순화하고 전체 생성 수, 활동 로그 수, 방문자 수를 신뢰 지표로 전면에 배치했습니다.' },
-      { tag: 'improve', text: '메인 타이틀 줄바꿈을 정리해 한 줄씩 어긋나 보이던 문제를 줄였습니다.' },
-      { tag: 'improve', text: '공용 통계 API를 추가해 서버 기준 사용량을 메인에서 바로 읽을 수 있게 했습니다.' },
+      { tag: 'improve', text: '硫붿씤 ?붾㈃ ?꾪솚 ?좊땲硫붿씠?섍낵 ?꾩껜 ?앹꽦 ?먮쫫???뺣━?덉뒿?덈떎.' },
+      { tag: 'improve', text: '硫붿씤 ?곹깭 諛붿? ?꾩옱 ?꾩튂 ?덈궡瑜??ъ슜?먯뿉寃?????蹂댁씠寃??ㅻ벉?덉뒿?덈떎.' },
+      { tag: 'improve', text: '怨듯넻 ?곸뿭 API瑜?異붽????붾㈃蹂?湲곕뒫??硫붿씤?먯꽌 諛붾줈 遺덈윭?????덇쾶 ?덉뒿?덈떎.' },
     ],
   },
   {
-    date: '26.04.01',
+    date: '2026-04-01',
     version: 'v4.1',
     items: [
-      { tag: 'new', text: '프롬프트 생성 결과를 3개 변형으로 보여주고 바로 선택할 수 있게 했습니다.' },
-      { tag: 'new', text: '결과 화면에 Optimize 버튼을 추가해 생성 결과를 최적화 모드로 바로 보낼 수 있게 했습니다.' },
-      { tag: 'improve', text: '관리자 학습 샘플에 검색과 CSV 내보내기를 추가해 포트폴리오용 데이터 정리를 쉽게 했습니다.' },
+      { tag: 'new', text: '?꾨＼?꾪듃 ?앹꽦 寃곌낵瑜?3媛?蹂?뺤쑝濡?蹂댁뿬二쇨퀬 諛붾줈 ?좏깮?????덇쾶 ?덉뒿?덈떎.' },
+      { tag: 'new', text: '寃곌낵 ?붾㈃??Optimize 踰꾪듉??異붽????앹꽦 寃곌낵瑜?媛쒖꽑 紐⑤뱶濡?諛붾줈 蹂대궪 ???덇쾶 ?덉뒿?덈떎.' },
+      { tag: 'improve', text: '愿由ъ옄 ??쒕낫?쒖? CSV ?대낫?닿린 援ъ“瑜??뺣━?덉뒿?덈떎.' },
     ],
   },
-  {
-    date: '26.03.31',
-    version: 'v4.0',
-    items: [
-      { tag: 'new', text: '자유 건의 게시판을 추가해 사용자가 개선 요청과 피드백을 직접 남길 수 있게 했습니다.' },
-      { tag: 'improve', text: '관리자 대시보드에서 건의사항 접수함을 전체화면에서 바로 확인할 수 있게 했습니다.' },
-      { tag: 'improve', text: '건의 제출 내용이 로컬 저장과 관리자 로그에 함께 남도록 연결했습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.9',
-    items: [
-      { tag: 'improve', text: '관리자 토큰 입력 후 모달이 아니라 전체화면 관리자 대시보드로 바로 열리도록 바꿨습니다.' },
-      { tag: 'improve', text: '라이트모드의 결과 버튼, 카드, 보조 텍스트 대비를 더 높여 가독성을 보강했습니다.' },
-      { tag: 'fix', text: '관리자 진입 경로와 결과 화면의 시각적 혼동을 줄였습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.8',
-    items: [
-      { tag: 'improve', text: '상단에 관리자 바로가기를 추가해 토큰 입력 후 히스토리 모달의 관리자 패널로 바로 들어갈 수 있게 했습니다.' },
-      { tag: 'improve', text: '무료 로컬 히스토리와 관리자 로그를 같은 모달에서 구분해 볼 수 있도록 정리했습니다.' },
-      { tag: 'fix', text: '관리자 진입 경로가 화면에 명시되지 않던 문제를 해결했습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.7',
-    items: [
-      { tag: 'improve', text: '로그인 없이도 프롬프트 히스토리와 버전이 브라우저에 저장되도록 무료 로컬 저장 구조를 추가했습니다.' },
-      { tag: 'improve', text: '개선과 최적화 결과도 같은 히스토리 스레드에 버전으로 쌓이도록 연결했습니다.' },
-      { tag: 'fix', text: 'GitHub Actions 자동 배포 트리거를 제거하고 수동 실행 전용으로 바꿨습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.6',
-    items: [
-      { tag: 'improve', text: '작업 상태 선택을 추가해 새로 시작, 진행 중, 완료 보고, 막힘 / 수정 요청을 구분할 수 있게 했습니다.' },
-      { tag: 'improve', text: '프롬프트 생성 시 진행형 작업에 맞는 안내 블록이 자동으로 붙도록 정리했습니다.' },
-      { tag: 'improve', text: '홈 화면에 베타 배지와 빠른 이동 사이드바를 넣어 처음 들어온 사용자가 덜 헤매게 했습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.5',
-    items: [
-      { tag: 'improve', text: '관리자 통계에 생성 수, 조회수, 복사 수, 다운로드 수, 주요 활동 패턴이 추가되었습니다.' },
-      { tag: 'improve', text: '히스토리 화면이 한국어 기준으로 다시 정리되어 로그와 통계를 더 쉽게 확인할 수 있습니다.' },
-      { tag: 'fix', text: '최신 배포가 README와 changelog의 상단 기준으로 반영되도록 정리했습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.4',
-    items: [
-      { tag: 'improve', text: '관리자 통계가 생성, 조회, 최적화, 인기 유형까지 한 번에 보이도록 확장되었습니다.' },
-      { tag: 'improve', text: 'Template / Builder / Optimize 모드 전환도 활동 로그에 남기도록 보강했습니다.' },
-      { tag: 'improve', text: '프롬프트 등급, 복사, 다운로드 같은 운영 지표도 함께 확인할 수 있게 했습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.3',
-    items: [
-      { tag: 'improve', text: '관리자 화면에 생성 수, 조회수, 최적화 수, 인기 유형 통계를 더 자세히 보여주도록 확장했습니다.' },
-      { tag: 'improve', text: '프롬프트 로그와 활동 로그의 상위 항목을 바로 볼 수 있게 정리했습니다.' },
-      { tag: 'improve', text: '로그 패널을 한국어 중심으로 재구성해 관리자가 기록을 더 쉽게 확인할 수 있게 했습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.2',
-    items: [
-      { tag: 'improve', text: '선택 입력을 개별 삭제할 수 있게 해서 입력 흐름을 더 유연하게 만들었습니다.' },
-      { tag: 'improve', text: '비어 있는 선택 입력도 최종 프롬프트의 추가 입력 섹션에 반영되도록 정리했습니다.' },
-      { tag: 'improve', text: 'Template / Builder / Optimize 모드의 활성 상태가 더 분명하게 보이도록 강조했습니다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.1',
-    items: [
-      { tag: 'improve', text: 'GPT, Claude, Gemini, Genspark 스타일 프리셋을 선택할 수 있게 했다.' },
-      { tag: 'improve', text: '선택한 스타일이 생성 프롬프트에 반영되도록 연결했다.' },
-      { tag: 'improve', text: '기본은 GPT 스타일로 두고, 필요하면 다른 스타일로 전환할 수 있게 했다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v3.0',
-    items: [
-      { tag: 'improve', text: '선택 입력을 원하는 항목만 골라 추가하는 방식으로 바꿨다.' },
-      { tag: 'improve', text: '빈 입력 칸을 추가해 자유롭게 메모를 넣을 수 있게 했다.' },
-      { tag: 'improve', text: '추가한 빈 입력 내용도 생성 프롬프트에 포함되도록 연결했다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v2.9',
-    items: [
-      { tag: 'improve', text: '선택 입력이 한 번에 펼쳐지지 않고 하나씩 추가되도록 바꿨다.' },
-      { tag: 'improve', text: '사무직 사용자가 고급 입력에 압도되지 않도록 기본 화면을 더 단순하게 정리했다.' },
-      { tag: 'fix', text: '선택 입력이 덩어리로 보이던 흐름을 단계형 추가 방식으로 바꿨다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v2.8',
-    items: [
-      { tag: 'improve', text: '퀵 모드에서 사무직과 개발자 진입점이 더 명확하게 보이도록 카드형 시작 흐름을 정리했다.' },
-      { tag: 'improve', text: '입력 폼은 기술별로 핵심 입력과 선택 입력을 나눠서 보여주도록 바꿨다.' },
-      { tag: 'improve', text: '사무직 사용자는 코딩 컨벤션, 브랜치 규칙 같은 개발용 항목을 기본적으로 숨기도록 조정했다.' },
-      { tag: 'fix', text: 'README와 배포 URL을 최신 상태로 다시 맞출 수 있게 정리했다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v2.7',
-    items: [
-      { tag: 'improve', text: '퀵 모드에 바로 시작할 수 있는 사무직/개발자 카드와 자동 시작 흐름을 추가했다.' },
-      { tag: 'improve', text: '고급자 모드의 빈칸 자동 보강과 must-have / should-have / nice-to-have 기본값을 강화했다.' },
-      { tag: 'improve', text: '라이트 모드 색상과 그림자를 더 통일감 있게 정리했다.' },
-      { tag: 'improve', text: 'README를 최신 배포 URL과 상세 설명 기준으로 다시 정리했다.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v2.6',
-    items: [
-      { tag: 'improve',  text: '퀵 모드 / 고급자 모드 / 최적화 모드로 첫 진입 구조를 더 단순하게 정리.' },
-      { tag: 'fix',      text: '라이트 모드 색상 계열을 더 통일되게 맞춤.' },
-      { tag: 'improve',  text: 'README에 배포 주소와 프로젝트 구성, 기능 설명을 더 상세히 추가.' },
-      { tag: 'fix',      text: '내부 용어인 적용 버튼을 이해하기 쉬운 표현으로 변경.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v2.5',
-    items: [
-      { tag: 'fix',      text: '최적화 모드 실행 안정성을 높이고 빈 입력 안내를 추가.' },
-      { tag: 'improve',  text: '한국어 기본 출력을 강화하고 영어는 선택했을 때만 나오도록 정리.' },
-      { tag: 'improve',  text: '라이트 모드 색감과 그림자 톤을 더 부드럽게 조정.' },
-      { tag: 'refactor', text: '첫 화면의 중복 안내를 줄여 진입 동선을 더 단순하게 정리.' },
-    ],
-  },
-  {
-    date: '26.03.31',
-    version: 'v2.4',
-    items: [
-      { tag: 'new',      text: '한국어 기본 UI와 라이트/다크 테마 전환을 추가.' },
-      { tag: 'new',      text: '프로젝트 설계용과 진행 중 질문용 시작 템플릿을 분리.' },
-      { tag: 'improve',  text: '예시, 도움말, 최적화 화면을 더 단순하고 읽기 쉽게 정리.' },
-      { tag: 'fix',      text: '라이트 모드 색상과 그림자 톤을 더 자연스럽게 조정.' },
-    ],
-  },
-  {
-    date: '26.03.30',
-    version: 'v2.3',
-    items: [
-      { tag: 'new',      text: '관리자 전용 로그 조회 기능 추가.' },
-      { tag: 'improve',  text: '최근 업데이트 화면을 더 짧고 읽기 쉽게 정리.' },
-      { tag: 'fix',      text: '화면 문구와 표시 위치를 수정.' },
-    ],
-  },
-  {
-    date: '26.03.30',
-    version: 'v2.2',
-    items: [
-      { tag: 'new',     text: '기록 확인 및 관리 기능 추가.' },
-      { tag: 'improve', text: '사용 흐름을 더 단순하게 정리.' },
-      { tag: 'fix',     text: '표시 오류를 수정.' },
-    ],
-  },
-  {
-    date: '26.03.28',
-    version: 'v2.1',
-    items: [
-      { tag: 'new',     text: '프롬프트 저장 및 재사용 기능 추가.' },
-      { tag: 'new',     text: '프롬프트 개선 기능 추가.' },
-      { tag: 'improve', text: '입력 옵션을 더 세밀하게 조정 가능.' },
-    ],
-  },
-  {
-    date: '26.03.20',
-    version: 'v2.0',
-    items: [
-      { tag: 'new',     text: '컨텍스트 문서 생성 기능 추가.' },
-      { tag: 'new',     text: '단계별 프롬프트 생성 기능 추가.' },
-      { tag: 'new',     text: 'context.md 다운로드 기능 추가.' },
-      { tag: 'improve', text: '생성 결과 활용성과 다운로드 경험 개선.' },
-    ],
-  },
-  {
-    date: '26.03.10',
-    version: 'v1.5',
-    items: [
-      { tag: 'new',     text: '목적별 기법 자동 추천 기능 추가.' },
-      { tag: 'new',     text: '입력 필드 자동 채우기 기능 추가.' },
-      { tag: 'improve', text: '품질 점검 항목을 보강.' },
-    ],
-  },
-  {
-    date: '26.03.01',
-    version: 'v1.0',
-    items: [
-      { tag: 'new', text: 'PromptBuilder 초기 버전 출시.' },
-      { tag: 'new', text: '프롬프트 생성 기록 저장 기능 추가.' },
-      { tag: 'new', text: '프롬프트 복사 및 다운로드 기능 추가.' },
-    ],
-  },
-];
+]
 
 const CHANGELOG_TAG_META = {
-  new:      { label: '새 기능',   cls: 'bg-blue-500/20 text-blue-400',   icon: 'fa-plus' },
-  improve:  { label: '개선',      cls: 'bg-green-500/20 text-green-400', icon: 'fa-arrow-up' },
-  fix:      { label: '버그 수정', cls: 'bg-red-500/20 text-red-400',     icon: 'fa-wrench' },
-  refactor: { label: '리팩토링',  cls: 'bg-gray-500/20 text-gray-400',   icon: 'fa-code' },
-};
+  new: { label: '??湲곕뒫', cls: 'bg-blue-500/20 text-blue-400', icon: 'fa-plus' },
+  improve: { label: '媛쒖꽑', cls: 'bg-green-500/20 text-green-400', icon: 'fa-arrow-up' },
+  fix: { label: '踰꾧렇 ?섏젙', cls: 'bg-red-500/20 text-red-400', icon: 'fa-wrench' },
+  refactor: { label: '由ы뙥?곕쭅', cls: 'bg-gray-500/20 text-gray-300', icon: 'fa-code' },
+}
 
-// ── 읽음 처리 ──────────────────────────────────────────────────────
 function getLastSeenVersion() {
-  return localStorage.getItem('pb_last_seen_version') || '';
+  return localStorage.getItem('pb_last_seen_version') || ''
 }
 
-function markUpdatesRead() {
-  if (CHANGELOG_ITEMS.length > 0) {
-    localStorage.setItem('pb_last_seen_version', CHANGELOG_ITEMS[0].version);
-  }
-  const badge = document.getElementById('updates-new-badge');
-  if (badge) badge.remove();
+function setLastSeenVersion(version) {
+  if (!version) return
+  localStorage.setItem('pb_last_seen_version', version)
 }
 
-function hasUnreadUpdates() {
-  const seen = getLastSeenVersion();
-  if (!seen) return true;
-  return CHANGELOG_ITEMS.length > 0 && CHANGELOG_ITEMS[0].version !== seen;
+function getLatestVersion() {
+  return CHANGELOG_ITEMS[0]?.version || ''
 }
 
-function renderUpdatesBadge() {
-  const btn = document.querySelector('button[onclick="showUpdates()"]');
-  if (!btn || document.getElementById('updates-new-badge')) return;
-  if (hasUnreadUpdates()) {
-    const badge = document.createElement('span');
-    badge.id = 'updates-new-badge';
-    badge.className = 'absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-500 text-[9px] font-bold text-white';
-    badge.textContent = 'N';
-    btn.style.position = 'relative';
-    btn.appendChild(badge);
-  }
+function getUnseenCount() {
+  const lastSeen = getLastSeenVersion()
+  return CHANGELOG_ITEMS.filter((item) => item.version !== lastSeen).length
 }
 
-// ── 모달 ───────────────────────────────────────────────────────────
-function showUpdates() {
-  document.getElementById('updates-modal').classList.remove('hidden');
-  markUpdatesRead();
-
-  const content = document.getElementById('updates-content');
-  content.innerHTML = CHANGELOG_ITEMS.map((item, index) => {
-    const isLatest = index === 0;
-    const itemsHtml = item.items.map(entry => {
-      const meta = CHANGELOG_TAG_META[entry.tag] || CHANGELOG_TAG_META.new;
-      return `
-        <div class="flex items-start gap-3 rounded-xl border border-gray-800 bg-gray-900/60 px-4 py-3">
-          <span class="mt-0.5 flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${meta.cls}">
-            <i class="fas ${meta.icon} text-[9px]"></i>${meta.label}
-          </span>
-          <span class="text-sm leading-relaxed text-gray-300">${escapeHtml(entry.text)}</span>
-        </div>`;
-    }).join('');
+function renderChangelogItems() {
+  return CHANGELOG_ITEMS.map((group) => {
+    const items = group.items
+      .map((item) => {
+        const meta = CHANGELOG_TAG_META[item.tag] || CHANGELOG_TAG_META.improve
+        return `
+          <li class="flex gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <span class="mt-0.5 inline-flex h-7 w-7 flex-none items-center justify-center rounded-full ${meta.cls}">
+              <i class="fas ${meta.icon} text-[10px]"></i>
+            </span>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">${meta.label}</span>
+                <span class="text-[10px] text-slate-500">${group.version} 쨌 ${group.date}</span>
+              </div>
+              <p class="mt-2 text-sm leading-6 text-slate-700">${item.text}</p>
+            </div>
+          </li>
+        `
+      })
+      .join('')
 
     return `
-      <div class="${index ? 'mt-6 border-t border-gray-800/60 pt-6' : ''}">
-        <div class="mb-3 flex items-center gap-3">
-          <span class="inline-flex h-9 w-9 items-center justify-center rounded-full ${isLatest ? 'bg-brand-500/20 text-brand-400' : 'bg-gray-800 text-gray-500'}">
-            <i class="fas ${isLatest ? 'fa-rocket' : 'fa-clock-rotate-left'} text-sm"></i>
-          </span>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold text-white">${escapeHtml(item.version || '')}</span>
-              ${isLatest ? '<span class="inline-flex items-center gap-1 rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-bold text-brand-400"><i class="fas fa-bolt text-[8px]"></i>최신</span>' : ''}
-            </div>
-            <div class="text-[11px] text-gray-500">${escapeHtml(item.date)}</div>
+      <section class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500">${group.date}</div>
+            <h4 class="mt-1 text-sm font-semibold text-slate-900">${group.version}</h4>
           </div>
+          <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] text-slate-600">${group.items.length} items</span>
         </div>
-        <div class="space-y-2 pl-12">${itemsHtml}</div>
-      </div>`;
-  }).join('');
+        <ul class="space-y-3">${items}</ul>
+      </section>
+    `
+  }).join('')
+}
+
+function renderUpdatesContent() {
+  return `
+    <div class="space-y-5">
+      <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500">?낅뜲?댄듃 濡쒓렇</div>
+            <h3 class="mt-1 text-xl font-bold text-slate-900">理쒓렐 蹂寃??ы빆</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-600">踰꾩쟾蹂꾨줈 湲곕뒫 異붽?, 援ъ“ 蹂寃? ?섏젙 ?ы빆???뺤씤?????덉뒿?덈떎.</p>
+          </div>
+          <button onclick="markUpdatesSeen()" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+            理쒖떊?쇰줈 ?쒖떆
+          </button>
+        </div>
+      </div>
+      <div class="space-y-4">${renderChangelogItems()}</div>
+    </div>
+  `
+}
+
+function showUpdates() {
+  const modal = document.getElementById('updates-modal')
+  const content = document.getElementById('updates-content')
+  if (!modal || !content) return
+  content.innerHTML = renderUpdatesContent()
+  modal.classList.remove('hidden')
+  setLastSeenVersion(getLatestVersion())
+  renderUpdatesBadge()
 }
 
 function closeUpdates() {
-  document.getElementById('updates-modal').classList.add('hidden');
+  const modal = document.getElementById('updates-modal')
+  if (modal) modal.classList.add('hidden')
 }
+
+function markUpdatesSeen() {
+  setLastSeenVersion(getLatestVersion())
+  renderUpdatesBadge()
+}
+
+function renderUpdatesBadge() {
+  return
+}
+
+window.showUpdates = showUpdates
+window.closeUpdates = closeUpdates
+window.renderUpdatesBadge = renderUpdatesBadge
+window.markUpdatesSeen = markUpdatesSeen
+

@@ -3,13 +3,12 @@
 ## Current Priority
 
 1. 결과 3개 생성
-2. Optimize 버튼
-3. Compare 기능
-4. 히스토리
-5. Intent Engine
-6. 설명 기능
-7. 관리자 페이지
-8. 데이터 분석
+2. Optimize
+3. Compare / 히스토리
+4. Intent Engine
+5. 설명 기능
+6. 관리자 분석
+7. 데이터 분석
 
 ## Phase 0. Docs And Agent Scaffold
 
@@ -34,6 +33,10 @@ Goal:
 Includes:
 - ambiguity detection
 - missing role detection
+- problem definition detection
+- input data detection
+- reasoning guidance detection
+- example detection
 - missing constraints detection
 - output structure detection
 - token waste hints
@@ -71,6 +74,11 @@ Includes:
 - diff view
 - version labels
 - history review
+
+Current focus:
+- result 3 variants
+- optimize entry
+- compare and history flow
 
 Done when:
 - users can compare two versions without leaving the app
@@ -158,3 +166,14 @@ Done when:
 - The free plan should cover phases 0 to 5 without requiring paid APIs.
 - Collaboration can stay optional or limited if persistence costs are needed.
 - Any new feature should be documented in the matching phase section before merging.
+
+## Recent Work
+
+- 프롬프트 품질 분석에 문제 정의, 입력 데이터, 추론 방향, 예시, 복구 경로를 추가했습니다.
+- 생성된 프롬프트에 최종 검증 블록 전에 전략 가이드 블록을 넣도록 했습니다.
+- 이번 작업이 문서와 변경 로그에 함께 기록되도록 정리했습니다.
+
+## Recent UI Work
+
+- 카드와 버튼에 공통 surface 토큰을 적용해서 라이트/다크 모드 톤을 일관되게 맞췄습니다.
+- 모바일에서 간격과 그리드 밀도를 조정해 템플릿/빌더 흐름이 덜 빽빽하게 보이도록 했습니다.

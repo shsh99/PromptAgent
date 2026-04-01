@@ -141,6 +141,20 @@ async function promptAdminToken() {
   await showAdminDashboard();
 }
 
+window.showHistory = showHistory;
+window.closeHistory = closeHistory;
+window.clearHistory = clearHistory;
+window.showAdminHistory = showAdminHistory;
+window.promptAdminToken = promptAdminToken;
+window.openSuggestionBoard = openSuggestionBoard;
+window.showSuggestionBoard = showSuggestionBoard;
+window.closeSuggestionBoard = closeSuggestionBoard;
+window.submitSuggestion = submitSuggestion;
+window.clearSuggestionDraft = clearSuggestionDraft;
+window.copyHistoryItem = copyHistoryItem;
+window.loadHistoryItem = loadHistoryItem;
+window.copySuggestionText = copySuggestionText;
+
 function openSuggestionBoard() {
   const board = document.getElementById('suggestion-board');
   if (!board) return;
@@ -295,4 +309,3 @@ async function showHistory() {
     refreshTrainingSamplesSection();
   }
 }
-

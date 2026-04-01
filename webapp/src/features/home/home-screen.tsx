@@ -5,7 +5,7 @@ import { HomeScreenOverlays } from './home-screen-overlays'
 
 export function HomeScreen() {
   return (
-<div id="app-root">
+    <div id="app-root">
       <nav class="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
         <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -75,29 +75,29 @@ export function HomeScreen() {
               <p class="max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
                 프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
               </p>
-              <div class="flex flex-wrap gap-3">
-                <button onclick="switchMode('template')" class="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10 hover:bg-slate-100">
+            <div class="hero-actions flex flex-wrap gap-3">
+                <button onclick="switchMode('template')" class="surface-button-primary rounded-2xl px-4 py-3 text-sm font-semibold shadow-lg shadow-black/10 hover:bg-slate-100">
                   템플릿 모드로 시작
                 </button>
-                <button onclick="switchMode('builder')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                <button onclick="switchMode('builder')" class="surface-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold hover:bg-white/10">
                   고급자 모드
                 </button>
-                <button onclick="switchMode('optimize')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10">
+                <button onclick="switchMode('optimize')" class="surface-button-secondary rounded-2xl px-4 py-3 text-sm font-semibold hover:bg-white/10">
                   최적화 열기
                 </button>
               </div>
-              <div class="grid gap-3 lg:grid-cols-3">
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div class="density-stack grid gap-3 lg:grid-cols-3">
+                <div class="surface-card rounded-2xl p-4">
                   <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 생성 프롬프트</div>
                   <div class="mt-2 text-3xl font-black text-white"><span id="site-prompt-count">0</span></div>
                   <div class="mt-1 text-xs leading-5 text-slate-400">지금까지 생성된 프롬프트 누적 수</div>
                 </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div class="surface-card rounded-2xl p-4">
                   <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 활동 로그</div>
                   <div class="mt-2 text-3xl font-black text-white"><span id="site-activity-count">0</span></div>
                   <div class="mt-1 text-xs leading-5 text-slate-400">페이지뷰를 제외한 생성, 복사, 다운로드 활동 수</div>
                 </div>
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div class="surface-card rounded-2xl p-4">
                   <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">전체 방문자 수</div>
                   <div class="mt-2 text-3xl font-black text-white"><span id="site-visitor-count">0</span></div>
                   <div class="mt-1 text-xs leading-5 text-slate-400">고유 사용자를 기준으로 집계된 방문자 수</div>
@@ -105,7 +105,7 @@ export function HomeScreen() {
               </div>
             </div>
           <div class="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+            <div class="surface-panel rounded-3xl p-5 backdrop-blur-xl">
               <div class="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">모드 선택</div>
@@ -113,22 +113,22 @@ export function HomeScreen() {
                 </div>
                 <div class="text-xs text-slate-400">한 번만 고르면 됩니다</div>
               </div>
-              <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                <button onclick="switchMode('template')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
+              <div class="density-stack grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                <button onclick="switchMode('template')" class="surface-card rounded-3xl px-4 py-4 text-left transition hover:bg-white/10">
                   <div class="flex items-center justify-between">
                     <div class="text-sm font-semibold text-white">템플릿 모드</div>
                     <span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-200">사무직</span>
                   </div>
                   <div class="mt-2 text-xs leading-5 text-slate-300">메일, 보고서, 회의록 같은 일상 업무를 빠르게 고릅니다.</div>
                 </button>
-                <button onclick="switchMode('builder')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
+                <button onclick="switchMode('builder')" class="surface-card rounded-3xl px-4 py-4 text-left transition hover:bg-white/10">
                   <div class="flex items-center justify-between">
                     <div class="text-sm font-semibold text-white">빌더 모드</div>
                     <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200">개발자</span>
                   </div>
                   <div class="mt-2 text-xs leading-5 text-slate-300">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
                 </button>
-                <button onclick="switchMode('optimize')" class="rounded-3xl border border-brand-400/20 bg-brand-500/10 px-4 py-4 text-left transition hover:bg-brand-500/15">
+                <button onclick="switchMode('optimize')" class="surface-card-strong rounded-3xl px-4 py-4 text-left transition hover:bg-brand-500/15">
                   <div class="flex items-center justify-between">
                     <div class="text-sm font-semibold text-brand-100">최적화 모드</div>
                     <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-100">개선</span>
@@ -138,7 +138,7 @@ export function HomeScreen() {
               </div>
             </div>
 
-            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl xl:sticky xl:top-24 self-start">
+            <div class="surface-panel rounded-3xl p-5 backdrop-blur-xl xl:sticky xl:top-24 self-start">
               <div class="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">AI 스타일</div>
@@ -146,24 +146,24 @@ export function HomeScreen() {
                 </div>
                 <div class="text-xs text-slate-300">기본은 GPT 스타일</div>
               </div>
-              <div class="grid gap-3 grid-cols-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="rounded-2xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
+              <div class="density-stack grid gap-3 grid-cols-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="surface-card-strong rounded-2xl px-4 py-3 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
                   GPT
                   <div class="mt-1 text-[11px] font-normal text-brand-100/80">구조적이고 간결한 스타일</div>
                 </button>
-                <button data-prompt-style="claude" onclick="setPromptStyle('claude')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                <button data-prompt-style="claude" onclick="setPromptStyle('claude')" class="surface-card rounded-2xl px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
                   Claude
                   <div class="mt-1 text-[11px] font-normal text-slate-300">맥락이 풍부한 스타일</div>
                 </button>
-                <button data-prompt-style="gemini" onclick="setPromptStyle('gemini')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                <button data-prompt-style="gemini" onclick="setPromptStyle('gemini')" class="surface-card rounded-2xl px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
                   Gemini
                   <div class="mt-1 text-[11px] font-normal text-slate-300">짧고 직접적인 스타일</div>
                 </button>
-                <button data-prompt-style="genspark" onclick="setPromptStyle('genspark')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                <button data-prompt-style="genspark" onclick="setPromptStyle('genspark')" class="surface-card rounded-2xl px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
                   Genspark
                   <div class="mt-1 text-[11px] font-normal text-slate-300">실행 순서가 분명한 스타일</div>
                 </button>
-                <button data-prompt-style="custom" onclick="setPromptStyle('custom')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10 sm:col-span-2 xl:col-span-1 2xl:col-span-2">
+                <button data-prompt-style="custom" onclick="setPromptStyle('custom')" class="surface-card rounded-2xl px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10 sm:col-span-2 xl:col-span-1 2xl:col-span-2">
                   직접 지정
                   <div class="mt-1 text-[11px] font-normal text-slate-300">기본 구조 유지, 수동 조정</div>
                 </button>
@@ -172,7 +172,137 @@ export function HomeScreen() {
           </div>
         </section>
 
-          <section id="step-purpose" class="mb-6">
+        <section id="template-workspace" class="hidden mb-10">
+          <div class="density-stack grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div class="surface-card rounded-3xl p-5">
+              <div class="mb-3 flex items-center gap-2 text-brand-600">
+                <i class="fas fa-briefcase"></i>
+                <h3 class="font-semibold text-slate-900">업무 시작 카드</h3>
+              </div>
+              <p class="text-sm leading-relaxed text-slate-600">역할, 문제, 출력 형식이 미리 채워져 있어 바로 시작할 수 있습니다.</p>
+            </div>
+            <div class="surface-card rounded-3xl p-5">
+              <div class="mb-3 flex items-center gap-2 text-brand-600">
+                <i class="fas fa-code"></i>
+                <h3 class="font-semibold text-slate-900">빌더 시작 카드</h3>
+              </div>
+              <p class="text-sm leading-relaxed text-slate-600">강한 제약과 구조가 필요할 때 하네스 필드를 바로 사용할 수 있습니다.</p>
+            </div>
+            <div class="surface-card rounded-3xl p-5">
+              <div class="mb-3 flex items-center gap-2 text-brand-600">
+                <i class="fas fa-magic"></i>
+                <h3 class="font-semibold text-slate-900">최적화 시작 카드</h3>
+              </div>
+              <p class="text-sm leading-relaxed text-slate-600">프롬프트와 결과를 넣고, 다음 버전을 더 좋게 개선할 수 있습니다.</p>
+              <button onclick="switchMode('optimize')" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500">
+                최적화 열기
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section id="quick-start-panel" class="hidden mb-10">
+          <div class="surface-panel rounded-3xl p-6">
+            <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">템플릿 모드</div>
+                <h3 class="mt-2 text-2xl font-bold text-slate-900">자주 쓰는 업무를 바로 시작하세요</h3>
+                <p class="mt-2 text-sm leading-6 text-slate-600">카드를 누르면 목적, 키워드, 구조가 자동으로 들어갑니다. 빈칸이 있어도 생성되도록 기본값을 채워 둡니다.</p>
+              </div>
+              <button onclick="switchMode('builder')" class="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-500">
+                <i class="fas fa-code"></i> 빌더 모드 열기
+              </button>
+            </div>
+
+            <div class="density-stack grid gap-5 xl:grid-cols-2">
+              <div class="surface-card rounded-3xl p-5">
+                <div class="mb-3 flex items-center gap-2">
+                  <i class="fas fa-briefcase text-brand-600"></i>
+                  <h4 class="font-semibold text-slate-900">사무직 퀵 템플릿</h4>
+                </div>
+                <div class="density-stack grid gap-3 md:grid-cols-2">
+                  <button onclick="loadQuickStart(0)" class="surface-card rounded-2xl p-4 text-left transition hover:-translate-y-0.5 hover:border-brand-300">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2">
+                        <i class="fas fa-envelope text-brand-600"></i>
+                        <span class="font-semibold text-slate-900">업무 이메일</span>
+                      </div>
+                      <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-700">템플릿</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-600">상황, 목표, 톤, 출력 형식을 자동으로 채워 초안을 빠르게 만듭니다.</div>
+                    <div class="mt-3 text-[11px] font-medium text-brand-600">누르면 바로 채워집니다</div>
+                  </button>
+                  <button onclick="loadQuickStart(1)" class="surface-card rounded-2xl p-4 text-left transition hover:-translate-y-0.5 hover:border-brand-300">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2">
+                        <i class="fas fa-clipboard-list text-brand-600"></i>
+                        <span class="font-semibold text-slate-900">회의 요약</span>
+                      </div>
+                      <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-700">템플릿</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-600">결정사항, 할 일, 담당자를 빠르게 정리하는 구조로 시작합니다.</div>
+                    <div class="mt-3 text-[11px] font-medium text-brand-600">누르면 바로 채워집니다</div>
+                  </button>
+                  <button onclick="loadQuickStart(2)" class="surface-card rounded-2xl p-4 text-left transition hover:-translate-y-0.5 hover:border-brand-300">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2">
+                        <i class="fas fa-chart-line text-brand-600"></i>
+                        <span class="font-semibold text-slate-900">보고서 초안</span>
+                      </div>
+                      <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-700">템플릿</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-600">문제 정의, 핵심 지표, 개선안이 들어간 보고서 구조를 만듭니다.</div>
+                    <div class="mt-3 text-[11px] font-medium text-brand-600">누르면 바로 채워집니다</div>
+                  </button>
+                  <button onclick="loadQuickStart(3)" class="surface-card rounded-2xl p-4 text-left transition hover:-translate-y-0.5 hover:border-brand-300">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2">
+                        <i class="fas fa-user-edit text-brand-600"></i>
+                        <span class="font-semibold text-slate-900">자기소개서</span>
+                      </div>
+                      <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-700">템플릿</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-600">경험, 강점, 지원 동기를 빈칸 없이 이어지도록 채워줍니다.</div>
+                    <div class="mt-3 text-[11px] font-medium text-brand-600">누르면 바로 채워집니다</div>
+                  </button>
+                </div>
+              </div>
+
+              <div class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                <div class="mb-3 flex items-center gap-2">
+                  <i class="fas fa-code text-indigo-600"></i>
+                  <h4 class="font-semibold text-slate-900">개발자 고급 시작</h4>
+                </div>
+                <div class="grid gap-3 md:grid-cols-2">
+                  <button onclick="loadQuickStart(4)" class="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2">
+                        <i class="fas fa-code text-indigo-600"></i>
+                        <span class="font-semibold text-slate-900">코드 리뷰</span>
+                      </div>
+                      <span class="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">고급</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-600">문제, 원인, 수정안, 리스크를 구조화해서 정리합니다.</div>
+                    <div class="mt-3 text-[11px] font-medium text-indigo-600">구조화된 입력으로 바로 이동</div>
+                  </button>
+                  <button onclick="loadQuickStart(5)" class="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-2">
+                        <i class="fas fa-sitemap text-indigo-600"></i>
+                        <span class="font-semibold text-slate-900">기획 문서</span>
+                      </div>
+                      <span class="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">고급</span>
+                    </div>
+                    <div class="mt-2 text-xs leading-5 text-slate-600">목표, 사용자, 기능, 데이터 모델을 한 번에 정리합니다.</div>
+                    <div class="mt-3 text-[11px] font-medium text-indigo-600">구조화된 입력으로 바로 이동</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="step-purpose" class="mb-6">
           <div class="mb-4 flex items-center gap-3">
             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">1</div>
             <div>

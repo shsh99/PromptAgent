@@ -29,6 +29,11 @@ async function showAdminDashboard() {
   refreshTrainingSamplesSection();
 }
 
+window.showAdminDashboard = showAdminDashboard;
+window.reloadAdminDashboard = reloadAdminDashboard;
+window.closeAdminDashboard = closeAdminDashboard;
+window.clearHistory = clearHistory;
+
 async function reloadAdminDashboard() {
   const dashboard = document.getElementById('admin-dashboard');
   if (dashboard && !dashboard.classList.contains('hidden')) {
@@ -254,7 +259,6 @@ function renderSuggestionAdminSectionV2(suggestions) {
     </section>
   `;
 }
-
 
 
 

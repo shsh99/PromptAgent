@@ -3,11 +3,11 @@ import assert from 'node:assert/strict'
 import {
   analyzePromptQualityEnhanced,
   buildPromptVerificationBlock,
-} from '../webapp/src/features/prompt/quality'
+} from '../../../webapp/src/features/prompt/quality'
 import {
   buildGenerateResult,
   buildImproveResult,
-} from '../webapp/src/features/prompt/prompt-services'
+} from '../../../webapp/src/features/prompt/prompt-services'
 
 const sparsePrompt = 'Write something.'
 const completePrompt = [
@@ -59,6 +59,8 @@ const generateResult = buildGenerateResult({
 })
 
 assert.ok(generateResult.prompt.includes('Final verification'), 'Generated prompt should include the verification block.')
+assert.ok(generateResult.prompt.includes('Problem definition'), 'Generated prompt should include the strategic guidance block.')
+assert.ok(generateResult.prompt.includes('Input data'), 'Generated prompt should include input data guidance.')
 assert.ok(generateResult.qualityReport.percentage >= 0)
 assert.ok(Array.isArray(generateResult.variants))
 
