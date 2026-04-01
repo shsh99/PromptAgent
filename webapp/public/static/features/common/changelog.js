@@ -1,26 +1,46 @@
-﻿// ?낅뜲?댄듃 濡쒓렇
+// 업데이트 로그
 //
-// ??諛고룷留덈떎 CHANGELOG_ITEMS 留??꾩뿉 ??ぉ??異붽??⑸땲??
+// 최근 변경 사항을 화면에 보여주는 모듈입니다.
 // tag: 'new' | 'improve' | 'fix' | 'refactor'
 
 const CHANGELOG_ITEMS = [
   {
     date: '2026-04-01',
+    version: 'v4.10',
+    items: [
+      { tag: 'improve', text: '관리자 대시보드를 프로젝트명에 맞춰 다시 정리하고, 사이드바 탭 전환 방식으로 바꿨습니다.' },
+      { tag: 'improve', text: '라이트 모드와 다크 모드의 표면, 버튼, 배지 토큰을 분리해 가시성을 개선했습니다.' },
+      { tag: 'improve', text: '히스토리와 관리자 화면의 정보를 아래로 길게 읽지 않도록 섹션 전환 구조로 압축했습니다.' },
+    ],
+  },
+  {
+    date: '2026-04-01',
+    version: 'v4.9',
+    items: [
+      { tag: 'improve', text: '히스토리 화면을 선택 목록과 상세 패널로 나눠서 세로 스크롤 부담을 줄였습니다.' },
+      { tag: 'improve', text: '선택한 기록의 버전과 미리보기를 오른쪽 패널에서 바로 확인할 수 있게 했습니다.' },
+      { tag: 'improve', text: '히스토리 불러오기와 복사가 선택된 기록 기준으로 동작하도록 정리했습니다.' },
+    ],
+  },
+  {
+    date: '2026-04-01',
     version: 'v4.8',
     items: [
-      { tag: 'improve', text: '히스토리 카드에서 이전 버전을 탭으로 전환하도록 바꿨습니다.' },
-      { tag: 'improve', text: '선택된 버전을 기준으로 불러오기와 복사가 동작하도록 정리했습니다.' },
-      { tag: 'improve', text: '세로 스크롤 대신 카드 내부 전환으로 이전 버전을 더 빠르게 확인할 수 있게 했습니다.' },
+      { tag: 'improve', text: '히스토리 카드에서 이전 버전을 탭으로 전환할 수 있게 했습니다.' },
+      { tag: 'improve', text: '선택한 버전을 기준으로 불러오기와 복사가 동작하도록 정리했습니다.' },
+      { tag: 'improve', text: '세로 스크롤 대신 카드 내부 전환으로 이전 기록을 더 빠르게 확인할 수 있게 했습니다.' },
     ],
-  },  {
+  },
+  {
     date: '2026-04-01',
     version: 'v4.7',
     items: [
       { tag: 'improve', text: '프롬프트 생성 레이어를 System, Template, User Input으로 분리했습니다.' },
       { tag: 'improve', text: '복잡도에 따라 간단 템플릿과 확장 템플릿을 나누어 토큰 사용량을 줄였습니다.' },
-      { tag: 'improve', text: '최종 검증을 복잡도에 맞게 축약형과 확장형으로 나누어 출력 비용을 줄였습니다.' },
+      { tag: 'improve', text: '최종 검증도 복잡도에 맞게 축약형과 확장형으로 나누어 출력 비용을 줄였습니다.' },
     ],
-  },  {
+  },
+  {
     date: '2026-04-01',
     version: 'v4.6',
     items: [
@@ -42,45 +62,45 @@ const CHANGELOG_ITEMS = [
     date: '2026-04-01',
     version: 'v4.4',
     items: [
-      { tag: 'refactor', text: 'src/app??bootstrap, routing, rendering?쇰줈 遺꾨━?덉뒿?덈떎.' },
-      { tag: 'refactor', text: 'tests瑜?features/prompt 湲곗??쇰줈 ?대뜑?뷀뻽?듬땲??' },
-      { tag: 'improve', text: 'prompt quality???쒓뎅???곸뼱 濡쒖뺄?쇱씠吏?臾몄옄?댁쓣 ?ㅼ떆 ?뺣━?덉뒿?덈떎.' },
+      { tag: 'refactor', text: 'src/app을 bootstrap, routing, rendering으로 분리했습니다.' },
+      { tag: 'refactor', text: 'tests를 features/prompt 기준으로 다시 정리했습니다.' },
+      { tag: 'improve', text: '프롬프트 품질 관련 영어 로컬라이징 문자열을 다시 정리했습니다.' },
     ],
   },
   {
     date: '2026-04-01',
     version: 'v4.3',
     items: [
-      { tag: 'fix', text: '?쒖옉 ?붾㈃??以묐났 ?뚮뜑留?濡쒓렇瑜??뺣━?덉뒿?덈떎.' },
-      { tag: 'fix', text: '?앹꽦 ?꾨＼?꾪듃 寃利?釉붾줉???ㅽ뻾 濡쒓렇瑜??ㅼ떆 蹂댁씠?꾨줉 ?섏젙?덉뒿?덈떎.' },
-      { tag: 'improve', text: '?앹꽦 ?꾨즺 ???꾩껜 移댁슫?곌? ???덉젙?곸쑝濡?媛깆떊?섎룄濡?媛쒖꽑?덉뒿?덈떎.' },
+      { tag: 'fix', text: '시작 화면의 중복 헤더 로그를 정리했습니다.' },
+      { tag: 'fix', text: '생성 프롬프트 검증 블록이 다시 보이도록 수정했습니다.' },
+      { tag: 'improve', text: '생성 완료 후 전체 카운트를 더 안정적으로 갱신하도록 개선했습니다.' },
     ],
   },
   {
     date: '2026-04-01',
     version: 'v4.2',
     items: [
-      { tag: 'improve', text: '硫붿씤 ?붾㈃ ?꾪솚 ?좊땲硫붿씠?섍낵 ?꾩껜 ?앹꽦 ?먮쫫???뺣━?덉뒿?덈떎.' },
-      { tag: 'improve', text: '硫붿씤 ?곹깭 諛붿? ?꾩옱 ?꾩튂 ?덈궡瑜??ъ슜?먯뿉寃?????蹂댁씠寃??ㅻ벉?덉뒿?덈떎.' },
-      { tag: 'improve', text: '怨듯넻 ?곸뿭 API瑜?異붽????붾㈃蹂?湲곕뒫??硫붿씤?먯꽌 諛붾줈 遺덈윭?????덇쾶 ?덉뒿?덈떎.' },
+      { tag: 'improve', text: '메인 화면 전환 애니메이션과 전체 생성 흐름을 정리했습니다.' },
+      { tag: 'improve', text: '메인 상태 바와 현재 위치 안내를 사용자에게 더 잘 보이도록 조정했습니다.' },
+      { tag: 'improve', text: '공통 영역 API를 추가해 화면별 기능을 메인에서 바로 불러올 수 있게 했습니다.' },
     ],
   },
   {
     date: '2026-04-01',
     version: 'v4.1',
     items: [
-      { tag: 'new', text: '?꾨＼?꾪듃 ?앹꽦 寃곌낵瑜?3媛?蹂?뺤쑝濡?蹂댁뿬二쇨퀬 諛붾줈 ?좏깮?????덇쾶 ?덉뒿?덈떎.' },
-      { tag: 'new', text: '寃곌낵 ?붾㈃??Optimize 踰꾪듉??異붽????앹꽦 寃곌낵瑜?媛쒖꽑 紐⑤뱶濡?諛붾줈 蹂대궪 ???덇쾶 ?덉뒿?덈떎.' },
-      { tag: 'improve', text: '愿由ъ옄 ??쒕낫?쒖? CSV ?대낫?닿린 援ъ“瑜??뺣━?덉뒿?덈떎.' },
+      { tag: 'new', text: '프롬프트 생성 결과를 3개 변형으로 보여주고 바로 선택할 수 있게 했습니다.' },
+      { tag: 'new', text: '결과 화면에 Optimize 버튼을 넣어 생성 결과를 곧바로 개선 모드로 보낼 수 있게 했습니다.' },
+      { tag: 'improve', text: '관리자 대시보드에 CSV 내보내기 구조를 정리했습니다.' },
     ],
   },
 ]
 
 const CHANGELOG_TAG_META = {
-  new: { label: '??湲곕뒫', cls: 'bg-blue-500/20 text-blue-400', icon: 'fa-plus' },
-  improve: { label: '媛쒖꽑', cls: 'bg-green-500/20 text-green-400', icon: 'fa-arrow-up' },
-  fix: { label: '踰꾧렇 ?섏젙', cls: 'bg-red-500/20 text-red-400', icon: 'fa-wrench' },
-  refactor: { label: '由ы뙥?곕쭅', cls: 'bg-gray-500/20 text-gray-300', icon: 'fa-code' },
+  new: { label: '새 기능', cls: 'bg-blue-500/20 text-blue-300', icon: 'fa-plus' },
+  improve: { label: '개선', cls: 'bg-green-500/20 text-green-300', icon: 'fa-arrow-up' },
+  fix: { label: '수정', cls: 'bg-red-500/20 text-red-300', icon: 'fa-wrench' },
+  refactor: { label: '리팩터', cls: 'bg-gray-500/20 text-gray-200', icon: 'fa-code' },
 }
 
 function getLastSeenVersion() {
@@ -113,8 +133,8 @@ function renderChangelogItems() {
             </span>
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">${meta.label}</span>
-                <span class="text-[10px] text-slate-500">${group.version} 쨌 ${group.date}</span>
+                <span class="update-tag-pill rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">${meta.label}</span>
+                <span class="update-version-pill text-[10px] text-slate-500">${group.version} · ${group.date}</span>
               </div>
               <p class="mt-2 text-sm leading-6 text-slate-700">${item.text}</p>
             </div>
@@ -144,12 +164,12 @@ function renderUpdatesContent() {
       <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500">?낅뜲?댄듃 濡쒓렇</div>
-            <h3 class="mt-1 text-xl font-bold text-slate-900">理쒓렐 蹂寃??ы빆</h3>
-            <p class="mt-2 text-sm leading-6 text-slate-600">踰꾩쟾蹂꾨줈 湲곕뒫 異붽?, 援ъ“ 蹂寃? ?섏젙 ?ы빆???뺤씤?????덉뒿?덈떎.</p>
+            <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500">업데이트 로그</div>
+            <h3 class="mt-1 text-xl font-bold text-slate-900">최근 변경 사항</h3>
+            <p class="mt-2 text-sm leading-6 text-slate-600">버전별 기능 추가, 구조 변경, 수정 사항을 확인할 수 있습니다.</p>
           </div>
-          <button onclick="markUpdatesSeen()" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100">
-            理쒖떊?쇰줈 ?쒖떆
+          <button onclick="markUpdatesSeen()" class="updates-action-btn rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+            최신으로 표시
           </button>
         </div>
       </div>
@@ -186,6 +206,3 @@ window.showUpdates = showUpdates
 window.closeUpdates = closeUpdates
 window.renderUpdatesBadge = renderUpdatesBadge
 window.markUpdatesSeen = markUpdatesSeen
-
-
-

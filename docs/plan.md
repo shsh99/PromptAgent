@@ -86,6 +86,9 @@ Recently applied:
 - Strengthened the prompt quality analyzer with problem framing, input data, reasoning guidance, examples, and recovery-path checks.
 - Added a strategic guidance block to generated prompts before the final verification block.
 - Updated the docs and changelog so the current implementation state is recorded together.
+- Reworked the admin dashboard into a project-specific card layout with sidebar tab switching.
+- Separated light and dark mode tokens for admin buttons, badges, and cards to improve readability.
+- Updated the history dashboard so tabs switch sections instead of relying on long scrolling.
 
 ## Phase Ownership
 

@@ -109,6 +109,139 @@
   transform: translateY(-1px);
 }
 
+.prompt-shell .surface-button-hero {
+  background: color-mix(in srgb, var(--surface-card-strong) 92%, black);
+  color: var(--text-primary);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border-soft));
+  box-shadow:
+    0 14px 30px rgba(2, 6, 23, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.prompt-shell .surface-button-hero:hover {
+  background: color-mix(in srgb, var(--surface-card-strong) 84%, var(--accent-soft));
+  color: var(--text-primary);
+}
+
+.prompt-shell.theme-dark .surface-button-primary {
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.98), rgba(67, 56, 202, 0.98));
+  color: #ffffff;
+  border: 1px solid rgba(129, 140, 248, 0.5);
+  box-shadow:
+    0 16px 34px rgba(15, 23, 42, 0.28),
+    0 0 0 1px rgba(129, 140, 248, 0.12);
+}
+
+.prompt-shell.theme-dark .surface-button-primary:hover {
+  background: linear-gradient(180deg, rgba(99, 102, 241, 1), rgba(79, 70, 229, 1));
+  color: #ffffff;
+}
+
+.prompt-shell.theme-dark .surface-button-secondary {
+  background: rgba(30, 41, 59, 0.92);
+  color: #e2e8f0;
+  border: 1px solid rgba(71, 85, 105, 0.72);
+}
+
+.prompt-shell.theme-dark .surface-button-secondary:hover {
+  background: rgba(51, 65, 85, 0.98);
+  color: #ffffff;
+}
+
+.prompt-shell.theme-dark .surface-button-hero {
+  background: rgba(30, 41, 59, 0.96);
+  color: #f8fafc;
+  border: 1px solid rgba(71, 85, 105, 0.72);
+  box-shadow:
+    0 16px 34px rgba(15, 23, 42, 0.28),
+    0 0 0 1px rgba(148, 163, 184, 0.1);
+}
+
+.prompt-shell.theme-dark .surface-button-hero:hover {
+  background: rgba(51, 65, 85, 1);
+  color: #ffffff;
+}
+
+.prompt-shell.theme-dark button[class*="bg-white/5"],
+.prompt-shell.theme-dark button[class*="bg-white/10"],
+.prompt-shell.theme-dark button[class*="bg-white/20"],
+.prompt-shell.theme-dark button[class*="bg-white"],
+.prompt-shell.theme-dark button[class*="bg-slate-50"],
+.prompt-shell.theme-dark button[class*="bg-gray-50"] {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  color: #f8fafc !important;
+  border-color: rgba(71, 85, 105, 0.9) !important;
+}
+
+.prompt-shell.theme-dark button[class*="bg-white/5"]:hover,
+.prompt-shell.theme-dark button[class*="bg-white/10"]:hover,
+.prompt-shell.theme-dark button[class*="bg-white/20"]:hover,
+.prompt-shell.theme-dark button[class*="bg-white"]:hover,
+.prompt-shell.theme-dark button[class*="bg-slate-50"]:hover,
+.prompt-shell.theme-dark button[class*="bg-gray-50"]:hover {
+  background-color: rgba(51, 65, 85, 0.96) !important;
+  color: #ffffff !important;
+}
+
+.prompt-shell.theme-dark button[class*="text-slate-200"],
+.prompt-shell.theme-dark button[class*="text-slate-300"],
+.prompt-shell.theme-dark button[class*="text-gray-200"],
+.prompt-shell.theme-dark button[class*="text-gray-300"],
+.prompt-shell.theme-dark button[class*="text-slate-700"],
+.prompt-shell.theme-dark button[class*="text-gray-700"],
+.prompt-shell.theme-dark button[class*="text-brand-700"] {
+  color: #f8fafc !important;
+}
+
+.prompt-shell.theme-dark .updates-fab {
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.96), rgba(67, 56, 202, 0.96)) !important;
+  color: #ffffff !important;
+  border-color: rgba(129, 140, 248, 0.58) !important;
+  box-shadow:
+    0 18px 38px rgba(15, 23, 42, 0.32),
+    0 0 0 1px rgba(129, 140, 248, 0.18) !important;
+}
+
+.prompt-shell.theme-dark .updates-fab:hover {
+  background: linear-gradient(180deg, rgba(99, 102, 241, 1), rgba(79, 70, 229, 1)) !important;
+  color: #ffffff !important;
+}
+
+.prompt-shell.theme-dark #updates-modal .updates-action-btn {
+  background: linear-gradient(180deg, rgba(51, 65, 85, 0.96), rgba(30, 41, 59, 0.98)) !important;
+  color: #f8fafc !important;
+  border-color: rgba(148, 163, 184, 0.34) !important;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.24) !important;
+}
+
+.prompt-shell.theme-dark #updates-modal .updates-action-btn:hover {
+  background: linear-gradient(180deg, rgba(71, 85, 105, 0.98), rgba(51, 65, 85, 0.98)) !important;
+  color: #ffffff !important;
+}
+
+.prompt-shell.theme-dark #updates-modal .updates-close-btn {
+  color: #e2e8f0 !important;
+  background: rgba(15, 23, 42, 0.42) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 9999px;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prompt-shell.theme-dark #updates-modal .update-tag-pill {
+  background: rgba(99, 102, 241, 0.18) !important;
+  color: #e0e7ff !important;
+  border: 1px solid rgba(129, 140, 248, 0.22);
+}
+
+.prompt-shell.theme-dark #updates-modal .update-version-pill {
+  color: #cbd5e1 !important;
+  font-weight: 600;
+}
+
 .prompt-shell.mobile-sidebar-open {
   overflow: hidden;
 }
@@ -1101,6 +1234,295 @@ textarea:focus-visible {
 .prompt-shell.theme-light #quality-checks > div:not(:first-child) .text-gray-600,
 .prompt-shell.theme-light #quality-checks > div:not(:first-child) .text-gray-500 {
   color: #475569 !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard {
+  background:
+    radial-gradient(circle at top left, rgba(92, 124, 250, 0.12), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.08), transparent 26%),
+    rgba(241, 245, 249, 0.96) !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard {
+  background:
+    radial-gradient(circle at top left, rgba(92, 124, 250, 0.16), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.12), transparent 24%),
+    rgba(2, 6, 23, 0.96) !important;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-shell {
+  color: #0f172a;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-shell {
+  color: #f8fafc;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-sidebar {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(203, 213, 225, 0.95);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-sidebar {
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(51, 65, 85, 0.92);
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-sidebar-top {
+  border-color: rgba(226, 232, 240, 0.95);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-sidebar-top {
+  border-color: rgba(51, 65, 85, 0.92);
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-logo {
+  background: linear-gradient(135deg, #5c7cfa 0%, #6366f1 100%);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-logo {
+  background: linear-gradient(135deg, #7c8cff 0%, #5c7cfa 100%);
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-main,
+.prompt-shell.theme-light #admin-dashboard .admin-panel,
+.prompt-shell.theme-light #admin-dashboard .admin-metric-card,
+.prompt-shell.theme-light #admin-dashboard .admin-record-card,
+.prompt-shell.theme-light #admin-dashboard .admin-loading,
+.prompt-shell.theme-light #admin-dashboard .admin-error {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(203, 213, 225, 0.9);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-main,
+.prompt-shell.theme-dark #admin-dashboard .admin-panel,
+.prompt-shell.theme-dark #admin-dashboard .admin-metric-card,
+.prompt-shell.theme-dark #admin-dashboard .admin-record-card,
+.prompt-shell.theme-dark #admin-dashboard .admin-loading,
+.prompt-shell.theme-dark #admin-dashboard .admin-error {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(51, 65, 85, 0.94);
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-main {
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-main {
+  box-shadow: 0 24px 80px rgba(2, 6, 23, 0.55);
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-nav-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: transparent;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: transparent;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-nav-btn:hover {
+  background: rgba(248, 250, 252, 0.98);
+  border-color: rgba(226, 232, 240, 0.95);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn:hover {
+  background: rgba(30, 41, 59, 0.92);
+  border-color: rgba(71, 85, 105, 0.9);
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-nav-btn-active {
+  background: rgba(92, 124, 250, 0.12);
+  border-color: rgba(92, 124, 250, 0.24);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn-active {
+  background: rgba(92, 124, 250, 0.2);
+  border-color: rgba(124, 140, 255, 0.38);
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-nav-btn span span:first-child,
+.prompt-shell.theme-light #admin-dashboard .admin-nav-btn-active .block.text-sm {
+  color: #0f172a;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn,
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn span span:first-child,
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn span span:last-child {
+  color: #f8fafc;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-nav-btn span span:last-child {
+  color: #64748b;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn span span:last-child {
+  color: #cbd5e1;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-nav-icon {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: #eff6ff;
+  color: #4f46e5;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-icon {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: rgba(92, 124, 250, 0.16);
+  color: #c7d2fe;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-metric-icon {
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-metric-icon {
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-metric-icon-brand { background: #eff6ff; color: #4f46e5; }
+.prompt-shell.theme-light #admin-dashboard .admin-metric-icon-green { background: #ecfdf5; color: #059669; }
+.prompt-shell.theme-light #admin-dashboard .admin-metric-icon-amber { background: #fffbeb; color: #d97706; }
+.prompt-shell.theme-light #admin-dashboard .admin-metric-icon-rose { background: #fff1f2; color: #e11d48; }
+.prompt-shell.theme-light #admin-dashboard .admin-metric-icon-slate { background: #f8fafc; color: #475569; }
+
+.prompt-shell.theme-dark #admin-dashboard .admin-metric-icon-brand { background: rgba(92, 124, 250, 0.16); color: #c7d2fe; }
+.prompt-shell.theme-dark #admin-dashboard .admin-metric-icon-green { background: rgba(16, 185, 129, 0.16); color: #a7f3d0; }
+.prompt-shell.theme-dark #admin-dashboard .admin-metric-icon-amber { background: rgba(245, 158, 11, 0.16); color: #fde68a; }
+.prompt-shell.theme-dark #admin-dashboard .admin-metric-icon-rose { background: rgba(244, 63, 94, 0.16); color: #fda4af; }
+.prompt-shell.theme-dark #admin-dashboard .admin-metric-icon-slate { background: rgba(100, 116, 139, 0.16); color: #e2e8f0; }
+
+.prompt-shell.theme-light #admin-dashboard .admin-grade {
+  display: inline-flex;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-grade {
+  display: inline-flex;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-grade-good { background: #dcfce7; color: #166534; }
+.prompt-shell.theme-light #admin-dashboard .admin-grade-mid { background: #dbeafe; color: #1d4ed8; }
+.prompt-shell.theme-light #admin-dashboard .admin-grade-warn { background: #fef3c7; color: #b45309; }
+.prompt-shell.theme-light #admin-dashboard .admin-grade-bad { background: #fee2e2; color: #b91c1c; }
+
+.prompt-shell.theme-dark #admin-dashboard .admin-grade-good { background: rgba(22, 163, 74, 0.18); color: #bbf7d0; }
+.prompt-shell.theme-dark #admin-dashboard .admin-grade-mid { background: rgba(59, 130, 246, 0.18); color: #bfdbfe; }
+.prompt-shell.theme-dark #admin-dashboard .admin-grade-warn { background: rgba(217, 119, 6, 0.18); color: #fde68a; }
+.prompt-shell.theme-dark #admin-dashboard .admin-grade-bad { background: rgba(220, 38, 38, 0.18); color: #fecaca; }
+
+.prompt-shell.theme-light #admin-dashboard .admin-action-btn,
+.prompt-shell.theme-light #admin-dashboard .admin-close-btn {
+  border-color: rgba(203, 213, 225, 0.95);
+  color: #475569;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-action-btn,
+.prompt-shell.theme-dark #admin-dashboard .admin-close-btn {
+  border-color: rgba(51, 65, 85, 0.95);
+  color: #e2e8f0;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-action-btn:hover,
+.prompt-shell.theme-light #admin-dashboard .admin-close-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-action-btn:hover,
+.prompt-shell.theme-dark #admin-dashboard .admin-close-btn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: #fff;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-danger-btn {
+  border: 1px solid rgba(254, 202, 202, 0.9);
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-danger-btn {
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  background: rgba(127, 29, 29, 0.25);
+  color: #fecaca;
+}
+
+.prompt-shell.theme-light #admin-dashboard .admin-danger-btn:hover {
+  background: #ffe4e6;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-danger-btn:hover {
+  background: rgba(153, 27, 27, 0.35);
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-filter-btn {
+  box-shadow: none !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-filter-btn:not(.border-brand-500) {
+  background: rgba(15, 23, 42, 0.92) !important;
+  border-color: rgba(71, 85, 105, 0.95) !important;
+  color: #e2e8f0 !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-filter-btn.border-brand-500 {
+  background: linear-gradient(180deg, rgba(92, 124, 250, 0.96), rgba(67, 56, 202, 0.96)) !important;
+  border-color: rgba(124, 140, 255, 0.95) !important;
+  color: #ffffff !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-action-btn {
+  background: rgba(15, 23, 42, 0.92) !important;
+  border-color: rgba(71, 85, 105, 0.95) !important;
+  color: #e2e8f0 !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-action-btn:hover {
+  background: rgba(30, 41, 59, 0.96) !important;
+  color: #ffffff !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn-active,
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn:hover {
+  color: #ffffff !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn span,
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn span * {
+  color: inherit !important;
+}
+
+.prompt-shell.theme-dark #admin-dashboard .admin-nav-btn-active .admin-nav-icon {
+  background: rgba(124, 140, 255, 0.24) !important;
+  color: #ffffff !important;
 }
 
 #updates-modal .fa-sparkles {

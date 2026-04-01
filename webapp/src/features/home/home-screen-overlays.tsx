@@ -38,7 +38,7 @@ export function HomeScreenOverlays() {
           </div>
           <div id="history-content" class="p-6">
             <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-sm leading-7 text-slate-500">
-              아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 최신 기록이 쌓입니다.
+              아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 최근 기록이 쌓입니다.
             </div>
           </div>
         </div>
@@ -51,27 +51,15 @@ export function HomeScreenOverlays() {
             <h3 class="flex items-center gap-2 text-lg font-bold text-slate-900">
               <i class="fas fa-bullhorn text-brand-500"></i>최근 업데이트
             </h3>
-            <button onclick="closeUpdates()" class="text-slate-500 hover:text-slate-900"><i class="fas fa-xmark text-lg"></i></button>
+            <button onclick="closeUpdates()" class="updates-close-btn text-slate-500 hover:text-slate-900"><i class="fas fa-xmark text-lg"></i></button>
           </div>
           <div id="updates-content" class="p-6"></div>
         </div>
       </div>
 
-      <div id="admin-dashboard" class="fixed inset-0 z-[110] hidden bg-slate-950/96">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(92,124,250,0.16),transparent_35%),radial-gradient(circle_at_top_right,rgba(16,185,129,0.12),transparent_32%)]"></div>
-        <div class="relative flex h-full flex-col">
-          <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
-            <div>
-              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">관리자 대시보드</div>
-              <div class="mt-1 text-sm text-slate-300">토큰이 확인되면 전체 로그와 분석 화면이 열립니다.</div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="reloadAdminDashboard()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">다시 불러오기</button>
-              <button onclick="closeAdminDashboard()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">닫기</button>
-            </div>
-          </div>
-          <div id="admin-dashboard-content" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6"></div>
-        </div>
+      <div id="admin-dashboard" class="fixed inset-0 z-[110] hidden bg-slate-100/95">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(92,124,250,0.14),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.12),transparent_28%)]"></div>
+        <div id="admin-dashboard-content" class="relative h-full overflow-y-auto"></div>
       </div>
 
       <div id="suggestion-board" class="fixed inset-0 z-[105] hidden bg-slate-950/96">
@@ -79,7 +67,7 @@ export function HomeScreenOverlays() {
         <div class="relative flex h-full flex-col">
           <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
             <div>
-              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">사용자 건의 게시판</div>
+              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">사용자 제안 게시판</div>
               <div class="mt-1 text-sm text-slate-300">사용자 제안과 수정 요청을 모아 관리자가 확인합니다.</div>
             </div>
             <div class="flex items-center gap-2">

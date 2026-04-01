@@ -8,12 +8,14 @@ const USER_ACTIVITY_KEY = 'pf_user_activity';
 const USER_SUGGESTION_KEY = 'pf_user_suggestions';
 const USER_SUGGESTION_DRAFT_KEY = 'pf_suggestion_draft';
 const ACTIVE_PROMPT_HISTORY_KEY = 'pf_active_prompt_history_id';
+const HISTORY_SELECTED_THREAD_KEY = 'pf_history_selected_thread_id';
 const HISTORY_VERSION_SELECTION_KEY = 'pf_history_version_selection';
 const MAX_LOCAL_HISTORY = 120;
 const MAX_LOCAL_ACTIVITY = 300;
 const MAX_LOCAL_SUGGESTIONS = 60;
 
 let historyVersionSelection = safeJsonParse(localStorage.getItem(HISTORY_VERSION_SELECTION_KEY), {});
+let historySelectedThreadId = localStorage.getItem(HISTORY_SELECTED_THREAD_KEY) || '';
 let historyPanelSearchQuery = '';
 
 function safeJsonParse(value, fallback) {
@@ -92,6 +94,15 @@ function saveHistoryVersionSelection() {
   localStorage.setItem(HISTORY_VERSION_SELECTION_KEY, JSON.stringify(historyVersionSelection || {}));
 }
 
+function saveHistorySelectedThreadId(threadId) {
+  historySelectedThreadId = threadId || '';
+  if (threadId) {
+    localStorage.setItem(HISTORY_SELECTED_THREAD_KEY, threadId);
+  } else {
+    localStorage.removeItem(HISTORY_SELECTED_THREAD_KEY);
+  }
+}
+
 function getHistoryVersionIndex(threadId, versions) {
   if (!Array.isArray(versions) || !versions.length) return -1;
   const selected = Number(historyVersionSelection?.[threadId]);
@@ -103,6 +114,12 @@ function refreshLocalHistoryPanel() {
   const panel = document.getElementById('local-history-panel');
   if (!panel) return;
   panel.innerHTML = renderLocalHistoryPanel(loadLocalHistory(), historyPanelSearchQuery);
+}
+
+function selectHistoryThread(threadId) {
+  if (!threadId) return;
+  saveHistorySelectedThreadId(threadId);
+  refreshLocalHistoryPanel();
 }
 
 function selectHistoryVersion(threadId, versionIndex) {
@@ -483,12 +500,25 @@ function formatTime(value) {
 async function fetchAdminLogs() {
   const token = getAdminToken();
   if (!token) return { ok: false, unauthorized: true };
-  const res = await fetch('/api/admin/logs', {
-    headers: { 'X-Admin-Token': token },
-  });
-  if (res.status === 401) return { ok: false, unauthorized: true };
-  if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
-  return res.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch('/api/admin/logs', {
+      headers: { 'X-Admin-Token': token },
+      signal: controller.signal,
+    });
+    if (res.status === 401) return { ok: false, unauthorized: true };
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+    try {
+      return await res.json();
+    } catch (error) {
+      return { ok: false, error: 'JSON 파싱에 실패했습니다.' };
+    }
+  } catch (error) {
+    return { ok: false, error: error?.name === 'AbortError' ? '관리자 로그 요청이 시간 초과되었습니다.' : '관리자 로그를 불러오지 못했습니다.' };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function renderStatCard(label, value, accent = '') {
@@ -517,6 +547,12 @@ function renderLocalHistoryPanel(items, query = '') {
   const filtered = filterHistoryItems(items, query);
   const totalVersions = filtered.reduce((sum, item) => sum + ((item.versions || []).length || 0), 0);
   const latest = filtered[0];
+  const selectedThread = filtered.find((item) => item.id === historySelectedThreadId) || latest || null;
+  const versions = Array.isArray(selectedThread?.versions) ? selectedThread.versions : [];
+  const selectedVersionIndex = selectedThread ? getHistoryVersionIndex(selectedThread.id, versions) : -1;
+  const selectedVersion = selectedVersionIndex >= 0 ? versions[selectedVersionIndex] : null;
+  const selectedPrompt = selectedVersion?.prompt || selectedThread?.latestPrompt || '';
+  const selectedTime = selectedVersion?.createdAt || selectedThread?.updatedAt || selectedThread?.createdAt || '';
 
   return `
     <div class="mb-4 grid gap-3 sm:grid-cols-3">
@@ -533,51 +569,72 @@ function renderLocalHistoryPanel(items, query = '') {
         <div class="mt-2 text-sm font-semibold text-white">${escapeHtml(latest ? formatTime(latest.updatedAt) : '없음')}</div>
       </div>
     </div>
-    <div class="space-y-3">
-      ${filtered.length ? filtered.map((item) => {
-        const versions = Array.isArray(item.versions) ? item.versions : [];
-        const selectedIndex = getHistoryVersionIndex(item.id, versions);
-        const selectedVersion = selectedIndex >= 0 ? versions[selectedIndex] : null;
-        const previewPrompt = selectedVersion?.prompt || item.latestPrompt || '';
-        const previewTime = selectedVersion?.createdAt || item.updatedAt || item.createdAt;
-        return `
-        <article class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    ${filtered.length ? `
+      <div class="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
+        <aside class="rounded-2xl border border-white/10 bg-white/5 p-3">
+          <div class="mb-3 flex items-center justify-between">
+            <h4 class="text-sm font-semibold text-white">기록 목록</h4>
+            <span class="text-[10px] text-slate-400">${filtered.length}개</span>
+          </div>
+          <div class="max-h-[52vh] space-y-2 overflow-y-auto pr-1">
+            ${filtered.map((item) => {
+              const threadVersions = Array.isArray(item.versions) ? item.versions : [];
+              const isActive = item.id === (selectedThread?.id || '');
+              return `
+                <button type="button" onclick="selectHistoryThread('${escapeHtml(item.id)}')" class="w-full rounded-2xl border p-3 text-left transition-colors ${isActive ? 'border-brand-400/40 bg-brand-500/15' : 'border-white/10 bg-slate-950/30 hover:bg-white/10'}">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <div class="truncate text-sm font-semibold ${isActive ? 'text-brand-100' : 'text-white'}">${escapeHtml(item.title || 'Prompt')}</div>
+                      <div class="mt-1 truncate text-[11px] ${isActive ? 'text-brand-100/80' : 'text-slate-400'}">${escapeHtml(item.keyword || item.purpose || '기록')}</div>
+                    </div>
+                    <span class="rounded-full border px-2 py-0.5 text-[10px] font-semibold ${isActive ? 'border-brand-300/30 bg-brand-500/20 text-brand-50' : 'border-white/10 bg-white/5 text-slate-400'}">v${item.promptCount || threadVersions.length || 1}</span>
+                  </div>
+                  <div class="mt-2 flex items-center justify-between text-[10px] ${isActive ? 'text-brand-100/75' : 'text-slate-500'}">
+                    <span>${escapeHtml(formatTime(item.updatedAt || item.createdAt))}</span>
+                    <span>${escapeHtml(item.techniqueName || 'Prompt')}</span>
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </aside>
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="flex flex-col gap-3 border-b border-white/10 pb-4 sm:flex-row sm:items-start sm:justify-between">
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-2">
-                <h4 class="truncate text-sm font-semibold text-white">${escapeHtml(item.title || 'Prompt')}</h4>
-                <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] text-brand-200">v${item.promptCount || versions.length || 1}</span>
-                ${item.techniqueName ? `<span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-slate-300">${escapeHtml(item.techniqueName)}</span>` : ''}
+                <h4 class="truncate text-sm font-semibold text-white">${escapeHtml(selectedThread?.title || 'Prompt')}</h4>
+                <span class="rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] text-brand-200">v${selectedThread?.promptCount || versions.length || 1}</span>
+                ${selectedThread?.techniqueName ? `<span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-slate-300">${escapeHtml(selectedThread.techniqueName)}</span>` : ''}
               </div>
               <div class="mt-1 text-xs leading-5 text-slate-400">
-                ${item.keyword ? `<span class="mr-3">키워드: ${escapeHtml(item.keyword)}</span>` : ''}
-                ${item.purpose ? `<span class="mr-3">목적: ${escapeHtml(item.purpose)}</span>` : ''}
-                <span>${escapeHtml(formatTime(item.updatedAt || item.createdAt))}</span>
+                ${selectedThread?.keyword ? `<span class="mr-3">키워드: ${escapeHtml(selectedThread.keyword)}</span>` : ''}
+                ${selectedThread?.purpose ? `<span class="mr-3">목적: ${escapeHtml(selectedThread.purpose)}</span>` : ''}
+                <span>${escapeHtml(formatTime(selectedThread?.updatedAt || selectedThread?.createdAt || ''))}</span>
               </div>
             </div>
             <div class="flex flex-wrap gap-2">
-              <button onclick="loadHistoryItem('${escapeHtml(item.id)}')" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">불러오기</button>
-              <button onclick="copyHistoryItem('${escapeHtml(item.id)}')" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">복사</button>
+              <button onclick="loadHistoryItem('${escapeHtml(selectedThread?.id || '')}')" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">불러오기</button>
+              <button onclick="copyHistoryItem('${escapeHtml(selectedThread?.id || '')}')" class="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">복사</button>
             </div>
           </div>
           <div class="mt-4 flex flex-wrap gap-2">
             ${versions.length
               ? versions.map((version, index) => {
-                  const active = index === selectedIndex;
+                  const active = index === selectedVersionIndex;
                   const label = `v${version.versionNumber || versions.length - index}`;
                   const kind = version.kind || 'generate';
-                  return `<button type="button" onclick="selectHistoryVersion('${escapeHtml(item.id)}', ${index})" class="rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${active ? 'border-brand-400/40 bg-brand-500/20 text-brand-100' : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/10'}">${label} · ${escapeHtml(kind)}${active ? ' · 선택됨' : ''}</button>`;
+                  return `<button type="button" onclick="selectHistoryVersion('${escapeHtml(selectedThread?.id || '')}', ${index})" class="rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${active ? 'border-brand-400/40 bg-brand-500/20 text-brand-100' : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:bg-white/10'}">${label} · ${escapeHtml(kind)}${active ? ' · 선택됨' : ''}</button>`;
                 }).join('')
               : '<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] text-slate-400">버전 없음</span>'}
           </div>
           <div class="mt-2 text-[11px] text-slate-500">
-            <span class="mr-3">선택 버전: ${escapeHtml(selectedVersion ? `v${selectedVersion.versionNumber || selectedIndex + 1}` : '없음')}</span>
-            <span>${escapeHtml(formatTime(previewTime || item.updatedAt || item.createdAt))}</span>
+            <span class="mr-3">선택 버전: ${escapeHtml(selectedVersion ? `v${selectedVersion.versionNumber || selectedVersionIndex + 1}` : '없음')}</span>
+            <span>${escapeHtml(formatTime(selectedTime || ''))}</span>
           </div>
-          <pre class="mt-3 whitespace-pre-wrap rounded-2xl border border-white/10 bg-slate-950/40 p-3 text-xs leading-6 text-slate-300">${escapeHtml(String(previewPrompt || '').slice(0, 600))}</pre>
-        </article>
-      `; }).join('') : '<div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm leading-7 text-slate-400">아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 자동 저장됩니다.</div>'}
-    </div>
+          <pre class="mt-3 max-h-[48vh] overflow-y-auto whitespace-pre-wrap rounded-2xl border border-white/10 bg-slate-950/40 p-3 text-xs leading-6 text-slate-300">${escapeHtml(String(selectedPrompt || '').slice(0, 1200))}</pre>
+        </section>
+      </div>
+    ` : '<div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm leading-7 text-slate-400">아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 자동 저장됩니다.</div>'}
   `;
 }
 

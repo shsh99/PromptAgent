@@ -118,6 +118,7 @@ Status: `pending`
 
 Goal:
 - analyze usage and prompt quality from a management view
+- present the dashboard as a readable card-based workspace with sidebar tabs
 
 Includes:
 - admin dashboard
@@ -125,6 +126,15 @@ Includes:
 - prompt type distribution
 - result variant selection patterns
 - export and audit
+- light and dark mode token consistency
+- section switching instead of long vertical scrolling
+- project-specific dashboard labels and copy
+- readable sidebar navigation for tab switching
+
+Recent work:
+- admin dashboard was rewritten into a card-based workspace with a sidebar menu and top KPI cards
+- theme tokens for light and dark mode were separated so button text stays readable
+- section switching now happens by tab selection instead of long vertical scrolling
 
 Done when:
 - an admin can see what users do and what should be improved next

@@ -146,6 +146,7 @@ window.closeHistory = closeHistory;
 window.clearHistory = clearHistory;
 window.showAdminHistory = showAdminHistory;
 window.promptAdminToken = promptAdminToken;
+window.selectHistoryThread = selectHistoryThread;
 window.selectHistoryVersion = selectHistoryVersion;
 window.openSuggestionBoard = openSuggestionBoard;
 window.showSuggestionBoard = showSuggestionBoard;
@@ -225,6 +226,9 @@ function submitSuggestion() {
 function copyHistoryItem(threadId) {
   const item = loadHistoryThread(threadId);
   if (!item) return;
+  if (typeof selectHistoryThread === 'function') {
+    selectHistoryThread(threadId);
+  }
   const versions = Array.isArray(item.versions) ? item.versions : [];
   const selectedIndex = typeof getHistoryVersionIndex === 'function' ? getHistoryVersionIndex(item.id, versions) : 0;
   const selectedVersion = selectedIndex >= 0 ? versions[selectedIndex] : null;
@@ -236,6 +240,9 @@ function copyHistoryItem(threadId) {
 function loadHistoryItem(threadId) {
   const item = loadHistoryThread(threadId);
   if (!item) return;
+  if (typeof selectHistoryThread === 'function') {
+    selectHistoryThread(threadId);
+  }
   setCurrentHistoryThreadId(threadId);
   const versions = Array.isArray(item.versions) ? item.versions : [];
   const selectedIndex = typeof getHistoryVersionIndex === 'function' ? getHistoryVersionIndex(item.id, versions) : 0;
@@ -265,6 +272,9 @@ async function showHistory() {
   modal.classList.remove('hidden');
 
   const localItems = loadLocalHistory();
+  if (!historySelectedThreadId && localItems[0] && typeof saveHistorySelectedThreadId === 'function') {
+    saveHistorySelectedThreadId(localItems[0].id);
+  }
   content.innerHTML = `
     <div class="space-y-5">
       <div class="rounded-2xl border border-white/10 bg-white/5 p-4">

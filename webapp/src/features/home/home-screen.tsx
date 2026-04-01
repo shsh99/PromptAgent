@@ -76,13 +76,13 @@ export function HomeScreen() {
                 프롬프트를 자동으로 뚝딱 만드는 도구가 아니라, 빈칸을 채우고 구조를 정리해서 거의 완성형에 가까운 프롬프트를 만들 수 있게 돕습니다.
               </p>
               <div class="hero-actions flex flex-wrap gap-2">
-                <button onclick="switchMode('template')" class="surface-button-primary rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-lg shadow-black/10 hover:bg-slate-100">
+                <button onclick="switchMode('template')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
                   템플릿 모드로 시작
                 </button>
-                <button onclick="switchMode('builder')" class="surface-button-secondary rounded-2xl px-4 py-2.5 text-sm font-semibold hover:bg-white/10">
+                <button onclick="switchMode('builder')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
                   고급자 모드
                 </button>
-                <button onclick="switchMode('optimize')" class="surface-button-secondary rounded-2xl px-4 py-2.5 text-sm font-semibold hover:bg-white/10">
+                <button onclick="switchMode('optimize')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
                   최적화 열기
                 </button>
               </div>
