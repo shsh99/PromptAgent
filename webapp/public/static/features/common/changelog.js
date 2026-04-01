@@ -5,6 +5,15 @@
 
 const CHANGELOG_ITEMS = [
   {
+    date: '2026-04-02',
+    version: 'v4.11',
+    items: [
+      { tag: 'new', text: '검색엔진 인덱싱을 위해 robots.txt, sitemap.xml, 홈 메타 태그를 추가했습니다.' },
+      { tag: 'improve', text: '공개 페이지가 검색 결과에 더 잘 노출되도록 정규 URL과 설명 메타를 정리했습니다.' },
+      { tag: 'improve', text: '문서 최신화 흐름에 검색 노출 준비 항목도 함께 반영했습니다.' },
+    ],
+  },
+  {
     date: '2026-04-01',
     version: 'v4.10',
     items: [

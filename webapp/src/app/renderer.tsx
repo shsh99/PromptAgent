@@ -1,6 +1,9 @@
 ﻿/** @jsxImportSource hono/jsx */
 import { jsxRenderer } from 'hono/jsx-renderer'
 
+const SITE_URL = 'https://promptbuilder-df6.pages.dev'
+const SITE_DESCRIPTION = 'PromptBuilder는 템플릿, 빌더, Optimize, 히스토리를 제공하는 프롬프트 생성·최적화 도구입니다.'
+
 export const renderer = jsxRenderer(({ children }) => {
   return (
     <html lang="ko">
@@ -8,6 +11,17 @@ export const renderer = jsxRenderer(({ children }) => {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>프롬프트빌더 - 프롬프트 생성과 최적화</title>
+        <meta name="description" content={SITE_DESCRIPTION} />
+        <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+        <link rel="canonical" href={SITE_URL} />
+        <meta property="og:site_name" content="PromptBuilder" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="프롬프트빌더 - 프롬프트 생성과 최적화" />
+        <meta property="og:description" content={SITE_DESCRIPTION} />
+        <meta property="og:url" content={SITE_URL} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="프롬프트빌더 - 프롬프트 생성과 최적화" />
+        <meta name="twitter:description" content={SITE_DESCRIPTION} />
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />

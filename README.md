@@ -115,4 +115,5 @@ npm run deploy
 - 관리자 화면은 프로젝트 용어에 맞춰 다시 정리했고, 라이트/다크 모드에서 버튼과 카드가 읽히도록 토큰을 보강했습니다.
 - 히스토리는 아래로 길게 스크롤하는 방식 대신 탭과 선택 패널 중심으로 다시 구성했습니다.
 - 프롬프트 생성은 System / Template / User Input 레이어로 분리하는 방향을 문서와 구현에 반영했습니다.
+- 검색 노출을 위해 `robots.txt`, `sitemap.xml`, 홈 메타 설명, 정규 URL을 추가했습니다.
 - 새 기능을 추가할 때는 `README`, `docs/phase.md`, `docs/plan.md`, `webapp/public/static/features/common/changelog.js`를 함께 갱신하는 규칙을 유지합니다.

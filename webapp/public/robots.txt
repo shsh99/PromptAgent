@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://promptbuilder-df6.pages.dev/sitemap.xml
