@@ -718,6 +718,47 @@ textarea:focus-visible {
   background: rgba(255, 255, 255, 0.96);
 }
 
+.prompt-shell.theme-light #guide-modal .bg-slate-950,
+.prompt-shell.theme-light #guide-modal .bg-slate-950\/90,
+.prompt-shell.theme-light #guide-modal .bg-slate-900,
+.prompt-shell.theme-light #guide-modal .bg-gray-950,
+.prompt-shell.theme-light #guide-modal .bg-gray-900,
+.prompt-shell.theme-light #guide-modal .bg-gray-800,
+.prompt-shell.theme-light #guide-modal .bg-white\/5,
+.prompt-shell.theme-light #guide-modal .bg-brand-500\/5,
+.prompt-shell.theme-light #guide-modal .bg-cyan-500\/5,
+.prompt-shell.theme-light #guide-modal .bg-indigo-500\/5,
+.prompt-shell.theme-light #guide-modal .bg-emerald-500\/5 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+}
+
+.prompt-shell.theme-light #guide-modal .border-white\/10,
+.prompt-shell.theme-light #guide-modal .border-brand-500\/20,
+.prompt-shell.theme-light #guide-modal .border-cyan-500\/20,
+.prompt-shell.theme-light #guide-modal .border-indigo-500\/20,
+.prompt-shell.theme-light #guide-modal .border-emerald-500\/20 {
+  border-color: rgba(203, 213, 225, 0.9) !important;
+}
+
+.prompt-shell.theme-light #guide-modal .text-white,
+.prompt-shell.theme-light #guide-modal .text-gray-100 {
+  color: #0f172a !important;
+}
+
+.prompt-shell.theme-light #guide-modal .text-slate-300,
+.prompt-shell.theme-light #guide-modal .text-slate-400,
+.prompt-shell.theme-light #guide-modal .text-gray-300,
+.prompt-shell.theme-light #guide-modal .text-gray-400,
+.prompt-shell.theme-light #guide-modal .text-gray-500 {
+  color: #475569 !important;
+}
+
+.prompt-shell.theme-light #guide-modal pre {
+  background: rgba(248, 250, 252, 0.98) !important;
+  color: #0f172a !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
+}
+
 .prompt-shell.theme-light #updates-modal .bg-gray-950\/60,
 .prompt-shell.theme-light #updates-modal .bg-gray-900\/80,
 .prompt-shell.theme-light #updates-modal .bg-gray-800,
@@ -804,7 +845,8 @@ textarea:focus-visible {
 
 .prompt-shell.theme-light #quality-checks > div:first-child .text-gray-500,
 .prompt-shell.theme-light #quality-checks > div:first-child .text-gray-400,
-.prompt-shell.theme-light #quality-checks > div:first-child .text-slate-400 {
+.prompt-shell.theme-light #quality-checks > div:first-child .text-slate-400,
+.prompt-shell.theme-light #quality-checks > div:first-child .text-gray-300 {
   color: #64748b !important;
 }
 

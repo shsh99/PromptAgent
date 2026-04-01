@@ -10,6 +10,7 @@ import {
   getTechStack,
   getTargetUser,
 } from './helpers'
+import { buildPromptVerificationBlock } from './quality'
 
 function applyPromptLanguage(text: string, language: string): string {
   if (language !== 'en') return text
@@ -240,7 +241,7 @@ function buildPromptVariants(prompt: string, qualityReport: any, language: strin
       label: addon.title,
       summary: addon.summary,
       prompt: candidatePrompt,
-      qualityReport: analyzePromptQualityEnhanced(candidatePrompt, {}),
+      qualityReport: analyzePromptQualityEnhanced(candidatePrompt, {}, language),
     }
   })
 
@@ -462,7 +463,9 @@ export function buildGenerateResult(args: GenerateArgs) {
     prompt = `[바이브 코딩 프로젝트]\n프로젝트 유형: ${purposeInfo?.label || purpose}\n작업 키워드: ${keyword}\n\n${prompt}`
   }
 
-  const qualityReport = analyzePromptQualityEnhanced(prompt, fields)
+  prompt += `\n\n${buildPromptVerificationBlock(language || 'ko')}`
+
+  const qualityReport = analyzePromptQualityEnhanced(prompt, fields, language || 'ko')
   const variants = buildPromptVariants(prompt, qualityReport, language || 'ko')
 
   let chainData: any = null
@@ -539,6 +542,7 @@ export function buildImproveResult(args: ImproveArgs) {
     '- 불필요한 장황함 없이 명확하게 작성하세요.',
     '',
     '## 원본 프롬프트',
+    '## Execution Guidance',
     String(prompt).trim(),
   ].join('\n')
   return { improvedPrompt }

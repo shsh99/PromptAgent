@@ -20,6 +20,7 @@ This file tells future agents how to work in this repository without needing to 
 5. Keep UI copy short and actionable.
 6. Before each deployment, prepend a release note entry in `webapp/public/static/changelog.js`.
 7. Before each deployment, keep the agent instructions in sync and add the same update-log reminder to `AGENT.md`.
+8. After running Codex, keep output encoding fixed to UTF-8.
 
 ## Product Rules
 

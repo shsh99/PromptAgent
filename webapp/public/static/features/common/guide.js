@@ -1,8 +1,12 @@
-// ===== guide.js — 가이드 모달 =====
+// ===== guide.js - 가이드 모달 =====
 
 function showGuide() {
-  document.getElementById('guide-modal').classList.remove('hidden');
-  document.getElementById('guide-content').innerHTML = `
+  const modal = document.getElementById('guide-modal');
+  const content = document.getElementById('guide-content');
+  if (!modal || !content) return;
+
+  modal.classList.remove('hidden');
+  content.innerHTML = `
     <div>
       <h4 class="text-base font-bold text-white mb-2 flex items-center gap-2">
         <i class="fas fa-circle-info text-brand-400"></i>프롬프트 엔지니어링이란?
@@ -101,5 +105,7 @@ function showGuide() {
 }
 
 function closeGuide() {
-  document.getElementById('guide-modal').classList.add('hidden');
+  const modal = document.getElementById('guide-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
 }

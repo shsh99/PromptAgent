@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/build.mjs",
+    "test": "node scripts/test.mjs",
     "postbuild": "node scripts/sync-worker.mjs",
     "preview": "wrangler dev",
     "deploy": "npm run build && wrangler pages deploy dist --project-name promptbuilder --branch main --commit-dirty=true",

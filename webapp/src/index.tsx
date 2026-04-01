@@ -1,9 +1,9 @@
 ﻿/** @jsxImportSource hono/jsx */
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { renderer } from './renderer'
-import { apiRouter } from './routes'
-import { HomeScreen } from './home-screen'
+import { renderer } from './app/renderer'
+import { apiRouter } from './app/routes'
+import { HomeScreen } from './features/home/home-screen'
 import {
   DocumentPage,
   FaqPage,
@@ -11,7 +11,7 @@ import {
   buildPrivacySections,
   buildTermsSections,
   formatKoreanDate,
-} from './legal-pages'
+} from './features/legal/legal-pages'
 
 const app = new Hono()
 

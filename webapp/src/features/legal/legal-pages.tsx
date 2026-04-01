@@ -1,5 +1,5 @@
 /** @jsxImportSource hono/jsx */
-import { SiteFooter } from './site-footer'
+import { SiteFooter } from '../../components/site-footer'
 
 type Section = {
   title: string

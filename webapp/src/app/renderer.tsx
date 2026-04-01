@@ -46,17 +46,23 @@ export const renderer = jsxRenderer(({ children }) => {
       </head>
       <body class="prompt-shell theme-light bg-white text-slate-900 font-sans min-h-screen">
         {children}
-        <script src="/static/utils.js"></script>
-        <script src="/static/changelog.js"></script>
-        <script src="/static/history.js"></script>
-        <script src="/static/library.js"></script>
-        <script src="/static/improve.js"></script>
-        <script src="/static/prompt.js"></script>
-        <script src="/static/technique.js"></script>
-        <script src="/static/guide.js"></script>
-        <script src="/static/optimize.js"></script>
-        <script src="/static/app.js"></script>
-        <script src="/static/ui-fixes.js"></script>
+        <script src="/static/features/common/utils.js"></script>
+        <script src="/static/features/common/changelog.js"></script>
+        <script src="/static/features/history/history-core.js"></script>
+        <script src="/static/features/history/history-ui.js"></script>
+        <script src="/static/features/history/history-admin-report.js"></script>
+        <script src="/static/features/history/history-admin-dashboard.js"></script>
+        <script src="/static/features/common/library.js"></script>
+        <script src="/static/features/prompt/improve.js"></script>
+        <script src="/static/features/prompt/prompt.js"></script>
+        <script src="/static/features/prompt/technique.js"></script>
+        <script src="/static/features/common/guide.js"></script>
+        <script src="/static/features/optimize/optimize-mode.js"></script>
+        <script src="/static/features/optimize/optimize-run.js"></script>
+        <script src="/static/features/optimize/optimize-results.js"></script>
+        <script src="/static/features/optimize/optimize-extras.js"></script>
+        <script src="/static/features/common/app.js"></script>
+        <script src="/static/features/common/ui-fixes.js"></script>
       </body>
     </html>
   )

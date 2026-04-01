@@ -28,6 +28,7 @@ PromptBuilder is a prompt quality and workflow tool focused on:
 4. Keep documentation aligned with actual implementation status.
 5. When changing product behavior, update the docs in the same pass.
 6. Before each deployment, add an update log entry in `webapp/public/static/changelog.js` and keep the agent docs in sync.
+7. After running Codex, keep output encoding fixed to UTF-8.
 
 ## Product Direction
 

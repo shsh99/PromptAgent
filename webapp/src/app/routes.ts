@@ -2,19 +2,19 @@
 import { Hono } from 'hono'
 import {
   TECHNIQUES, FIELD_DEFINITIONS, PURPOSE_PRESETS, PURPOSE_RECOMMENDATIONS,
-} from './data'
+} from '../features/prompt/data'
 import {
   generateAutoFields, analyzePromptQualityEnhanced, getPromptTips,
   getRoleForPurpose, getChainSteps, getCoreFeatures, getDataModel,
   getTechStack, getTargetUser,
-} from './helpers'
+} from '../features/prompt/helpers'
 import {
   buildGenerateResult,
   buildImproveResult,
   buildOptimizeResult,
   buildChainResult,
   buildContextDocResult,
-} from './prompt-services'
+} from '../features/prompt/prompt-services'
 
 export const apiRouter = new Hono()
 
@@ -639,7 +639,7 @@ async function readPublicStats(c: any) {
       await ensureAppDataSchema(c)
       const [generatedPromptCountResult, activityCountResult, visitorCountResult, pageViewCountResult] = await Promise.all([
         db.prepare("SELECT COUNT(*) AS count FROM event_logs WHERE kind = ? AND action_type = ?").bind('prompt', 'RUN').all(),
-        db.prepare("SELECT COUNT(*) AS count FROM event_logs WHERE kind = ? AND action_type != ?").bind('activity', 'PAGE_VIEW').all(),
+        db.prepare("SELECT COUNT(*) AS count FROM event_logs WHERE kind = ?").bind('activity').all(),
         db.prepare(`
           SELECT COUNT(DISTINCT visitor_id) AS count FROM (
             SELECT visitor_id FROM event_logs WHERE visitor_id IS NOT NULL AND visitor_id != ''
@@ -676,7 +676,7 @@ async function readPublicStats(c: any) {
   ])
   return {
     generatedPromptCount: store.promptLogs.filter((log: any) => String(log.kind || log.actionType || '').toUpperCase() === 'RUN').length,
-    activityCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() !== 'PAGE_VIEW').length,
+    activityCount: store.activityLogs.length,
     visitorCount: visitors.size,
     pageViewCount: store.activityLogs.filter((log: any) => String(log.actionType || '').toUpperCase() === 'PAGE_VIEW').length,
     updatedAt: new Date().toISOString(),

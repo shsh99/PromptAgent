@@ -1,6 +1,7 @@
 ﻿/** @jsxImportSource hono/jsx */
 
-import { SiteFooter } from './site-footer'
+import { SiteFooter } from '../../components/site-footer'
+import { HomeScreenOverlays } from './home-screen-overlays'
 
 export function HomeScreen() {
   return (
@@ -48,8 +49,8 @@ export function HomeScreen() {
               <button onclick="showHistory()" class="hidden rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 md:inline-flex">
                 히스토리
               </button>
-              <button onclick="promptAdminToken()" class="hidden rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 shadow-sm hover:bg-brand-100 md:inline-flex">
-                관리자
+              <button onclick="promptAdminToken()" class="inline-flex rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 shadow-sm hover:bg-brand-100">
+                관리자 모드
               </button>
               <button onclick="toggleMobileSidebar()" class="inline-flex rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 xl:hidden">
                 <i class="fas fa-bars"></i>
@@ -61,7 +62,7 @@ export function HomeScreen() {
 
       <main class="mx-auto max-w-7xl px-4 pb-16 pt-24 sm:px-6 lg:px-8">
         <div class="min-w-0">
-          <section class="mb-10 space-y-6">
+          <section class="mb-8 space-y-6">
             <div class="space-y-4">
               <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-300">
                 <i class="fas fa-wand-magic-sparkles"></i>
@@ -103,71 +104,73 @@ export function HomeScreen() {
                 </div>
               </div>
             </div>
-          <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-            <div class="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">모드 선택</div>
-                <h3 class="mt-2 text-lg font-semibold text-white">가장 쉬운 방식부터 시작하세요</h3>
+          <div class="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">모드 선택</div>
+                  <h3 class="mt-2 text-lg font-semibold text-white">가장 쉬운 방식부터 시작하세요</h3>
+                </div>
+                <div class="text-xs text-slate-400">한 번만 고르면 됩니다</div>
               </div>
-              <div class="text-xs text-slate-400">한 번만 고르면 됩니다</div>
+              <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                <button onclick="switchMode('template')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
+                  <div class="flex items-center justify-between">
+                    <div class="text-sm font-semibold text-white">템플릿 모드</div>
+                    <span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-200">사무직</span>
+                  </div>
+                  <div class="mt-2 text-xs leading-5 text-slate-300">메일, 보고서, 회의록 같은 일상 업무를 빠르게 고릅니다.</div>
+                </button>
+                <button onclick="switchMode('builder')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
+                  <div class="flex items-center justify-between">
+                    <div class="text-sm font-semibold text-white">빌더 모드</div>
+                    <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200">개발자</span>
+                  </div>
+                  <div class="mt-2 text-xs leading-5 text-slate-300">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
+                </button>
+                <button onclick="switchMode('optimize')" class="rounded-3xl border border-brand-400/20 bg-brand-500/10 px-4 py-4 text-left transition hover:bg-brand-500/15">
+                  <div class="flex items-center justify-between">
+                    <div class="text-sm font-semibold text-brand-100">최적화 모드</div>
+                    <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-100">개선</span>
+                  </div>
+                  <div class="mt-2 text-xs leading-5 text-brand-100/80">이미 만든 프롬프트를 결과 기준으로 다듬습니다.</div>
+                </button>
+              </div>
             </div>
-            <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-              <button onclick="switchMode('template')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
-                <div class="flex items-center justify-between">
-                  <div class="text-sm font-semibold text-white">템플릿 모드</div>
-                  <span class="rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-200">사무직</span>
+
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl xl:sticky xl:top-24 self-start">
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">AI 스타일</div>
+                  <h3 class="mt-2 text-lg font-semibold text-white">어떤 AI 말투로 맞출지 고르세요</h3>
                 </div>
-                <div class="mt-2 text-xs leading-5 text-slate-300">메일, 보고서, 회의록 같은 일상 업무를 빠르게 고릅니다.</div>
-              </button>
-              <button onclick="switchMode('builder')" class="rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:bg-white/10">
-                <div class="flex items-center justify-between">
-                  <div class="text-sm font-semibold text-white">빌더 모드</div>
-                  <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200">개발자</span>
-                </div>
-                <div class="mt-2 text-xs leading-5 text-slate-300">문제 정의, 입력, 출력, 제약 조건을 직접 설계합니다.</div>
-              </button>
-              <button onclick="switchMode('optimize')" class="rounded-3xl border border-brand-400/20 bg-brand-500/10 px-4 py-4 text-left transition hover:bg-brand-500/15">
-                <div class="flex items-center justify-between">
-                  <div class="text-sm font-semibold text-brand-100">최적화 모드</div>
-                  <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-100">개선</span>
-                </div>
-                <div class="mt-2 text-xs leading-5 text-brand-100/80">이미 만든 프롬프트를 결과 기준으로 다듬습니다.</div>
-              </button>
+                <div class="text-xs text-slate-300">기본은 GPT 스타일</div>
+              </div>
+              <div class="grid gap-3 grid-cols-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+                <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="rounded-2xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
+                  GPT
+                  <div class="mt-1 text-[11px] font-normal text-brand-100/80">구조적이고 간결한 스타일</div>
+                </button>
+                <button data-prompt-style="claude" onclick="setPromptStyle('claude')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                  Claude
+                  <div class="mt-1 text-[11px] font-normal text-slate-300">맥락이 풍부한 스타일</div>
+                </button>
+                <button data-prompt-style="gemini" onclick="setPromptStyle('gemini')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                  Gemini
+                  <div class="mt-1 text-[11px] font-normal text-slate-300">짧고 직접적인 스타일</div>
+                </button>
+                <button data-prompt-style="genspark" onclick="setPromptStyle('genspark')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
+                  Genspark
+                  <div class="mt-1 text-[11px] font-normal text-slate-300">실행 순서가 분명한 스타일</div>
+                </button>
+                <button data-prompt-style="custom" onclick="setPromptStyle('custom')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10 sm:col-span-2 xl:col-span-1 2xl:col-span-2">
+                  직접 지정
+                  <div class="mt-1 text-[11px] font-normal text-slate-300">기본 구조 유지, 수동 조정</div>
+                </button>
+              </div>
             </div>
           </div>
         </section>
-
-        <div class="mb-10 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-          <div class="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">AI 스타일</div>
-              <h3 class="mt-2 text-lg font-semibold text-white">어떤 AI 말투로 맞출지 고르세요</h3>
-            </div>
-          <div class="text-xs text-slate-300">기본은 GPT 스타일</div>
-          </div>
-          <div class="grid gap-3 grid-cols-2 sm:grid-cols-2 xl:grid-cols-5">
-            <button data-prompt-style="gpt" onclick="setPromptStyle('gpt')" class="rounded-2xl border border-brand-500/20 bg-brand-500/10 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-brand-500/15">
-              GPT
-              <div class="mt-1 text-[11px] font-normal text-brand-100/80">구조적이고 간결한 스타일</div>
-            </button>
-            <button data-prompt-style="claude" onclick="setPromptStyle('claude')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-              Claude
-              <div class="mt-1 text-[11px] font-normal text-slate-300">맥락이 풍부한 스타일</div>
-            </button>
-            <button data-prompt-style="gemini" onclick="setPromptStyle('gemini')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-              Gemini
-              <div class="mt-1 text-[11px] font-normal text-slate-300">짧고 직접적인 스타일</div>
-            </button>
-            <button data-prompt-style="genspark" onclick="setPromptStyle('genspark')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-              Genspark
-              <div class="mt-1 text-[11px] font-normal text-slate-300">실행 순서가 분명한 스타일</div>
-            </button>
-            <button data-prompt-style="custom" onclick="setPromptStyle('custom')" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10">
-              직접 지정
-              <div class="mt-1 text-[11px] font-normal text-slate-300">기본 구조 유지, 수동 조정</div>
-            </button>
-          </div>
-        </div>
 
           <section id="step-purpose" class="mb-6">
           <div class="mb-4 flex items-center gap-3">
@@ -205,7 +208,7 @@ export function HomeScreen() {
             <div class="mb-3 flex items-center gap-2">
               <i class="fas fa-robot text-brand-300"></i>
               <h4 class="text-sm font-semibold text-white">AI 추천 결과</h4>
-              <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-200">자동 분석</span>
+              <span class="rounded-full bg-brand-500/20 px-2 py-0.5 text-[10px] font-semibold text-brand-200">자동 품질 분석</span>
             </div>
             <p id="rec-reason" class="mb-4 text-sm leading-7 text-slate-300">목적과 키워드를 고르면 그에 맞는 추천 이유를 보여줍니다.</p>
             <div class="grid gap-3 lg:grid-cols-2">
@@ -304,7 +307,7 @@ export function HomeScreen() {
                       다운로드
                     </button>
                     <button onclick="openOptimizeFromResult()" class="rounded-xl border border-brand-500/20 bg-brand-500/10 px-3 py-1.5 text-xs font-semibold text-brand-100 hover:bg-brand-500/15">
-                      Optimize
+                      최적화
                     </button>
                   </div>
                 </div>
@@ -334,7 +337,7 @@ export function HomeScreen() {
               </div>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-4 xl:sticky xl:top-24 self-start">
               <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
                 <h4 class="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
                   <i class="fas fa-chart-simple text-brand-300"></i>
@@ -344,7 +347,7 @@ export function HomeScreen() {
                   <div id="quality-grade" class="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl font-black"></div>
                   <div>
                     <div class="text-2xl font-bold text-white"><span id="quality-score">0</span><span class="text-sm text-slate-400">%</span></div>
-                    <div class="text-xs text-slate-400" id="quality-label">분석 대기 중</div>
+                    <div class="text-xs text-slate-400" id="quality-label">품질 분석 대기 중</div>
                   </div>
                 </div>
                 <div id="quality-checks" class="space-y-2"></div>
@@ -364,93 +367,7 @@ export function HomeScreen() {
       </main>
 
       <SiteFooter />
-
-      <button
-        onclick="showUpdates()"
-        class="updates-fab fixed bottom-5 right-5 z-[90] flex items-center gap-2 rounded-full border border-brand-400/30 bg-slate-900/90 px-4 py-3 text-xs font-semibold text-brand-300 shadow-lg shadow-brand-900/30 backdrop-blur-xl hover:-translate-y-0.5 hover:text-white"
-      >
-        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
-        <span>업데이트</span>
-      </button>
-
-      <div id="guide-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeGuide()"></div>
-        <div class="relative mx-auto mt-20 max-h-[80vh] max-w-3xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 m-4">
-          <div class="sticky top-0 flex items-center justify-between rounded-t-2xl border-b border-white/10 bg-slate-950 px-6 py-4">
-            <h3 class="flex items-center gap-2 text-lg font-bold text-white">
-              <i class="fas fa-book-open text-brand-300"></i>프롬프트 가이드
-            </h3>
-            <button onclick="closeGuide()" class="text-slate-400 hover:text-white"><i class="fas fa-xmark text-lg"></i></button>
-          </div>
-          <div class="space-y-6 p-6 text-sm text-slate-300" id="guide-content"></div>
-        </div>
-      </div>
-
-      <div id="history-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeHistory()"></div>
-        <div class="relative mx-auto mt-20 max-h-[80vh] max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 m-4">
-          <div class="sticky top-0 flex items-center justify-between rounded-t-2xl border-b border-white/10 bg-slate-950 px-6 py-4">
-            <h3 class="flex items-center gap-2 text-lg font-bold text-white">
-              <i class="fas fa-clock-rotate-left text-brand-300"></i>생성 히스토리
-            </h3>
-            <div class="flex items-center gap-2">
-              <button onclick="clearHistory()" class="rounded px-2 py-1 text-xs text-red-300 hover:text-red-200">전체 삭제</button>
-              <button onclick="closeHistory()" class="text-slate-400 hover:text-white"><i class="fas fa-xmark text-lg"></i></button>
-            </div>
-          </div>
-          <div id="history-content" class="p-6">
-              <div class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-sm leading-7 text-slate-400">
-              아직 저장된 기록이 없습니다. 프롬프트를 생성하면 여기에 최근 작업이 표시됩니다.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="updates-modal" class="fixed inset-0 z-[100] hidden">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeUpdates()"></div>
-        <div class="relative mx-auto mt-20 max-h-[80vh] max-w-3xl overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 m-4">
-          <div class="sticky top-0 flex items-center justify-between rounded-t-2xl border-b border-white/10 bg-slate-950 px-6 py-4">
-            <h3 class="flex items-center gap-2 text-lg font-bold text-white">
-              <i class="fas fa-bullhorn text-brand-300"></i>최근 업데이트
-            </h3>
-            <button onclick="closeUpdates()" class="text-slate-400 hover:text-white"><i class="fas fa-xmark text-lg"></i></button>
-          </div>
-          <div id="updates-content" class="p-6"></div>
-        </div>
-      </div>
-
-      <div id="admin-dashboard" class="fixed inset-0 z-[110] hidden bg-slate-950/96">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(92,124,250,0.16),transparent_35%),radial-gradient(circle_at_top_right,rgba(16,185,129,0.12),transparent_32%)]"></div>
-        <div class="relative flex h-full flex-col">
-          <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
-            <div>
-              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">관리자 대시보드</div>
-              <div class="mt-1 text-sm text-slate-300">토큰이 확인되면 전체화면 분석 화면이 열립니다.</div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="reloadAdminDashboard()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">새로고침</button>
-              <button onclick="closeAdminDashboard()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">닫기</button>
-            </div>
-          </div>
-          <div id="admin-dashboard-content" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6"></div>
-        </div>
-      </div>
-
-      <div id="suggestion-board" class="fixed inset-0 z-[105] hidden bg-slate-950/96">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.14),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(92,124,250,0.12),transparent_30%)]"></div>
-        <div class="relative flex h-full flex-col">
-          <div class="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-6">
-            <div>
-              <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">자유 건의 게시판</div>
-              <div class="mt-1 text-sm text-slate-300">사용자 제안과 수정 요청을 남기면 관리자가 보고 반영합니다.</div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="closeSuggestionBoard()" class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-white/10">닫기</button>
-            </div>
-          </div>
-          <div id="suggestion-board-content" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6"></div>
-        </div>
-      </div>
+      <HomeScreenOverlays />
     </div>
 
   )
