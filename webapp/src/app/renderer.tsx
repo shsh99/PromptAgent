@@ -59,6 +59,19 @@ export const renderer = jsxRenderer(({ children }) => {
         <link href="/static/style.css" rel="stylesheet" />
       </head>
       <body class="prompt-shell theme-light bg-white text-slate-900 font-sans min-h-screen">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var theme = localStorage.getItem('pf_theme') === 'dark' ? 'dark' : 'light';
+                  document.body.classList.toggle('theme-light', theme === 'light');
+                  document.body.classList.toggle('theme-dark', theme === 'dark');
+                } catch (error) {}
+              })();
+            `,
+          }}
+        />
         {children}
         <script src="/static/features/common/utils.js"></script>
         <script src="/static/features/common/changelog.js"></script>

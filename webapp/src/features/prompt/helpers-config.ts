@@ -254,3 +254,21 @@ export function registerPurposeConfig(purposeId: string, config: PurposeConfig):
 export function getPurposeConfigKeys(): string[] {
   return Object.keys(PURPOSE_CONFIGS)
 }
+
+Object.assign(PURPOSE_CONFIGS['web-app'], {
+  role: '시니어 풀스택 엔지니어',
+  roleDetail: '제품 구조와 운영까지 함께 보는 실무형 엔지니어',
+  contextDetail: '웹 서비스는 기능, UX, 상태 관리, 배포, 검증이 함께 맞물립니다. 이 점을 먼저 정리한 뒤 설계해야 합니다.',
+  coreFeatures: (keyword: string) => `문제 정의\n${keyword} 핵심 기능\n입력/출력 분리\n검증 기준\n실행 가능한 구조`,
+  chainSteps: (keyword: string) => `1단계: "${keyword}"의 문제와 목표를 분리합니다.\n2단계: 필요한 입력과 출력 형식을 나눕니다.\n3단계: 제약과 검증 기준을 먼저 정합니다.\n4단계: 구조, 데이터, UI 순으로 구체화합니다.\n5단계: 테스트와 배포 관점을 확인합니다.`,
+  approaches: () => `방법 A - 단순 구조: 핵심 기능만 빠르게 정리\n방법 B - 운영 구조: 검증, 롤백, 리뷰까지 포함\n방법 C - 확장 구조: 도메인과 상태 관리까지 반영`,
+  fewShotExamples: `프롬프트: 주간 보고서 초안 작성\n결과: 목표, 지표, 리스크, 다음 액션이 분리된 보고서\n프롬프트: 코드 리뷰 기준 작성\n결과: 문제, 원인, 수정안, 우선순위가 분명한 리뷰`,
+})
+
+Object.assign(PURPOSE_CONFIGS['custom'], {
+  role: '범용 프로젝트 설계자',
+  roleDetail: '상황에 맞게 구조를 정리하고 검증 기준을 만드는 실무형 역할',
+  contextDetail: '범용 프로젝트는 범위를 넓히기보다 필요한 맥락만 선별하는 것이 중요합니다.',
+  chainSteps: (keyword: string) => `1단계: "${keyword}"의 범위를 정의합니다.\n2단계: 입력, 출력, 제약을 분리합니다.\n3단계: 결과를 판단할 평가 기준을 정합니다.\n4단계: 실패 시 복구 방법을 추가합니다.\n5단계: 다음 버전 개선 포인트를 기록합니다.`,
+  fewShotExamples: `프롬프트: 일정 관리 화면 설계\n결과: 목적, 사용 흐름, 데이터 구조가 정리된 설계서\n프롬프트: 템플릿 생성기 만들기\n결과: 입력, 출력, 예시, 검증 기준이 있는 초안`,
+})

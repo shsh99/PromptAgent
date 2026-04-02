@@ -173,3 +173,17 @@ Paid dependencies should remain optional.
 - The prompt layer is now split into `System / Template / User Input` instead of one long mixed contract.
 - The analyzer adds problem framing, input data, reasoning guidance, examples, and recovery checks.
 - The current free path can still run end to end without mandatory paid APIs.
+
+## What These Techniques Do Not Guarantee
+
+No single technique guarantees a perfect prompt by itself.
+
+- Zero-shot helps only when the task is already clear.
+- Few-shot depends on the quality of the examples.
+- Chain of thought helps with reasoning, but it still needs a well-defined task and output contract.
+- Prompt chaining improves reliability for complex tasks, but weak step boundaries still produce weak results.
+- Role prompting stabilizes tone and perspective, but it cannot replace structure, constraints, or verification.
+- Context engineering improves the available context, but irrelevant or contradictory context still hurts quality.
+- Harness engineering is the most complete approach here, but it still needs explicit evaluation criteria, failure handling, and iteration.
+
+The project should therefore present these techniques as reliability tools, not as magic guarantees.

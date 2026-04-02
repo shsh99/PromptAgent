@@ -57,6 +57,58 @@ export function HomeScreenOverlays() {
         </div>
       </div>
 
+      <div id="template-market-modal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/75 backdrop-blur-sm" onclick="closeTemplateMarket()"></div>
+        <div class="relative mx-auto my-4 flex h-[92vh] max-w-[1560px] flex-col overflow-hidden rounded-[32px] border border-white/10 bg-slate-950 shadow-2xl shadow-black/40">
+          <div class="flex shrink-0 items-center justify-between border-b border-white/10 px-5 py-4 sm:px-6">
+            <div>
+              <h3 class="flex items-center gap-2 text-lg font-bold text-white sm:text-xl">
+                <i class="fas fa-store text-brand-300"></i>템플릿 마켓
+              </h3>
+              <p class="mt-1 text-xs leading-5 text-slate-400">카드를 고르면 목적, 키워드, 구조가 자동으로 채워집니다. 미리보기에서 구조를 확인하고 바로 적용하세요.</p>
+            </div>
+            <button onclick="closeTemplateMarket()" class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-slate-300 hover:bg-white/10 hover:text-white">
+              <i class="fas fa-xmark text-lg"></i>
+            </button>
+          </div>
+
+          <div class="grid min-h-0 flex-1 gap-0 lg:grid-cols-[minmax(0,1.26fr)_minmax(360px,0.74fr)]">
+            <div class="flex min-h-0 flex-col border-b border-white/10 lg:border-b-0 lg:border-r lg:border-white/10">
+              <div class="shrink-0 border-b border-white/10 px-5 py-4 sm:px-6">
+                <div class="flex flex-col gap-3">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <div class="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500">Template Library</div>
+                      <div class="mt-1 text-sm text-slate-400">카테고리를 고른 뒤 미리보기에서 확인하고 바로 적용할 수 있습니다.</div>
+                    </div>
+                    <div class="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold text-slate-200 sm:inline-flex">미리보기 기반 적용</div>
+                  </div>
+                  <input
+                    id="template-market-search"
+                    type="search"
+                    placeholder="템플릿 이름, 태그, 용도 검색"
+                    class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/10"
+                    oninput="setTemplateMarketQuery(this.value)"
+                  />
+                </div>
+              </div>
+              <div id="template-market-tabs" class="shrink-0 flex flex-wrap gap-2 border-b border-white/10 px-5 py-4 sm:px-6"></div>
+              <div class="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6">
+                <div class="mb-4 flex items-center justify-between gap-3 text-xs text-slate-400">
+                  <span id="template-market-count-label">템플릿을 불러오는 중입니다.</span>
+                  <span>카드를 클릭하면 오른쪽에서 바로 확인됩니다.</span>
+                </div>
+                <div id="template-market-grid" class="grid gap-3 md:grid-cols-2 xl:grid-cols-3"></div>
+              </div>
+            </div>
+
+            <div class="min-h-0 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(92,124,250,0.18),transparent_34%),linear-gradient(180deg,rgba(15,23,42,0.96),rgba(2,6,23,0.98))] p-5 sm:p-6">
+              <div id="template-market-preview"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div id="admin-dashboard" class="fixed inset-0 z-[110] hidden bg-slate-100/95">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(92,124,250,0.14),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.12),transparent_28%)]"></div>
         <div id="admin-dashboard-content" class="relative h-full overflow-y-auto"></div>

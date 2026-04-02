@@ -871,6 +871,202 @@ function getPromptStyleProfile(modelTarget: string, language: string) {
   }
 }
 
+type IntentRule = {
+  keywords: string[]
+  purpose: string
+  technique: string
+  label: string
+  fields: Record<string, string>
+}
+
+const INTENT_RULES: Record<string, IntentRule> = {
+  report: {
+    keywords: ['보고서', '리포트', 'report', '주간보고', '주간 보고', '월간보고', '월간 보고', '정리', '요약', '분석'],
+    purpose: 'content',
+    technique: 'harness',
+    label: '보고서 작성',
+    fields: {
+      role: '비즈니스 분석가',
+      context: '현황과 핵심 지표를 빠르게 파악할 수 있도록 상황을 먼저 정리합니다.',
+      task: '핵심 내용, 문제점, 원인, 개선안을 구조적으로 정리한 보고서를 작성합니다.',
+      output_format: '제목 / 요약 / 본문 / 결론 / 다음 액션',
+      tone: '전문적이고 간결하게',
+      constraints: '중요한 수치와 결론을 먼저 제시하고, 불필요한 수식어는 줄입니다.',
+    },
+  },
+  email: {
+    keywords: ['이메일', '메일', 'email', '답장', '회신', '공지'],
+    purpose: 'content',
+    technique: 'harness',
+    label: '이메일 작성',
+    fields: {
+      role: '비즈니스 커뮤니케이션 전문가',
+      context: '상대방이 빠르게 이해할 수 있도록 상황과 목적을 분명히 적습니다.',
+      task: '요청, 안내, 회신, 사과, 일정 조율 중 어떤 유형인지 반영한 이메일을 작성합니다.',
+      output_format: '제목 / 본문 / 마무리 문구',
+      tone: '정중하고 명확하게',
+      constraints: '핵심 요청과 기한이 보이도록 하고, 지나치게 길지 않게 작성합니다.',
+    },
+  },
+  code: {
+    keywords: ['코드', 'code', '개발', '프로그래밍', '버그', '리뷰', '리뷰해줘', 'react', 'python', 'api', '함수', '디버깅'],
+    purpose: 'dev',
+    technique: 'context-engineering',
+    label: '개발 / 코드 작업',
+    fields: {
+      role: '시니어 소프트웨어 엔지니어',
+      context: '현재 코드 구조와 발생한 문제를 함께 적어 재현 가능하게 만듭니다.',
+      task: '문제 원인 분석, 수정 방향 제안, 테스트 전략까지 함께 정리합니다.',
+      output_format: '문제 분석 / 수정안 / 코드 예시 / 테스트 케이스',
+      tone: '기술적이고 정확하게',
+      constraints: '안전한 수정과 회귀 방지를 우선하고, 과도한 리팩터링은 피합니다.',
+    },
+  },
+  planning: {
+    keywords: ['기획', '계획', '설계', '서비스', '플랫폼', '아키텍처', '프로젝트', '로드맵', '요구사항'],
+    purpose: 'dev',
+    technique: 'context-engineering',
+    label: '기획 / 설계',
+    fields: {
+      role: '프로덕트 매니저',
+      context: '현재 목표와 해결하려는 문제를 먼저 정리합니다.',
+      task: '사용자, 기능, 일정, 우선순위가 분명한 기획안을 작성합니다.',
+      output_format: '목표 / 사용자 / 핵심 기능 / 일정 / 리스크',
+      tone: '체계적이고 실용적으로',
+      constraints: '실행 가능성과 우선순위를 함께 고려하고, 과한 기능 확장은 피합니다.',
+    },
+  },
+  writing: {
+    keywords: ['글', '블로그', '콘텐츠', '작성', '기사', '카피', '문구', '소개', '에세이', '칼럼'],
+    purpose: 'content',
+    technique: 'role-prompting',
+    label: '글쓰기 / 콘텐츠',
+    fields: {
+      role: '전문 콘텐츠 크리에이터',
+      context: '독자와 전달 목적을 분명하게 설정합니다.',
+      task: '읽기 쉽고 설득력 있는 글을 작성합니다.',
+      output_format: '제목 / 본문 / 마무리 문장',
+      tone: '읽기 쉽고 매력적으로',
+      constraints: '중복 표현을 줄이고, 핵심 메시지를 초반에 배치합니다.',
+    },
+  },
+  meeting: {
+    keywords: ['회의', '미팅', '회의록', '회의록정리', '안건', '논의', '결정', '미팅노트'],
+    purpose: 'content',
+    technique: 'harness',
+    label: '회의 정리',
+    fields: {
+      role: '프로젝트 코디네이터',
+      context: '회의에서 나온 내용을 빠르게 정리할 수 있도록 배경을 적습니다.',
+      task: '안건, 논의 내용, 결정사항, 후속조치를 빠짐없이 정리합니다.',
+      output_format: '안건 / 논의 / 결정사항 / 담당자 / 일정',
+      tone: '간결하고 실무적으로',
+      constraints: '누가, 무엇을, 언제까지 할지 명확하게 남깁니다.',
+    },
+  },
+  marketing: {
+    keywords: ['마케팅', '광고', '캠페인', 'SNS', '홍보', '브랜딩', '런칭', '전환', '카피'],
+    purpose: 'content',
+    technique: 'harness',
+    label: '마케팅 / 카피',
+    fields: {
+      role: '마케팅 전략가',
+      context: '타깃과 채널, 전달하려는 메시지를 먼저 정리합니다.',
+      task: '전환과 주목도를 높일 수 있는 마케팅 문구나 캠페인 초안을 작성합니다.',
+      output_format: '타깃 / 핵심 메시지 / CTA / 실행 아이디어',
+      tone: '설득력 있고 창의적으로',
+      constraints: '브랜드 톤을 유지하고, 행동 유도를 분명히 합니다.',
+    },
+  },
+  data: {
+    keywords: ['데이터', '분석', '통계', 'SQL', '차트', '대시보드', '지표', '인사이트', '리서치'],
+    purpose: 'dev',
+    technique: 'structured-output',
+    label: '데이터 분석',
+    fields: {
+      role: '데이터 분석가',
+      context: '분석 대상과 사용 가능한 데이터 범위를 먼저 정리합니다.',
+      task: '핵심 지표를 분석하고, 인사이트와 해석을 함께 제시합니다.',
+      output_format: '요약 / 수치 분석 / 인사이트 / 다음 액션',
+      tone: '정확하고 수치 기반으로',
+      constraints: '추정과 사실을 구분하고, 근거가 되는 지표를 함께 적습니다.',
+    },
+  },
+  resume: {
+    keywords: ['자기소개', '이력서', '지원', '면접', '자소서', '경력', '입사지원'],
+    purpose: 'content',
+    technique: 'role-prompting',
+    label: '자기소개서',
+    fields: {
+      role: '커리어 컨설턴트',
+      context: '지원 직무와 본인의 경험을 연결할 수 있도록 정리합니다.',
+      task: '동기, 경험, 강점, 포부가 자연스럽게 이어지는 자기소개서를 작성합니다.',
+      output_format: '지원 동기 / 경험 / 강점 / 입사 후 포부',
+      tone: '진정성 있고 구체적으로',
+      constraints: '추상적인 표현보다 실제 경험과 성과를 우선합니다.',
+    },
+  },
+  translate: {
+    keywords: ['번역', '영어', '영문', 'translate', '한영', '영한', 'transl', '번역해줘'],
+    purpose: 'content',
+    technique: 'few-shot',
+    label: '번역',
+    fields: {
+      role: '전문 번역가',
+      context: '원문의 맥락과 대상 독자를 함께 고려합니다.',
+      task: '원문의 의미와 뉘앙스를 유지하면서 자연스럽게 번역합니다.',
+      output_format: '원문 / 번역문 / 용어 메모',
+      tone: '원문의 뉘앙스를 살린 자연스러운 표현',
+      constraints: '직역보다 자연스러운 표현을 우선하고, 핵심 의미를 보존합니다.',
+    },
+  },
+}
+
+function normalizeIntentText(text: string): string {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[\s\-_.,!?/\\()[\]{}<>:"'`~·…]/g, '')
+}
+
+function classifyIntent(text: string): { intent: string; confidence: number; purpose: string; technique: string; fields: Record<string, string>; matchedKeywords: string[]; label: string } | null {
+  const raw = String(text || '')
+  const lower = raw.toLowerCase()
+  const compact = normalizeIntentText(raw)
+  let bestMatch: { intent: string; count: number; purpose: string; technique: string; fields: Record<string, string>; matchedKeywords: string[]; label: string } | null = null
+
+  for (const [intent, rule] of Object.entries(INTENT_RULES)) {
+    const matchedKeywords = rule.keywords.filter((keyword) => {
+      const normalizedKeyword = normalizeIntentText(keyword)
+      return lower.includes(keyword.toLowerCase()) || compact.includes(normalizedKeyword)
+    })
+    const count = matchedKeywords.reduce((sum, keyword) => sum + (keyword.includes(' ') ? 2 : 1), 0)
+    if (!count) continue
+    if (!bestMatch || count > bestMatch.count) {
+      bestMatch = {
+        intent,
+        count,
+        purpose: rule.purpose,
+        technique: rule.technique,
+        fields: rule.fields,
+        matchedKeywords,
+        label: rule.label,
+      }
+    }
+  }
+
+  if (!bestMatch) return null
+  const label = bestMatch.label || bestMatch.intent
+  return {
+    intent: bestMatch.intent,
+    confidence: Math.min(bestMatch.count / 4, 1),
+    purpose: bestMatch.purpose,
+    technique: bestMatch.technique,
+    fields: bestMatch.fields,
+    matchedKeywords: bestMatch.matchedKeywords,
+    label,
+  }
+}
+
 apiRouter.post('/logs', async (c) => {
   try {
     const payload = await c.req.json()
@@ -1040,6 +1236,16 @@ apiRouter.post('/recommend', async (c) => {
         color: TECHNIQUES[id].color, category: TECHNIQUES[id].category,
       })),
     })
+  } catch {
+    return c.json({ error: '잘못된 요청입니다.' }, 400)
+  }
+})
+
+apiRouter.post('/intent', async (c) => {
+  try {
+    const { text } = await c.req.json()
+    const result = classifyIntent(String(text || ''))
+    return c.json({ intent: result })
   } catch {
     return c.json({ error: '잘못된 요청입니다.' }, 400)
   }

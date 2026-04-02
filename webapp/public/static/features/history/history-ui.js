@@ -2,6 +2,7 @@ function renderAdminPanel(data) {
   const promptLogs = data?.promptLogs || [];
   const activityLogs = data?.activityLogs || [];
   const stats = data?.stats || {};
+  const activityCount = Number(stats.activityCount || activityLogs.length);
   const tokenState = getAdminToken() ? '연결됨' : '없음';
 
   const promptCards = promptLogs.length
@@ -50,7 +51,7 @@ function renderAdminPanel(data) {
       ${renderStatCard('생성 수', stats.promptCount || 0)}
       ${renderStatCard('조회수', stats.pageViewCount || 0)}
       ${renderStatCard('최적화 수', stats.optimizeRunCount || 0)}
-      ${renderStatCard('활동 수', stats.activityCount || 0)}
+      ${renderStatCard('활동 수', activityCount)}
       ${renderStatCard('사용자 수', stats.visitorCount || 0)}
       ${renderStatCard('Token', tokenState, 'text-white')}
     </div>
@@ -79,7 +80,7 @@ function renderAdminPanel(data) {
       <section class="rounded-2xl border border-gray-800 bg-gray-950/60 p-4">
         <div class="mb-3 flex items-center justify-between">
           <h4 class="text-sm font-semibold text-white">관리자 활동 로그</h4>
-          <span class="text-[10px] text-gray-500">${activityLogs.length} events</span>
+          <span class="text-[10px] text-gray-500">${activityCount} events</span>
         </div>
         ${activityCards}
       </section>

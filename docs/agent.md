@@ -49,6 +49,8 @@ When uncertain, prioritize:
 - `webapp/public/static/*.js` for UI flow and client-side persistence
 - `docs/plan.md` for task sequencing
 - `docs/phase.md` for roadmap status
+- `docs/prompt-library.md` for reusable prompt assets and canonical prompt blocks
+- `docs/phase-workflow.md` for phase packaging and work-package rules
 
 ## Before Editing
 

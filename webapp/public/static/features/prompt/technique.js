@@ -758,3 +758,319 @@ window.addBlankInputField = addBlankInputField;
 window.removeSelectedAdvancedField = removeSelectedAdvancedField;
 window.removeBlankInputField = removeBlankInputField;
 window.resetFields = resetFields;
+
+let smartIntentDebounce = null;
+
+function syncIntentFieldValues(fields) {
+  if (!fields) return;
+  Object.entries(fields).forEach(([key, value]) => {
+    const el = document.getElementById(`field-${key}`);
+    if (!el) return;
+    el.value = value;
+    el.classList.add('border-brand-500/30', 'bg-brand-500/5');
+    updateField(key, value);
+  });
+}
+
+function renderIntentResult(intent, text) {
+  const result = document.getElementById('intent-result');
+  const label = document.getElementById('intent-label');
+  const confidence = document.getElementById('intent-confidence');
+  const summary = document.getElementById('intent-summary');
+  const fields = document.getElementById('intent-auto-fields');
+  if (!result || !label || !confidence || !summary || !fields) return;
+
+  if (!intent) {
+    result.classList.add('hidden');
+    return;
+  }
+
+  result.classList.remove('hidden');
+  label.textContent = `${intent.intent || 'unknown'} 감지`;
+  confidence.textContent = `신뢰도: ${Math.round((intent.confidence || 0) * 100)}%`;
+  summary.textContent = text ? `입력한 문장을 ${intent.intent} 유형으로 해석했습니다. 목적과 방식, 기본 필드를 자동으로 채울 수 있습니다.` : '인텐트를 분석하면 목적과 구조가 여기에 표시됩니다.';
+  const chips = [
+    intent.purpose ? `목적: ${intent.purpose}` : '',
+    intent.technique ? `방식: ${intent.technique}` : '',
+    ...(intent.matchedKeywords || []).slice(0, 4).map((keyword) => `키워드: ${keyword}`),
+  ].filter(Boolean);
+  fields.innerHTML = chips.map((chip) => `
+    <span class="inline-flex items-center gap-1 rounded-full border border-white/10 bg-slate-900/80 px-3 py-1 text-[11px] font-medium text-slate-200">
+      <i class="fas fa-circle-check text-emerald-400 text-[10px]"></i>${chip}
+    </span>
+  `).join('');
+}
+
+async function analyzeIntent() {
+  const input = document.getElementById('smart-input-field');
+  const text = input?.value?.trim() || '';
+  if (text.length < 3) {
+    if (input) input.focus();
+    renderIntentResult(null, '');
+    return null;
+  }
+
+  const btn = document.getElementById('smart-analyze-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>분석 중';
+  }
+
+  try {
+    const res = await fetch('/api/intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    state.intent = data.intent || null;
+    renderIntentResult(state.intent, text);
+    return data;
+  } catch (error) {
+    console.error(error);
+    renderIntentResult(null, text);
+    return null;
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-magnifying-glass mr-2"></i>분석';
+    }
+  }
+}
+
+function onSmartInput(value) {
+  clearTimeout(smartIntentDebounce);
+  const trimmed = String(value || '').trim();
+  if (trimmed.length < 3) {
+    state.intent = null;
+    renderIntentResult(null, '');
+    return;
+  }
+  smartIntentDebounce = setTimeout(() => {
+    analyzeIntent();
+  }, 600);
+}
+
+async function applyIntentResult() {
+  if (!state.intent) {
+    await analyzeIntent();
+    if (!state.intent) return;
+  }
+
+  const input = document.getElementById('smart-input-field');
+  const keyword = input?.value?.trim() || '';
+  const keywordInput = document.getElementById('keyword-input');
+  if (keywordInput) keywordInput.value = keyword;
+  state.keyword = keyword;
+
+  selectPurpose(state.intent.purpose);
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  if (state.intent.technique) {
+    await selectRecommendedTechnique(state.intent.technique);
+  }
+
+  syncIntentFieldValues(state.intent.fields || {});
+  renderIntentResult(state.intent, keyword);
+
+  const result = document.getElementById('intent-result');
+  if (result) result.classList.add('hidden');
+}
+
+async function requestRecommendation() {
+  const keywordInput = document.getElementById('keyword-input');
+  const smartInput = document.getElementById('smart-input-field');
+  const keyword = (keywordInput?.value || smartInput?.value || '').trim();
+  if (!keyword) { document.getElementById('keyword-input')?.focus(); return; }
+  if (!state.purpose) { alert('먼저 프로젝트 목적을 선택하세요.'); return; }
+  state.keyword = keyword;
+
+  const btn = document.getElementById('recommend-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 분석 중...';
+
+  try {
+    const res = await fetch('/api/recommend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ purpose: state.purpose, keyword }),
+    });
+    const data = await res.json();
+    state.recommendation = data;
+    displayRecommendation(data);
+    return data;
+  } catch (e) {
+    console.error(e);
+    renderRecommendationPlaceholder();
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic"></i> 추천 경로 보기';
+  }
+}
+
+window.analyzeIntent = analyzeIntent;
+window.applyIntentResult = applyIntentResult;
+window.onSmartInput = onSmartInput;
+window.requestRecommendation = requestRecommendation;
+
+function renderIntentResult(intent, text) {
+  const result = document.getElementById('intent-result');
+  const label = document.getElementById('intent-label');
+  const confidence = document.getElementById('intent-confidence');
+  const summary = document.getElementById('intent-summary');
+  const fields = document.getElementById('intent-auto-fields');
+  if (!result || !label || !confidence || !summary || !fields) return;
+
+  if (!intent) {
+    result.classList.add('hidden');
+    return;
+  }
+
+  const intentLabels = {
+    report: '보고서 작성',
+    email: '이메일 작성',
+    code: '개발 / 코드 작업',
+    planning: '기획 / 설계',
+    writing: '글쓰기 / 콘텐츠',
+    meeting: '회의 정리',
+    marketing: '마케팅 / 카피',
+    data: '데이터 분석',
+    resume: '자기소개서',
+    translate: '번역',
+  };
+
+  result.classList.remove('hidden');
+  label.textContent = `${intent.label || intentLabels[intent.intent] || intent.intent || 'unknown'} 분석됨`;
+  confidence.textContent = `신뢰도: ${Math.round((intent.confidence || 0) * 100)}%`;
+  summary.textContent = text
+    ? `입력한 문장을 ${intent.label || intentLabels[intent.intent] || intent.intent} 유형으로 해석했습니다. 목적과 방식, 기본 필드를 자동으로 채울 수 있습니다.`
+    : '인텐트를 분석하면 목적과 구조가 여기에 표시됩니다.';
+
+  const chips = [
+    intent.purpose ? `목적: ${intent.purpose}` : '',
+    intent.technique ? `방식: ${intent.technique}` : '',
+    ...(intent.matchedKeywords || []).slice(0, 4).map((keyword) => `키워드: ${keyword}`),
+  ].filter(Boolean);
+
+  fields.innerHTML = chips.map((chip) => `
+    <span class="inline-flex items-center gap-1 rounded-full border border-white/10 bg-slate-900/80 px-3 py-1 text-[11px] font-medium text-slate-200">
+      <i class="fas fa-circle-check text-emerald-400 text-[10px]"></i>${chip}
+    </span>
+  `).join('');
+}
+
+async function analyzeIntent() {
+  const input = document.getElementById('smart-input-field');
+  const text = input?.value?.trim() || '';
+  if (text.length < 3) {
+    if (input) input.focus();
+    renderIntentResult(null, '');
+    return null;
+  }
+
+  const btn = document.getElementById('smart-analyze-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>분석 중';
+  }
+
+  try {
+    const res = await fetch('/api/intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    state.intent = data.intent || null;
+    renderIntentResult(state.intent, text);
+    return data;
+  } catch (error) {
+    console.error(error);
+    renderIntentResult(null, text);
+    return null;
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-magnifying-glass mr-2"></i>분석';
+    }
+  }
+}
+
+function onSmartInput(value) {
+  clearTimeout(smartIntentDebounce);
+  const trimmed = String(value || '').trim();
+  if (trimmed.length < 3) {
+    state.intent = null;
+    renderIntentResult(null, '');
+    return;
+  }
+  smartIntentDebounce = setTimeout(() => {
+    analyzeIntent();
+  }, 600);
+}
+
+async function applyIntentResult() {
+  if (!state.intent) {
+    await analyzeIntent();
+    if (!state.intent) return;
+  }
+
+  const input = document.getElementById('smart-input-field');
+  const keyword = input?.value?.trim() || '';
+  const keywordInput = document.getElementById('keyword-input');
+  if (keywordInput) keywordInput.value = keyword;
+  state.keyword = keyword;
+
+  selectPurpose(state.intent.purpose);
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  if (state.intent.technique) {
+    await selectRecommendedTechnique(state.intent.technique);
+  }
+
+  syncIntentFieldValues(state.intent.fields || {});
+  renderIntentResult(state.intent, keyword);
+
+  const result = document.getElementById('intent-result');
+  if (result) result.classList.add('hidden');
+}
+
+async function requestRecommendation() {
+  const keywordInput = document.getElementById('keyword-input');
+  const smartInput = document.getElementById('smart-input-field');
+  const keyword = (keywordInput?.value || smartInput?.value || '').trim();
+  if (!keyword) { document.getElementById('keyword-input')?.focus(); return; }
+  if (!state.purpose) { alert('먼저 프로젝트 목적을 선택하세요.'); return; }
+  state.keyword = keyword;
+
+  const btn = document.getElementById('recommend-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 분석 중...';
+  }
+
+  try {
+    const res = await fetch('/api/recommend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ purpose: state.purpose, keyword }),
+    });
+    const data = await res.json();
+    state.recommendation = data;
+    displayRecommendation(data);
+    return data;
+  } catch (e) {
+    console.error(e);
+    renderRecommendationPlaceholder();
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-magic"></i> 추천 경로 보기';
+    }
+  }
+}
+
+window.analyzeIntent = analyzeIntent;
+window.applyIntentResult = applyIntentResult;
+window.onSmartInput = onSmartInput;
+window.requestRecommendation = requestRecommendation;

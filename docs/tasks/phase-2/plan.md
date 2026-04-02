@@ -10,7 +10,7 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - output input field
 - evaluation engine
 - improve endpoint for output-based feedback
-- result 3 variants
+- result variants
 - one-click Optimize entry
 - version save and compare
 - loop history
@@ -20,6 +20,9 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - The UI now favors tab switching and compact cards over long vertical scrolling.
 - The result screen can branch into three variants before the user enters the optimize loop.
 - History should remain usable as a comparison surface, not just a log dump.
+- Template presets can feed the smart input flow and trigger intent analysis.
+- Template market usage counts act as the main ranking signal.
+- Optimize behavior should stay compatible with the organization docs and multi-AI routing notes.
 
 ## Execution Items
 
@@ -65,12 +68,19 @@ Ship an Optimize Mode that supports prompt execution, evaluation, and iterative 
 - add a prompt-writing checklist
 - allow one-click loading of sample prompts
 - make the first run easier for new users
+- connect starter templates to the smart input and template market flow
 
 ### 8. Result Variants
 
 - show three prompt variants after generation
 - let the user apply, copy, or send a variant to Optimize
 - keep the selected variant in local history
+
+### 9. Multi-AI Compatibility
+
+- keep the output format stable across AI backends
+- preserve a rule-based fallback path
+- document backend switching behavior in the feature docs
 
 ## Exit Criteria
 

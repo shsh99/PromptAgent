@@ -31,7 +31,6 @@ export function HomeScreen() {
                 <i data-theme-icon class="fas fa-moon text-sm"></i>
                 <span class="sr-only">라이트/다크 모드 전환</span>
               </button>
-
               <button
                 type="button"
                 data-lang-switch
@@ -78,6 +77,9 @@ export function HomeScreen() {
                   <button onclick="switchMode('template')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
                     템플릿 모드로 시작
                   </button>
+                  <button onclick="openTemplateMarket()" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
+                    템플릿 마켓
+                  </button>
                   <button onclick="switchMode('builder')" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
                     고급자 모드
                   </button>
@@ -116,7 +118,7 @@ export function HomeScreen() {
                     </div>
                   </div>
                 </div>
-              </div>
+            </div>
           </section>
 
           <section class="mb-6">
@@ -233,9 +235,14 @@ export function HomeScreen() {
                 <h3 class="mt-1.5 text-xl font-bold text-slate-900">자주 쓰는 업무를 바로 시작하세요</h3>
                 <p class="mt-1.5 max-w-2xl text-sm leading-6 text-slate-600">카드를 누르면 목적, 키워드, 구조가 자동으로 들어갑니다. 빈칸이 있어도 생성되도록 기본값을 채워 둡니다.</p>
               </div>
-              <button onclick="switchMode('builder')" class="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500">
-                <i class="fas fa-code"></i> 빌더 모드 열기
-              </button>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="openTemplateMarket()" class="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500">
+                  <i class="fas fa-store"></i> 템플릿 마켓 열기
+                </button>
+                <button onclick="switchMode('builder')" class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">
+                  <i class="fas fa-code"></i> 빌더 모드 열기
+                </button>
+              </div>
             </div>
 
             <div class="density-stack grid gap-4 xl:grid-cols-2">
@@ -322,6 +329,56 @@ export function HomeScreen() {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="smart-input-panel" class="mb-6">
+          <div class="surface-panel rounded-3xl p-4 backdrop-blur-xl">
+            <div class="mb-3 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Smart Input</div>
+                <h3 class="mt-1.5 text-xl font-bold text-white">무엇을 만들고 싶으신가요?</h3>
+                <p class="mt-1.5 max-w-2xl text-sm leading-6 text-slate-300">한 줄로 설명하면 목적, 방식, 기본 필드가 자동으로 채워집니다. 기존 키워드 추천은 그대로 사용할 수 있습니다.</p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="analyzeIntent()" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
+                  <i class="fas fa-bolt mr-2"></i>인텐트 분석
+                </button>
+                <button onclick="applyIntentResult()" class="surface-button-hero rounded-2xl px-4 py-2.5 text-sm font-semibold">
+                  <i class="fas fa-check mr-2"></i>바로 적용
+                </button>
+              </div>
+            </div>
+
+            <div class="relative">
+              <textarea
+                id="smart-input-field"
+                rows="3"
+                class="w-full rounded-3xl border border-white/10 bg-white/95 px-4 py-4 pr-28 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                placeholder="예: 주간 보고서 써줘 / React 코드 리뷰해줘 / 마케팅 이메일 작성..."
+                oninput="onSmartInput(this.value)"
+                onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();analyzeIntent()}"
+              ></textarea>
+              <button
+                onclick="analyzeIntent()"
+                id="smart-analyze-btn"
+                class="absolute bottom-3 right-3 rounded-2xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-500/20 hover:bg-brand-500"
+              >
+                <i class="fas fa-magnifying-glass mr-2"></i>분석
+              </button>
+            </div>
+
+            <div id="intent-result" class="mt-4 hidden rounded-3xl border border-brand-500/15 bg-brand-500/5 p-4">
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="intent-label" class="rounded-full bg-brand-500/15 px-3 py-1 text-xs font-semibold text-brand-200">분석 중...</span>
+                <span id="intent-confidence" class="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">신뢰도: 0%</span>
+                <button onclick="applyIntentResult()" class="ml-auto rounded-full bg-brand-600 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-500">
+                  적용하기
+                </button>
+              </div>
+              <div class="mt-3 text-xs leading-6 text-slate-300" id="intent-summary">인텐트를 분석하면 목적과 구조가 여기에 표시됩니다.</div>
+              <div id="intent-auto-fields" class="mt-3 flex flex-wrap gap-2"></div>
             </div>
           </div>
         </section>

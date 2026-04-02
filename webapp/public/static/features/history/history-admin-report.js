@@ -218,6 +218,43 @@ function renderSuggestionAdminSection(entries) {
   `;
 }
 
+function renderRecentSuggestionPanel(entries) {
+  const suggestions = Array.isArray(entries) ? entries.slice(0, 3) : [];
+  const cards = suggestions.length
+    ? suggestions.map((entry) => `
+      <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">최근 건의</div>
+            <h4 class="mt-1 truncate text-sm font-bold text-slate-900">${escapeHtml(entry.title || '건의사항')}</h4>
+          </div>
+          <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">${escapeHtml(formatTime(entry.createdAt))}</span>
+        </div>
+        <p class="mt-3 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-slate-600">${escapeHtml(entry.text || '')}</p>
+        <div class="mt-3 flex items-center justify-between text-[11px] text-slate-500">
+          <span>${entry.visitorId ? `visitor: ${escapeHtml(entry.visitorId)}` : 'anonymous'}</span>
+          <span>${entry.status ? escapeHtml(entry.status) : 'submitted'}</span>
+        </div>
+      </article>
+    `).join('')
+    : '<div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm leading-7 text-slate-500">아직 접수된 건의가 없습니다.</div>';
+
+  return `
+    <section class="admin-panel rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <div class="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <div class="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">요약</div>
+          <h3 class="mt-1 text-lg font-bold text-slate-900">최근 건의 바로 보기</h3>
+        </div>
+        <button type="button" onclick="scrollAdminSection('admin-suggestions')" class="admin-action-btn rounded-2xl border border-brand-200 bg-brand-50 px-4 py-2 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100">
+          전체 건의 보기
+        </button>
+      </div>
+      <div class="grid gap-3 md:grid-cols-3">${cards}</div>
+    </section>
+  `;
+}
+
 function getAdminDashboardPeriod() {
   return normalizeAdminPeriod(window.__adminDashboardPeriod || 'all');
 }
@@ -376,6 +413,7 @@ function getAdminDashboardView(data) {
   const period = getAdminDashboardPeriod();
   const promptLogs = filterAdminRecords(data?.promptLogs || [], period);
   const activityLogs = filterAdminRecords(data?.activityLogs || [], period);
+  const activityCount = Number(data?.stats?.activityCount || activityLogs.length);
   const promptThreads = filterAdminRecords(data?.promptThreads || [], period);
   const suggestions = filterAdminRecords(data?.suggestions || [], period);
   const trainingSamples = filterAdminRecords(data?.trainingSamples || [], period);
@@ -404,6 +442,7 @@ function getAdminDashboardView(data) {
     period,
     promptLogs,
     activityLogs,
+    activityCount,
     promptThreads,
     suggestions,
     trainingSamples,
@@ -421,7 +460,7 @@ function getAdminDashboardView(data) {
 
 function renderAdminPanelV2(data) {
   const view = getAdminDashboardView(data);
-  const activeSection = String(window.__adminDashboardSection || 'admin-overview');
+  const activeSection = String(window.__adminDashboardSection || (view.suggestions.length ? 'admin-suggestions' : 'admin-overview'));
   const periodLabel = getAdminPeriodLabel(view.period);
   const sectionMeta = {
     'admin-overview': { title: '대시보드', subtitle: '테넌트 현황을 한눈에 확인합니다', count: `${periodLabel} 기준` },
@@ -429,7 +468,7 @@ function renderAdminPanelV2(data) {
     'admin-history-threads': { title: '히스토리', subtitle: '버전이 쌓인 기록', count: `${view.promptThreads.length}개` },
     'admin-suggestions': { title: '사용자 제안', subtitle: '접수된 제안과 요청', count: `${view.suggestions.length}개` },
     'admin-training-samples': { title: '학습 샘플', subtitle: '검색과 CSV 내보내기', count: `${view.trainingSamples.length}개` },
-    'admin-activity-logs': { title: '활동 로그', subtitle: '사용자 행동 추적', count: `${view.activityLogs.length}개` },
+    'admin-activity-logs': { title: '활동 로그', subtitle: '사용자 행동 추적', count: `${view.activityCount}개` },
   };
   const meta = sectionMeta[activeSection] || sectionMeta['admin-overview'];
   const topButtons = [
@@ -454,7 +493,7 @@ function renderAdminPanelV2(data) {
       ${renderMetricCard({ label: '고유 방문자', value: formatCompactNumber(view.uniqueVisitors), hint: '선택한 기간 기준', icon: 'fa-users', tone: 'brand' })}
       ${renderMetricCard({ label: '프롬프트 기록', value: formatCompactNumber(view.promptLogs.length), hint: '생성된 프롬프트 로그', icon: 'fa-file-lines', tone: 'green' })}
       ${renderMetricCard({ label: '히스토리 스레드', value: formatCompactNumber(view.promptThreads.length), hint: '버전 단위 기록', icon: 'fa-clock-rotate-left', tone: 'amber' })}
-      ${renderMetricCard({ label: '활동 로그', value: formatCompactNumber(view.activityLogs.length), hint: '사용자 행동 이벤트', icon: 'fa-bolt', tone: 'rose' })}
+      ${renderMetricCard({ label: '활동 로그', value: formatCompactNumber(view.activityCount), hint: '사용자 행동 이벤트', icon: 'fa-bolt', tone: 'rose' })}
       ${renderMetricCard({ label: '제안', value: formatCompactNumber(view.suggestions.length), hint: '접수된 피드백', icon: 'fa-message', tone: 'slate' })}
       ${renderMetricCard({ label: '평균 점수', value: view.averageScore ? `${view.averageScore}점` : '0점', hint: `최고 등급: ${view.topGrade}`, icon: 'fa-gauge-high', tone: 'brand' })}
     </section>
@@ -488,7 +527,7 @@ function renderAdminPanelV2(data) {
           id: 'admin-activity-logs',
           title: '활동 로그',
           subtitle: '사용자 행동 추적',
-          countLabel: `${view.activityLogs.length}개`,
+          countLabel: `${view.activityCount}개`,
           contentHtml: renderRecordCards(view.activityLogs, 'activity'),
         })}
         <div data-admin-section="admin-training-samples">
@@ -531,7 +570,7 @@ function renderAdminPanelV2(data) {
       id: 'admin-activity-logs',
       title: '활동 로그',
       subtitle: '사용자 행동 추적',
-      countLabel: `${view.activityLogs.length}개`,
+      countLabel: `${view.activityCount}개`,
       contentHtml: renderRecordCards(view.activityLogs, 'activity'),
     })}
   `;

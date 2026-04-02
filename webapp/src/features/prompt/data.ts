@@ -143,3 +143,46 @@ export const PURPOSE_RECOMMENDATIONS: Record<string, any> = {
   'game':          { primary: 'harness',             secondary: ['context-engineering', 'tree-of-thought'], reason: '게임 개발은 세계관, 게임 메카닉, 기술 스택 등 복합 요소가 있습니다. 하네스로 게임 디자인 문서를 구조화하고, 사고 트리로 설계 방향을 비교하세요.' },
   'custom':        { primary: 'harness',             secondary: ['context-engineering', 'zero-shot'],       reason: '범용 프로젝트에는 하네스 엔지니어링이 가장 유연합니다. 프로젝트 규모에 따라 간단하면 제로샷, 복잡하면 컨텍스트 엔지니어링을 활용하세요.' },
 };
+Object.assign(TECHNIQUES['zero-shot'], {
+  description: '예시 없이 명확한 지시만으로 시작하는 기본 방식입니다. 범위가 분명하고 단순한 작업에 적합합니다.',
+})
+
+Object.assign(TECHNIQUES['few-shot'], {
+  description: '좋은 예시를 함께 주어 출력 형식과 패턴을 학습시키는 방식입니다. 예시의 품질이 결과 품질을 크게 좌우합니다.',
+})
+
+Object.assign(TECHNIQUES['chain-of-thought'], {
+  description: '복잡한 판단을 단계별로 분해해 사고하도록 유도하는 방식입니다. 계산, 분석, 비교처럼 생각 과정이 필요한 작업에 적합합니다.',
+})
+
+Object.assign(TECHNIQUES['tree-of-thought'], {
+  description: '여러 후보 경로를 비교하고 탐색해 더 나은 해답을 고르는 전략입니다. 단, 실무에서는 탐색 비용이 커서 신중히 써야 합니다.',
+})
+
+Object.assign(TECHNIQUES['role-prompting'], {
+  description: '역할과 관점을 고정해 톤, 판단 기준, 문체를 안정화하는 방식입니다. 역할만으로 완성도를 보장하지는 않습니다.',
+})
+
+Object.assign(TECHNIQUES['prompt-chaining'], {
+  description: '하나의 복잡한 과업을 여러 단계의 프롬프트로 나누어 처리하는 방식입니다. 단계 간 인계가 명확할수록 안정적입니다.',
+})
+
+Object.assign(TECHNIQUES['meta-prompting'], {
+  description: '프롬프트 자체를 평가하고 개선하는 상위 프롬프트 기법입니다. 생성 결과보다 프롬프트 품질 개선에 초점이 있습니다.',
+})
+
+Object.assign(TECHNIQUES['context-engineering'], {
+  description: '문서, 상태, 도구, 히스토리를 포함한 전체 컨텍스트를 설계하는 방식입니다. 긴 작업이나 프로젝트형 과업에 유리합니다.',
+})
+
+Object.assign(TECHNIQUES['harness'], {
+  description: '에이전트 실행 환경을 설계하는 방식으로, 초기화·도구·기록·검증·인계·복구까지 포함합니다. 단순 도구 호출보다 넓은 개념입니다.',
+  fields: ['role', 'problem_definition', 'context', 'input_data', 'task', 'goal', 'reasoning', 'evaluation_criteria', 'workflow_state', 'non_goal', 'must_have', 'should_have', 'nice_to_have', 'project_structure', 'code_conventions', 'branch_strategy', 'code_review_rules', 'input_guardrails', 'output_guardrails', 'data_governance', 'access_policy', 'monitoring_rules', 'feedback_loop', 'failure_response', 'human_in_the_loop', 'audit_log_rules', 'compliance_rules', 'rollback_plan', 'appendix_docs', 'output_format', 'tone', 'constraints', 'example'],
+})
+
+Object.assign(FIELD_DEFINITIONS, {
+  problem_definition: { label: '문제 정의', placeholder: '예: 어떤 문제를 해결하는지 한 문장으로 적어주세요.', type: 'textarea', required: true },
+  reasoning: { label: '추론 / 진행 방식', placeholder: '예: 먼저 문제를 정의하고, 다음에 입력과 출력, 그다음 검증 기준을 정리하세요.', type: 'textarea', required: false },
+  evaluation_criteria: { label: '평가 기준', placeholder: '예: 정확성, 형식 준수, 누락 여부, 실행 가능성을 기준으로 확인하세요.', type: 'textarea', required: false },
+  feedback_loop: { label: '피드백 루프', placeholder: '예: 결과를 보고 무엇을 수정할지, 다음 버전에서 무엇을 바꿀지 적어주세요.', type: 'textarea', required: false },
+})

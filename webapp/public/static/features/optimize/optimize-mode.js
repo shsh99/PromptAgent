@@ -510,8 +510,9 @@ function toggleSections(mode) {
   if (optimizePanel) optimizePanel.classList.toggle('hidden', !showOptimize);
 }
 
-function switchMode(mode) {
+function switchMode(mode, options = {}) {
   const nextMode = mode || 'builder';
+  const shouldRecordActivity = options.recordActivity !== false;
   if (typeof state !== 'undefined') state.mode = nextMode;
   localStorage.setItem('pf_mode', nextMode);
   if (typeof toggleMobileSidebar === 'function') toggleMobileSidebar(false);
@@ -523,7 +524,7 @@ function switchMode(mode) {
   }
   setActiveModeTab(nextMode);
   toggleSections(nextMode);
-  if (typeof recordActivity === 'function') {
+  if (shouldRecordActivity && typeof recordActivity === 'function') {
     recordActivity('MODE_SWITCH', {
       mode: nextMode,
     });
@@ -537,7 +538,7 @@ function switchMode(mode) {
 
 function initializeMode(mode) {
   injectOptimizeUI();
-  switchMode(mode || localStorage.getItem('pf_mode') || 'builder');
+  switchMode(mode || localStorage.getItem('pf_mode') || 'builder', { recordActivity: false });
   if (typeof localizeWorkspaceCopy === 'function') {
     localizeWorkspaceCopy();
   }
