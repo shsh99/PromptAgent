@@ -49,7 +49,10 @@ This folder is the working documentation for the PromptBuilder project.
 - `docs/org-branching-strategy.md`
 - `docs/org-branching-strategy.json`
 - `docs/org-pr-mr-policy.md`
+- `docs/org-pr-mr-policy.json`
 - `docs/org-issue-template-guide.md`
+- `docs/org-issue-template-policy.json`
+- `docs/org-repo-migration.md`
 - `docs/org-llm-engineering.md`
 - `docs/org-llm-code-review.md`
 - `docs/org-working-tree-cli.md`

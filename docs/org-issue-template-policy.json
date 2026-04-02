@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "name": "PromptCraft Issue Template Policy",
+  "purpose": "Define how issues should be structured so that contributors and agents can start work without re-asking the same questions.",
+  "issueTypes": [
+    "feature",
+    "bug",
+    "research",
+    "docs",
+    "chore"
+  ],
+  "requiredFields": [
+    "summary",
+    "background",
+    "expected outcome",
+    "scope",
+    "acceptance criteria",
+    "risks",
+    "links"
+  ],
+  "templates": {
+    "feature": [
+      "What is the user problem?",
+      "What should the new behavior be?",
+      "What must stay unchanged?",
+      "What files are likely affected?",
+      "What counts as done?"
+    ],
+    "bug": [
+      "What happened?",
+      "What should have happened?",
+      "How can it be reproduced?",
+      "What changed recently?",
+      "What is the safest fix?"
+    ],
+    "research": [
+      "What are we trying to learn?",
+      "What options are being compared?",
+      "What is the decision criterion?",
+      "What sample size or test flow is enough?",
+      "What result would change the plan?"
+    ],
+    "docs": [
+      "Which doc needs updating?",
+      "Which behavior changed?",
+      "Which template or policy is affected?",
+      "What should future contributors know?"
+    ]
+  },
+  "triageRules": [
+    "Prefer one issue per actionable slice",
+    "Document the acceptance criteria before implementation starts",
+    "Link the relevant docs or phase notes",
+    "Mark risky work clearly so it can be reviewed separately"
+  ],
+  "sourceDocs": [
+    "docs/org-issue-template-guide.md"
+  ]
+}

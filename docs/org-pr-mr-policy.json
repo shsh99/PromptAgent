@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "name": "PromptCraft PR and MR Policy",
+  "purpose": "Define the review contract for pull requests and merge requests.",
+  "requiredContent": [
+    "what changed",
+    "why it changed",
+    "files touched",
+    "screenshots or recordings if UI changed",
+    "testing notes",
+    "rollback note if the change is risky"
+  ],
+  "reviewChecklist": [
+    "Scope is narrow",
+    "Behavior changes are explained",
+    "Tests or manual verification are listed",
+    "No unrelated files are included",
+    "Existing features were preserved",
+    "New UI still works in light and dark mode",
+    "AI usage is documented if applicable",
+    "Rollback path is clear"
+  ],
+  "approvalRules": {
+    "minimumHumanApprovals": 1,
+    "highRiskChangeApprovals": [
+      "code quality reviewer",
+      "product behavior reviewer",
+      "release readiness reviewer"
+    ]
+  },
+  "mergeRules": [
+    "Do not merge if the checklist is incomplete",
+    "Do not merge if the diff is too broad",
+    "Do not merge if the PR message is vague",
+    "Do not merge if the branch contains unrelated edits",
+    "Do not merge if a risky AI-backed change is unreviewed"
+  ],
+  "aiAssistedReviewRules": {
+    "allowedFor": [
+      "bug risk detection",
+      "missing tests",
+      "inconsistent naming",
+      "incomplete doc updates",
+      "likely regressions"
+    ],
+    "notASubstituteFor": [
+      "human judgment",
+      "release ownership",
+      "security review"
+    ]
+  },
+  "sourceDocs": [
+    "docs/org-pr-mr-policy.md"
+  ]
+}
