@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "name": "PromptCraft Branching Strategy",
+  "purpose": "Define a branch-based workflow that replaces direct-to-main work with reviewable, isolated changes.",
+  "protectedBranches": [
+    "main"
+  ],
+  "branchTypes": [
+    {
+      "name": "feature",
+      "pattern": "feature/<name>",
+      "purpose": "New features and enhancements",
+      "examples": [
+        "feature/intent-routing",
+        "feature/template-market"
+      ]
+    },
+    {
+      "name": "fix",
+      "pattern": "fix/<name>",
+      "purpose": "Bug fixes and regressions",
+      "examples": [
+        "fix/template-market-button",
+        "fix/history-count"
+      ]
+    },
+    {
+      "name": "docs",
+      "pattern": "docs/<name>",
+      "purpose": "Documentation-only changes",
+      "examples": [
+        "docs/pr-policy",
+        "docs/phase-workflow"
+      ]
+    },
+    {
+      "name": "chore",
+      "pattern": "chore/<name>",
+      "purpose": "Tooling, cleanup, dependency, or maintenance work",
+      "examples": [
+        "chore/llm-review-flow",
+        "chore/branch-policy"
+      ]
+    }
+  ],
+  "workingTreeRules": [
+    "Use a separate working tree when a second task must run in parallel.",
+    "Use a separate working tree when a risky change needs isolation.",
+    "Use a separate working tree when a feature branch needs its own clean workspace.",
+    "Do not mix unrelated work in the same tree."
+  ],
+  "mergeRules": [
+    "Rebase or sync from main before opening the PR.",
+    "Keep the branch focused on one issue or one feature slice.",
+    "Do not merge if the branch includes unrelated cleanup.",
+    "Do not merge if the branch changes behavior without tests or review notes."
+  ],
+  "namingRules": {
+    "style": "short and readable",
+    "prefixes": [
+      "feature/",
+      "fix/",
+      "docs/",
+      "chore/"
+    ],
+    "examples": [
+      "feature/intent-routing",
+      "fix/template-market-button",
+      "docs/pr-policy",
+      "chore/llm-review-flow"
+    ]
+  },
+  "reviewRequirements": {
+    "minimumHumanApprovals": 1,
+    "highRiskChangeApprovals": [
+      "code quality reviewer",
+      "product behavior reviewer",
+      "release readiness reviewer"
+    ],
+    "blockedIf": [
+      "checklist is incomplete",
+      "diff is too broad",
+      "PR message is vague",
+      "branch contains unrelated edits",
+      "risky AI-backed change is unreviewed"
+    ]
+  },
+  "aiAssistedReview": {
+    "allowedFor": [
+      "bug risk detection",
+      "missing tests",
+      "inconsistent naming",
+      "incomplete doc updates",
+      "likely regressions"
+    ],
+    "notASubstituteFor": [
+      "human judgment",
+      "release ownership",
+      "security review"
+    ]
+  },
+  "sourceDocs": [
+    "docs/org-branching-strategy.md",
+    "docs/org-pr-mr-policy.md",
+    "docs/org-working-tree-cli.md"
+  ]
+}

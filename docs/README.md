@@ -4,14 +4,15 @@ This folder is the working documentation for the PromptBuilder project.
 
 ## Recommended Reading Order
 
-1. `docs/agent.md`
-2. `docs/plan.md`
-3. `docs/phase.md`
-4. `docs/retrospective.md`
-5. `docs/features/README.md`
-6. `docs/tasks/README.md`
-7. `docs/prompt-library.md`
-8. `docs/phase-workflow.md`
+1. `docs/project-overview.md`
+2. `docs/agent.md`
+3. `docs/plan.md`
+4. `docs/phase.md`
+5. `docs/retrospective.md`
+6. `docs/features/README.md`
+7. `docs/tasks/README.md`
+8. `docs/prompt-library.md`
+9. `docs/phase-workflow.md`
 
 ## What Belongs Here
 
@@ -33,6 +34,10 @@ This folder is the working documentation for the PromptBuilder project.
 - `docs/features/prompt-examples-and-helpers.md`
 - `docs/features/multi-ai-routing.md`
 
+## Project Overview
+
+- `docs/project-overview.md`
+
 ## Prompt And Phase Docs
 
 - `docs/prompt-library.md`
@@ -42,6 +47,7 @@ This folder is the working documentation for the PromptBuilder project.
 
 - `docs/org-agent-guide.md`
 - `docs/org-branching-strategy.md`
+- `docs/org-branching-strategy.json`
 - `docs/org-pr-mr-policy.md`
 - `docs/org-issue-template-guide.md`
 - `docs/org-llm-engineering.md`
