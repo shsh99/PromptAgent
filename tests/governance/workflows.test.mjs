@@ -26,6 +26,12 @@ test('governance workflow gates pull requests to dev and main with least privile
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm run build/);
   assert.match(workflow, /tests\/harness\/validate-harness\.mjs/);
+  assert.match(workflow, /working-directory:\s*backend/);
+  assert.match(workflow, /\.\/gradlew/);
+  assert.match(workflow, /test bootJar/);
+  assert.match(workflow, /working-directory:\s*frontend/);
+  assert.match(workflow, /npm run typecheck/);
+  assert.match(workflow, /npm run build/);
 });
 
 test('merged pull requests to dev close explicitly linked issues', async () => {

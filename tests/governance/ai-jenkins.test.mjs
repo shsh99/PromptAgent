@@ -60,6 +60,8 @@ test('Jenkins는 현재 앱과 미래 모듈을 조건부 검증하고 dev와 ma
   assert.match(pipeline, /npm run build/);
   assert.match(pipeline, /backend\/gradlew/);
   assert.match(pipeline, /frontend\/package\.json/);
+  assert.match(pipeline, /backend\/src\/integrationTest/);
+  assert.match(pipeline, /npm run typecheck/);
   assert.match(pipeline, /branch 'dev'/);
   assert.match(pipeline, /branch 'main'/);
   assert.match(pipeline, /input\s+message:/);

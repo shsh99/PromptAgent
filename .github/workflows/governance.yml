@@ -29,6 +29,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
 
       - name: 의존성 설치
         run: npm ci
@@ -58,6 +61,31 @@ jobs:
         run: npm test
 
       - name: 애플리케이션 빌드
+        run: npm run build
+
+      - name: 기반 구성 계약 테스트
+        run: npm run test:foundation
+
+      - name: Spring Boot 테스트와 빌드
+        working-directory: backend
+        run: |
+          chmod +x gradlew
+          ./gradlew test bootJar
+
+      - name: React 의존성 설치
+        working-directory: frontend
+        run: npm ci
+
+      - name: React 테스트
+        working-directory: frontend
+        run: npm test
+
+      - name: React 타입 검사
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: React 빌드
+        working-directory: frontend
         run: npm run build
 
       - name: 하네스 검증

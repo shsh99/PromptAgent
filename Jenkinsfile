@@ -31,7 +31,7 @@ pipeline {
                     }
                     if (fileExists('frontend/package.json')) {
                         dir('frontend') {
-                            sh 'npm ci && npm test'
+                            sh 'npm ci && npm run typecheck && npm test'
                         }
                     }
                 }
@@ -56,7 +56,7 @@ pipeline {
 
         stage('Integration') {
             when {
-                expression { fileExists('backend/gradlew') }
+                expression { fileExists('backend/src/integrationTest') }
             }
             steps {
                 sh './backend/gradlew -p backend integrationTest'
