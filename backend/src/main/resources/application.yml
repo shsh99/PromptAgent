@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: prompt-agent-api
+  config:
+    import: "optional:file:.env[.properties],optional:file:../.env[.properties]"
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/promptagent}
+    username: ${DB_USERNAME:promptagent}
+    password: ${DB_PASSWORD:}
+    hikari:
+      connection-timeout: 3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
