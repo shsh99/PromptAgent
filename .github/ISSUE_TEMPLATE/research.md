@@ -1,19 +1,31 @@
 ---
-name: Research
-about: Compare AI, prompt, or workflow options
-title: "[Research]"
+name: 조사 과제
+about: 기술, AI, 프롬프트 또는 작업 흐름 대안을 비교합니다
+title: "[조사] "
 labels: research
 ---
 
-## Question
+## 목적 또는 문제
 
-## Options to compare
+조사를 통해 답해야 할 질문과 의사결정 배경을 적어 주세요.
 
-- 
+## 비교 대상과 근거
 
-## Decision criteria
+- 대안:
+- 필요한 자료·실험:
+- 평가 기준:
 
-## Expected evidence
+## 범위
 
-## Notes
+- 포함:
+- 제외:
+
+## 완료 조건
+
+- [ ] 출처와 실험 결과를 재현할 수 있습니다.
+- [ ] 권고안, 근거, 기각한 대안을 문서화합니다.
+
+## 위험 요소
+
+불확실성, 편향, 비용, 일정 위험과 추가 검증 필요 사항을 적어 주세요.
 
