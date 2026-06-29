@@ -2,6 +2,8 @@
 
 PromptBuilder는 프롬프트를 잘 모르는 사용자도 구조를 따라가며 AI를 쉽게 활용할 수 있게 돕는 도구입니다.
 
+> 현재 저장소는 Spring Boot·React·PostgreSQL/pgvector 기반 PromptAgent로 단계적으로 전환 중입니다. 개발 규칙과 목표 구조는 [AGENTS.md](AGENTS.md)와 [프로젝트 문서](docs/README.md)를 먼저 확인하세요.
+
 ## 사이트
 
 - [PromptBuilder](https://promptbuilder-df6.pages.dev/)
@@ -61,8 +63,14 @@ wrangler d1 migrations apply DB --remote --config wrangler.toml
 
 ## 개발
 
+기능 작업은 `dev`에서 `feat/<이슈번호>-<slug>` 브랜치를 만들고, 한글 커밋·PR과 `docs/changes/` 변경 문서를 함께 작성합니다.
+
 ```bash
 npm install
+npm run validate:governance
+npm run test:governance
+npm run test:harness
+npm test
 npm run build
 npm run dev
 ```

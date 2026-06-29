@@ -2,6 +2,21 @@
 
 This folder is the working documentation for the PromptBuilder project.
 
+## 현재 기준 문서 읽기 순서
+
+1. [프로젝트 컨텍스트](../AGENTS.md)
+2. [시스템 개요](architecture/system-overview.md)
+3. [모듈 구조](architecture/module-structure.md)
+4. [데이터 흐름](architecture/data-flow.md)
+5. [프롬프트 계약](product/prompt-contract.md)
+6. [템플릿 마켓](product/template-market.md)
+7. [인텐트·RAG](product/intent-rag.md)
+8. [에이전트 패키지](product/agent-package.md)
+9. [Git 작업 흐름](conventions/git-workflow.md)
+10. [운영 런북](operations/runbook.md)
+
+Java·React·테스트·API·코드 크기 규칙은 [컨벤션 디렉터리](conventions/)를, CI·AI 리뷰·Jenkins 운영은 [운영 디렉터리](operations/)를 기준으로 합니다. 아래 기존 문서는 레거시 구현의 배경과 이전 결정을 보존합니다.
+
 ## Recommended Reading Order
 
 1. `docs/project-overview.md`
