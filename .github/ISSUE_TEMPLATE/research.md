@@ -1,8 +1,9 @@
 ---
-name: 조사 과제
-about: 기술, AI, 프롬프트 또는 작업 흐름 대안을 비교합니다
+name: "조사 과제"
+about: "기술, AI, 프롬프트 또는 작업 흐름 대안을 비교합니다"
 title: "[조사] "
-labels: research
+labels: ""
+assignees: ""
 ---
 
 ## 목적 또는 문제

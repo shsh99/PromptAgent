@@ -1,8 +1,9 @@
 ---
-name: 기능 요청
-about: 새로운 기능이나 작업 흐름 개선을 제안합니다
+name: "기능 요청"
+about: "새로운 기능이나 작업 흐름 개선을 제안합니다"
 title: "[기능] "
-labels: enhancement
+labels: "enhancement"
+assignees: ""
 ---
 
 ## 목적 또는 문제

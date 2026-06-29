@@ -1,8 +1,9 @@
 ---
-name: 리팩터링
-about: 외부 동작을 유지하며 코드 구조와 유지보수성을 개선합니다
+name: "리팩터링"
+about: "외부 동작을 유지하며 코드 구조와 유지보수성을 개선합니다"
 title: "[정리] "
-labels: refactor
+labels: ""
+assignees: ""
 ---
 
 ## 목적 또는 문제

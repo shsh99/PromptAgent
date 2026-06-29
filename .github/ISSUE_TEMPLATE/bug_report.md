@@ -1,8 +1,9 @@
 ---
-name: 버그 보고
-about: 재현 가능한 잘못된 동작을 보고합니다
+name: "버그 보고"
+about: "재현 가능한 잘못된 동작을 보고합니다"
 title: "[버그] "
-labels: bug
+labels: "bug"
+assignees: ""
 ---
 
 ## 목적 또는 문제

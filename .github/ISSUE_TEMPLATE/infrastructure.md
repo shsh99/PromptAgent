@@ -1,8 +1,9 @@
 ---
-name: 인프라 작업
-about: 빌드, 배포, 관측, 보안 또는 개발 환경을 변경합니다
+name: "인프라 작업"
+about: "빌드, 배포, 관측, 보안 또는 개발 환경을 변경합니다"
 title: "[배포] "
-labels: infrastructure
+labels: ""
+assignees: ""
 ---
 
 ## 목적 또는 문제
