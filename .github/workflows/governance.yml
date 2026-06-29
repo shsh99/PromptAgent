@@ -1,0 +1,111 @@
+name: 저장소 품질 게이트
+
+on:
+  pull_request:
+    branches: [dev, main]
+    types: [opened, reopened, synchronize, edited, closed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: governance-${{ github.event.pull_request.number }}-${{ github.event.action }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    name: 규칙·테스트·빌드 검증
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 의존성 설치
+        run: npm ci
+
+      - name: 브랜치 컨텍스트 검증
+        run: test "$GITHUB_HEAD_REF" = "${{ github.head_ref }}"
+
+      - name: 저장소 규칙 검증
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/validate-governance.mjs --pr
+
+      - name: 연결 이슈 검증
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node scripts/validate-pr-links.mjs
+
+      - name: 거버넌스 테스트
+        run: npm run test:governance
+
+      - name: 워크플로 계약 테스트
+        run: node --test tests/governance/workflows.test.mjs
+
+      - name: 애플리케이션 테스트
+        run: npm test
+
+      - name: 애플리케이션 빌드
+        run: npm run build
+
+      - name: 하네스 검증
+        shell: bash
+        run: |
+          if [ -f tests/harness/validate-harness.mjs ]; then
+            node tests/harness/validate-harness.mjs
+          else
+            echo "하네스 검증기가 없어 검사를 건너뜁니다."
+          fi
+
+  close-linked-issues:
+    name: dev 병합 연결 이슈 종료
+    if: >-
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'dev'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: PR 본문의 연결 이슈 종료
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+            const keyword = /(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
+            const issueNumbers = [...body.matchAll(keyword)]
+              .map((match) => Number(match[1]));
+
+            for (const issue_number of [...new Set(issueNumbers)]) {
+              const { data: issue } = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+              });
+              if (issue.pull_request) {
+                core.info(`#${issue_number}은(는) PR이므로 종료하지 않습니다.`);
+                continue;
+              }
+              if (issue.state === 'open') {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number,
+                  state: 'closed',
+                  state_reason: 'completed',
+                });
+              }
+            }

@@ -1,54 +1,15 @@
-# AGENT.md
+# AGENT.md 호환 포인터
 
-## Project
+## 목적
 
-PromptBuilder is a prompt quality and workflow tool focused on:
-- prompt generation
-- prompt quality analysis
-- model-specific prompt optimization
-- prompt versioning and comparison
-- result feedback loops
-- reusable templates and libraries
+기존 도구가 `AGENT.md`를 찾을 때 현재 시스템 컨텍스트로 안내한다.
 
-## Source Of Truth
+## 적용 범위
 
-- `README.md`
-- `docs/README.md`
-- `docs/agent.md`
-- `docs/plan.md`
-- `docs/phase.md`
-- `docs/features/README.md`
-- `docs/tasks/README.md`
+레거시 자동화와 에이전트 진입점에만 적용한다.
 
-## Working Rules
+## 함께 갱신할 문서
 
-1. Prefer small, incremental changes.
-2. Preserve existing user work; do not revert unrelated edits.
-3. Use `apply_patch` for manual file edits.
-4. Keep documentation aligned with actual implementation status.
-5. When changing product behavior, update the docs in the same pass.
-6. Before each deployment, add an update log entry in `webapp/public/static/changelog.js` and keep the agent docs in sync.
-7. After running Codex, keep output encoding fixed to UTF-8.
+- [AGENTS.md](AGENTS.md)
 
-## Product Direction
-
-- Keep the free core usable without paid APIs.
-- Make quality analysis the primary value, not just generation.
-- Treat versioning and feedback as first-class features.
-- Prefer local-first storage for lightweight usage.
-
-## Current Priority
-
-1. Prompt Quality Analyzer
-2. Prompt Versioning
-3. Result Feedback Loop
-4. Multi-Model Optimizer
-5. Template Library
-6. Collaboration and sharing
-
-## Notes For Future Agents
-
-- Check `docs/plan.md` before starting feature work.
-- Check `docs/phase.md` before changing priorities.
-- If you add a feature, document its UX and storage impact.
-- If a change needs server support, define the API contract first.
+프로젝트 작업 규칙의 단일 기준은 [AGENTS.md](AGENTS.md)다. 이 파일에 규칙을 복제하지 않는다.

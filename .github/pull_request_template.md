@@ -1,28 +1,40 @@
-# Summary
+# 변경 요약
 
-## What changed
+## 연결 정보
 
--
+- Closes #이슈번호
+- 변경 문서: `docs/changes/YYYY-MM-DD-유형-작업명.md`
 
-## Why
+## 작업 목적
 
--
+이 변경이 필요한 이유와 해결하려는 문제를 적어 주세요.
 
-## Scope
+## 변경 내용과 영향 범위
 
--
+- 주요 변경:
+- 영향받는 모듈·사용자:
 
-## Verification
+## 검증
 
-- [ ] Build passed
-- [ ] Existing features preserved
-- [ ] UI still works in light mode
-- [ ] UI still works in dark mode
-- [ ] Manual test completed
+- [ ] 관련 테스트를 추가하거나 갱신했습니다.
+- [ ] 전체 테스트와 빌드를 실행했습니다.
+- 테스트 결과:
 
-## Notes
+## 문서와 배포
 
-- AI usage:
-- Rollback:
-- Follow-up:
+- [ ] 관련 문서를 갱신했거나 문서 변경이 불필요한 이유를 적었습니다.
+- 문서 영향:
+- 배포·마이그레이션 영향:
+- 롤백 절차:
+
+## AI 사용과 리뷰
+
+- AI 사용 내용:
+- [ ] AI가 생성하거나 수정한 내용을 사람이 검토했습니다.
+- [ ] AI 리뷰 결과를 확인하고 필요한 조치를 반영했습니다.
+
+## 최종 확인
+
+- [ ] 범위 밖 변경이 포함되지 않았습니다.
+- [ ] 비밀 정보와 개인정보가 포함되지 않았습니다.
 

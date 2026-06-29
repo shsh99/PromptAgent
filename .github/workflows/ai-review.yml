@@ -1,0 +1,68 @@
+name: Codex AI 리뷰
+
+"on":
+  pull_request:
+    branches: [dev, main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions: {}
+
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: 읽기 전용 코드 리뷰
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      HAS_OPENAI_KEY: ${{ secrets.OPENAI_API_KEY != '' }}
+    outputs:
+      final_message: ${{ steps.codex.outputs.final-message }}
+    steps:
+      - name: PR 병합 커밋 체크아웃
+        uses: actions/checkout@v5
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Codex 읽기 전용 리뷰
+        id: codex
+        if: env.HAS_OPENAI_KEY == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/codex/review-prompt.md
+          sandbox: read-only
+          safety-strategy: drop-sudo
+
+      - name: 건너뜀 사유 기록
+        if: env.HAS_OPENAI_KEY != 'true' || github.event.pull_request.head.repo.full_name != github.repository
+        run: echo "포크 PR이거나 OPENAI_API_KEY가 없어 AI 리뷰를 건너뜁니다."
+
+  post-feedback:
+    name: 리뷰 결과 게시
+    needs: review
+    if: needs.review.outputs.final_message != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: PR 댓글 작성
+        uses: actions/github-script@v7
+        env:
+          CODEX_REVIEW: ${{ needs.review.outputs.final_message }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: process.env.CODEX_REVIEW,
+            });

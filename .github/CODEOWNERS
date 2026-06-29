@@ -1,0 +1,16 @@
+# 기본 검토자
+* @shsh99
+
+# 저장소 운영 및 자동화
+/.github/ @shsh99
+/scripts/ @shsh99
+/Jenkinsfile @shsh99
+
+# 프로젝트 하네스
+/agents/ @shsh99
+/skills/ @shsh99
+
+# 아키텍처와 운영 문서
+/docs/architecture/ @shsh99
+/docs/conventions/ @shsh99
+/docs/operations/ @shsh99

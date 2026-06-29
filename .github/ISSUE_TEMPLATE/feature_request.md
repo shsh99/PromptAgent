@@ -1,23 +1,40 @@
 ---
-name: Feature request
-about: Suggest a new feature or workflow improvement
-title: "[Feature]"
-labels: enhancement
+name: "기능 요청"
+about: "새로운 기능이나 작업 흐름 개선을 제안합니다"
+title: "[기능] "
+labels: "enhancement"
+assignees: ""
 ---
 
-## Summary
+## 목적 또는 문제
 
-## Problem
+누가 어떤 문제를 겪고 있으며 왜 지금 해결해야 하는지 적어 주세요.
 
-## Proposed behavior
+## 제안 동작
 
-## Scope
+사용자가 경험할 결과와 핵심 흐름을 설명해 주세요.
 
-## Acceptance criteria
+## 범위
 
-- [ ]
+- 포함:
+- 제외:
 
-## Risks
+## 완료 조건
 
-## Notes
+- [ ] 사용자가 확인할 수 있는 결과를 구체적으로 적었습니다.
+- [ ] 정상·오류·경계 조건이 검증됩니다.
+
+## 테스트 계획 및 결과
+
+- 계획할 정상·오류·경계 테스트:
+- 실행한 명령과 결과:
+
+## 문서 영향
+
+- 갱신할 사용자·개발자 문서:
+- 문서 변경이 없다면 그 이유:
+
+## 위험 요소
+
+호환성, 보안, 성능, 운영 복잡도 위험과 완화 방안을 적어 주세요.
 
