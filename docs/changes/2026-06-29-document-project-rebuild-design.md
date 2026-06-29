@@ -17,6 +17,7 @@ PromptBuilder의 제품 범위와 Spring Boot·React 전환 방향, AI 검색·�
 - 브랜치, 이슈, 한글 커밋·PR, 변경 문서 규칙을 정의했다.
 - 테스트, GitHub Actions, AI 리뷰, Jenkins, Swagger 기준을 정의했다.
 - 프로젝트 로컬 하네스의 에이전트·스킬 구성을 정의했다.
+- 첫 독립 하위 프로젝트인 저장소 운영 기반과 하네스의 구현 계획을 추가했다.
 
 ## 영향 범위
 
@@ -53,3 +54,4 @@ UI 변경 없음
 ## 관련 문서
 
 - `docs/superpowers/specs/2026-06-29-prompt-platform-rebuild-design.md`
+- `docs/superpowers/plans/2026-06-29-repository-governance-harness.md`
