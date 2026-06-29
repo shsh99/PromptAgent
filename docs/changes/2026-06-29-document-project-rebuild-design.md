@@ -2,7 +2,7 @@
 
 ## PR 정보
 
-- PR: 이 변경을 게시하는 `dev` 대상 초안 PR
+- PR: [#5 Spring·React 전환 전체 설계 추가](https://github.com/shsh99/PromptAgent/pull/5)
 - 관련 이슈: #4
 
 ## 작업 목적
