@@ -1,6 +1,6 @@
 ---
 name: react-product-ui
-description: Use when React product screens, components, hooks, interactions, responsive states, accessibility, or frontend performance are created, 재실행, 업데이트, 수정, fixed, migrated, or reviewed.
+description: "Use when React product screens, components, hooks, interactions, responsive states, accessibility, or frontend performance are created, 재실행, 업데이트, 수정, fixed, migrated, or reviewed."
 ---
 
 # React Product UI

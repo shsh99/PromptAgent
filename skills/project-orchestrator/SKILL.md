@@ -1,6 +1,6 @@
 ---
 name: project-orchestrator
-description: Use when starting or continuing project delivery, including Korean issue-driven features, 재실행, 업데이트, 수정, 보완, partial reruns, review fixes, pull requests, CI failures, merges, or next-task selection.
+description: "Use when starting or continuing project delivery, including Korean issue-driven features, 재실행, 업데이트, 수정, 보완, partial reruns, review fixes, pull requests, CI failures, merges, or next-task selection."
 ---
 
 # Project Orchestrator
@@ -26,7 +26,7 @@ description: Use when starting or continuing project delivery, including Korean 
 
 ## 권한 매니페스트
 
-실행 시작 시 `_workspace/00_authority_manifest.md`를 만들고 `이슈 생성`, `push`, `PR`, `merge`, `close`, `deploy` 각각을 `allowed` 또는 `denied`로 기록한다. 각 권한의 승인 범위에는 저장소, 이슈·브랜치, 대상 환경, 최대 횟수, 만료 조건을 적는다. 명시되지 않은 권한은 미승인으로 간주하며 해당 외부 쓰기 직전에 정지하고 승인을 요청한다. 읽기·로컬 검증은 계속할 수 있지만 권한을 묶거나 확대 해석하지 않는다.
+실행 시작 시 authority/run manifest인 `_workspace/00_authority_manifest.md`를 만들고 `이슈 생성`, `push`, `PR`, `merge`, `close`, `deploy` 각각을 `allowed` 또는 `denied`로 기록한다. 각 권한의 승인 범위에는 저장소, 이슈·브랜치, 대상 환경, 최대 횟수, 만료 조건을 적는다. 같은 파일에 실행·이슈·PR 전체의 **총 수정 시도 상한**과 **총 deadline**, 시작 시각, 누적 수정 횟수, 현재 SHA를 고정한다. 명시되지 않은 권한은 미승인으로 간주하며 해당 외부 쓰기 직전에 정지하고 승인을 요청한다. 읽기·로컬 검증은 계속할 수 있지만 권한을 묶거나 확대 해석하지 않는다.
 
 devops-governance는 이 매니페스트에서 현재 작업과 환경에 대한 `merge` 또는 `deploy` 승인을 다시 확인한다. 매니페스트와 사용자 지시가 충돌하면 더 좁은 승인 범위를 적용하고 `blocked`로 보고한다.
 
@@ -40,12 +40,21 @@ devops-governance는 이 매니페스트에서 현재 작업과 환경에 대한
 | spring-rag / react-ui / devops-governance | 계약·허용 경로·검증 명령 | 독립 commit·결과 산출물 | architecture, 필요 시 선행 계약 |
 | qa-migration 검토 에이전트 | 계약·구현 diff·테스트 결과 | 독립 검토 보고서 | 해당 구현 완료 |
 
-각 작업은 전용 **worktree**, 이슈 연결 **branch**, 단일 담당자의 **commit 소유**를 갖는다. 배정 메시지에 역할, 입력, 출력, 의존성, 허용 파일, 완료 조건을 넣는다. 파일 또는 계약 중첩은 병렬화하지 않으며, 예상치 못한 충돌은 임의 병합하지 않고 관리자에게 즉시 보고한다. 구현자는 자기 결과를 승인하지 않고 분리된 qa-migration 검토 에이전트가 명세·품질을 확인한 뒤 수정 작업을 원 소유자에게 돌려보낸다.
+fan-in 소유 구조는 다음과 같다.
+
+- 오케스트레이터는 최신 `dev`만 다루는 **dev 전용 소유 worktree**와 PR 후보를 모으는 **integration** `feat/{issue-number}-{slug}` worktree를 소유한다.
+- 구현자는 하나의 이슈 번호와 역할 slug를 공유하는 로컬 `feat/{issue-number}-{role-slug}` **child branch**와 **child worktree**를 각각 소유하고 단일 **commit 소유**를 유지한다. 로컬 임시 child branch는 integration 반영 후 최종 게이트 전에 삭제하며 원격에 push하지 않는다.
+- 각 child commit SHA는 구현자와 분리된 qa-migration **독립 reviewer**의 승인을 받아야 한다. 승인된 commit만 오케스트레이터가 **dependency order**에 따라 integration branch로 `cherry-pick`한다.
+- cherry-pick 충돌은 **통합 소유자**만 integration worktree에서 해결하고 영향 테스트와 독립 reviewer **재검증**을 받는다. child 담당자는 통합 충돌을 직접 수정하지 않고 근거만 제공한다.
+
+배정 메시지에 역할, 입력, 출력, 의존성, 허용 파일, 완료 조건을 넣는다. 파일 또는 계약 중첩은 병렬화하지 않으며, 예상치 못한 충돌은 임의 병합하지 않고 관리자에게 즉시 보고한다. 구현자는 자기 결과를 승인하지 않는다.
 
 ## 실행 예산과 종료 조건
 
 - 기본 **CI pending timeout**은 20분이다. 시간 내 최종 상태가 없으면 `blocked`로 기록하고 재개 조건을 남긴다.
 - 같은 **SHA별 최대 수정 1회**만 허용한다. 새 실패를 무한히 고치지 말고 한도 도달 시 `blocked`로 전환한다.
+- 실행·이슈·PR 전체 **총 수정 시도 상한**은 **2회**, **총 deadline**은 시작부터 **60분**이다. 수정 시도는 SHA가 바뀌어도 누적하며 authority/run manifest에 즉시 반영한다.
+- **pending 20분** 대기는 항상 **deadline 내**에서만 허용한다. SHA별 한도, 총 수정 상한, 총 deadline 중 어느 하나라도 초과하면 `blocked`로 종료한다.
 - **실행당 최대 이슈** 수는 1개다. 추가 요청은 사용자가 승인한 **승인 backlog**에만 기록한다.
 - 상태는 `running`, `blocked`, `completed` 중 하나로 기록한다. `blocked`에는 원인, 마지막 SHA, 필요한 승인·수동 조치, 재개 조건을 포함한다.
 - 현재 이슈 종료 후 **승인된 다음 이슈**가 없으면 실행을 종료한다. 승인 backlog를 임의 확장하거나 자동 재귀 호출하지 않는다. **무한 루프 금지**가 모든 재시도·다음 작업 규칙보다 우선한다.
@@ -54,17 +63,19 @@ devops-governance는 이 매니페스트에서 현재 작업과 환경에 대한
 
 1. 권한 매니페스트와 실행 예산을 기록한다. 외부 쓰기는 해당 권한이 허용된 경우에만 수행한다.
 2. 완료 조건, 범위, 위험을 담은 **한글 이슈**를 생성하거나 확인한다.
-3. 최신 `dev`에서 `feat/{issue-number}-{slug}` 브랜치를 만든다.
+3. dev 소유 worktree에서 최신 `dev`를 확인하고 integration `feat/{issue-number}-{slug}` branch와 전용 worktree를 만든다.
 4. architecture에 계약을 맡기고 결과를 `_workspace/01_architecture_contract.md`에 받는다.
-5. 파일·계약 소유가 **비중첩**인 작업만 독립 worktree에서 병렬 실행한다.
-6. 구현 결과마다 분리된 qa-migration이 API·UI·DB 경계와 명세를 검토한다.
-7. 리뷰 결함을 원 commit 소유자에게 반환한다. 일반 실패는 **1회 재시도**, CI 수정은 SHA별 한도 안에서만 수행한다.
-8. 범위, 테스트, `git diff --check`를 확인한 뒤 한글 커밋을 만들고 승인된 경우에만 branch를 push한다.
-9. 한글 제목·본문과 이슈 연결로 승인된 `dev` 대상 PR을 만든다.
-10. 필수 checks를 CI pending timeout까지 확인한다. 실패·pending 한도를 넘으면 `blocked`로 정지한다.
-11. `merge`가 승인된 PR만 **squash merge**하고 로컬 `dev`를 `git pull --ff-only origin dev`로 동기화한다.
-12. `dev`는 기본 브랜치가 아닐 수 있으므로 PR 문구의 **자동 close**에 의존하지 않는다. 승인된 `close` 권한으로 issue API 또는 `gh issue close`를 호출해 명시적으로 닫고 상태를 재조회한다. 실패하면 `blocked`와 수동 조치를 기록한다.
-13. 현재 이슈를 정리하고 승인된 다음 이슈가 있을 때만 새 실행을 시작한다. 없으면 종료한다.
+5. 파일·계약 소유가 **비중첩**인 작업만 child branch·worktree에서 병렬 실행한다.
+6. 각 child commit을 분리된 qa-migration이 검토하고 승인 SHA를 기록한다.
+7. 오케스트레이터가 승인 commit을 dependency order로 integration에 cherry-pick한다. 충돌은 통합 소유자만 해결하고 재검증한다.
+8. 리뷰 결함을 원 commit 소유자에게 반환한다. 모든 수정 시도를 SHA별·총 상한에 누적한다.
+9. integration에서 범위, 테스트, `git diff --check`를 확인하고 로컬 child branch·worktree를 정리한 뒤 승인된 경우에만 branch를 push한다.
+10. 한글 제목·본문과 이슈 연결로 승인된 `dev` 대상 PR을 만든다.
+11. 필수 checks를 CI pending timeout과 총 deadline 안에서 확인한다. 실패·pending 한도를 넘으면 `blocked`로 정지한다.
+12. `merge`가 승인된 PR만 **squash merge**한다.
+13. feature worktree가 아닌 **dev 소유 worktree**에서 `git fetch origin dev` 후 `git pull --ff-only origin dev`로 동기화한다.
+14. `dev`는 기본 브랜치가 아닐 수 있으므로 PR 문구의 **자동 close**에 의존하지 않는다. 승인된 `close` 권한으로 issue API 또는 `gh issue close`를 호출해 명시적으로 닫고 상태를 재조회한다. 실패하면 `blocked`와 수동 조치를 기록한다.
+15. 현재 이슈를 정리하고 승인된 다음 이슈가 있을 때만 새 실행을 시작한다. 없으면 종료한다.
 
 ## 출력
 
@@ -90,7 +101,7 @@ devops-governance는 이 매니페스트에서 현재 작업과 환경에 대한
 - 브랜치가 이슈 번호를 포함하고 PR 대상이 `dev`인지 확인한다.
 - 변경 파일이 담당 범위와 일치하고 비중첩 병렬 조건을 지켰는지 확인한다.
 - 모듈별 QA, 전체 테스트, 필수 checks, squash merge SHA, 최신 `dev`를 근거로 남긴다.
-- authority manifest, 실행 예산, 명시적 issue close 결과와 최종 상태를 확인한다.
+- authority/run manifest의 누적 수정 횟수·deadline, fan-in 승인 SHA, 명시적 issue close 결과와 최종 상태를 확인한다.
 - `_workspace/`와 `_workspace_prev/` 산출물이 보존되었는지 확인한다.
 
 ## 테스트 시나리오

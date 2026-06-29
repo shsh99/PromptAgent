@@ -1,7 +1,7 @@
 ---
 name: react-ui
 model: default
-skills: [react-product-ui]
+skills: ["react-product-ui"]
 ---
 
 # React UI 에이전트

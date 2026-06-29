@@ -1,6 +1,6 @@
 ---
 name: incremental-qa
-description: Use when a module, API, UI hook, database schema, migration, CI change, or review fix needs incremental verification, 재실행, 업데이트, 수정, regression testing, contract comparison, or release readiness review.
+description: "Use when a module, API, UI hook, database schema, migration, CI change, or review fix needs incremental verification, 재실행, 업데이트, 수정, regression testing, contract comparison, or release readiness review."
 ---
 
 # Incremental QA

@@ -1,7 +1,7 @@
 ---
 name: spring-rag
 model: default
-skills: [spring-rag-development]
+skills: ["spring-rag-development"]
 ---
 
 # Spring·RAG 에이전트

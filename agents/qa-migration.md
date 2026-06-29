@@ -2,7 +2,7 @@
 name: qa-migration
 model: default
 subagent_type: general-purpose
-skills: [incremental-qa]
+skills: ["incremental-qa"]
 ---
 
 # QA·마이그레이션 에이전트

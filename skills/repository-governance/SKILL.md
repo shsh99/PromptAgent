@@ -1,6 +1,6 @@
 ---
 name: repository-governance
-description: Use when issues, branches, Korean commits, pull requests, repository policy, CI checks, deployments, secrets, rollbacks, or release workflows are created, 재실행, 업데이트, 수정, fixed, audited, or reviewed.
+description: "Use when issues, branches, Korean commits, pull requests, repository policy, CI checks, deployments, secrets, rollbacks, or release workflows are created, 재실행, 업데이트, 수정, fixed, audited, or reviewed."
 ---
 
 # Repository Governance

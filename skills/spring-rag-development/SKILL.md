@@ -1,6 +1,6 @@
 ---
 name: spring-rag-development
-description: Use when Spring APIs, Java domain logic, persistence, embeddings, retrieval, vector search, or RAG behavior is created, 재실행, 업데이트, 수정, fixed, migrated, or reviewed.
+description: "Use when Spring APIs, Java domain logic, persistence, embeddings, retrieval, vector search, or RAG behavior is created, 재실행, 업데이트, 수정, fixed, migrated, or reviewed."
 ---
 
 # Spring RAG Development

@@ -96,7 +96,34 @@ const parseFrontmatter = (content, path) => {
     }
     const [, key, value] = match
     if (Object.hasOwn(fields, key)) parseErrors.push(`${path}: 중복 frontmatter 필드: ${key}`)
-    fields[key] = value.trim()
+    const raw = value.trim()
+    if (raw.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(raw)
+        if (!Array.isArray(parsed) || parsed.some((item) => typeof item !== 'string' || !item)) {
+          throw new TypeError('not a non-empty string array')
+        }
+        fields[key] = parsed
+      } catch {
+        parseErrors.push(`${path}: ${key}는 JSON.parse 가능한 JSON 문자열 배열이어야 합니다.`)
+      }
+      continue
+    }
+    if (raw.startsWith('"')) {
+      try {
+        const parsed = JSON.parse(raw)
+        if (typeof parsed !== 'string') throw new TypeError('not a string')
+        fields[key] = parsed
+      } catch {
+        parseErrors.push(`${path}: ${key}는 유효한 큰따옴표 JSON 문자열이어야 합니다.`)
+      }
+      continue
+    }
+    if (/^[a-z][a-z0-9-]*$/.test(raw)) {
+      fields[key] = raw
+      continue
+    }
+    parseErrors.push(`${path}: ${key} scalar는 큰따옴표 JSON 문자열 또는 허용 bare token이어야 합니다.`)
   }
   return { fields, errors: parseErrors }
 }
@@ -117,33 +144,32 @@ export const validateFrontmatterSchema = (content, options) => {
   for (const key of required) {
     if (!fields[key]) schemaErrors.push(`${path}: 필수 frontmatter 필드가 없습니다: ${key}`)
   }
-  if (fields.name && fields.name !== expectedName) {
+  for (const key of ['name', 'model', 'description', 'subagent_type']) {
+    if (fields[key] !== undefined && typeof fields[key] !== 'string') {
+      schemaErrors.push(`${path}: ${key}는 scalar 문자열이어야 합니다.`)
+    }
+  }
+  if (typeof fields.name === 'string' && fields.name !== expectedName) {
     schemaErrors.push(`${path}: name이 파일 이름과 일치하지 않습니다.`)
   }
 
   if (kind === 'skill') {
-    if (fields.description && !fields.description.startsWith('Use when')) {
+    if (typeof fields.description === 'string' && !fields.description.startsWith('Use when')) {
       schemaErrors.push(`${path}: description은 "Use when"으로 시작해야 합니다.`)
     }
     return schemaErrors
   }
 
-  if (fields.model && fields.model !== 'default') {
+  if (typeof fields.model === 'string' && fields.model !== 'default') {
     schemaErrors.push(`${path}: model은 특정 벤더명이 아닌 프로젝트 환경 기본 모델(default)이어야 합니다.`)
   }
-  if (fields.skills) {
-    if (!/^\[[^\]]*\]$/.test(fields.skills)) {
-      schemaErrors.push(`${path}: skills는 인라인 배열이어야 합니다.`)
-    } else {
-      const references = fields.skills
-        .slice(1, -1)
-        .split(',')
-        .map((value) => value.trim())
-        .filter(Boolean)
-      for (const reference of references) {
-        if (!knownSkills.has(reference)) {
-          schemaErrors.push(`${path}: 참조 스킬 파일이 없습니다: skills/${reference}/SKILL.md`)
-        }
+  if (fields.skills && !Array.isArray(fields.skills)) {
+    schemaErrors.push(`${path}: skills는 JSON 문자열 배열이어야 합니다.`)
+  }
+  if (Array.isArray(fields.skills)) {
+    for (const reference of fields.skills) {
+      if (!knownSkills.has(reference)) {
+        schemaErrors.push(`${path}: 참조 스킬 파일이 없습니다: skills/${reference}/SKILL.md`)
       }
     }
   }
@@ -190,7 +216,7 @@ assert.match(
   /닫는 구분자/,
 )
 const invalidAgentFrontmatterErrors = validateFrontmatterSchema(
-  '---\nname: fixture\nmodel: opus\nskills: [missing-skill]\n---\n', {
+  '---\nname: fixture\nmodel: opus\nskills: ["missing-skill"]\n---\n', {
     kind: 'agent', path: 'fixture.md', expectedName: 'fixture', knownSkills: new Set(),
   },
 ).join('\n')
@@ -199,6 +225,20 @@ assert.match(
   /프로젝트 환경 기본 모델/,
 )
 assert.match(invalidAgentFrontmatterErrors, /참조 스킬 파일이 없습니다/)
+assert.match(
+  validateFrontmatterSchema(
+    '---\nname: fixture\ndescription: Use when API: retries fail\n---\n',
+    { kind: 'skill', path: 'fixture.md', expectedName: 'fixture', knownSkills: new Set() },
+  ).join('\n'),
+  /큰따옴표 JSON 문자열 또는 허용 bare token/,
+)
+assert.match(
+  validateFrontmatterSchema(
+    '---\nname: fixture\nmodel: default\nskills: ["known",]\n---\n',
+    { kind: 'agent', path: 'fixture.md', expectedName: 'fixture', knownSkills: new Set(['known']) },
+  ).join('\n'),
+  /JSON 문자열 배열/,
+)
 assert.match(
   validateSectionTokens('## 다른 섹션\n\npush\n\n## 권한\n\n기록\n', {
     권한: ['push'],
@@ -254,35 +294,39 @@ errors.push(...validateSectionTokens(orchestrator, {
   '실행 모드': ['초기 실행', '새 실행', '부분 재실행', '_workspace/'],
   '권한 매니페스트': [
     '_workspace/00_authority_manifest.md', '이슈 생성', 'push', 'PR', 'merge', 'close', 'deploy',
-    '승인 범위', '미승인', '정지',
+    '승인 범위', '미승인', '정지', '총 수정 시도 상한', '총 deadline',
   ],
   '서브에이전트 팀 운영': [
     'subagent-driven', '역할', '입력', '출력', '의존성', 'worktree', 'branch', 'commit',
-    '충돌', 'qa-migration', '검토 에이전트', '프로젝트 환경 기본',
+    '충돌', 'qa-migration', '검토 에이전트', '프로젝트 환경 기본', 'fan-in',
+    'dev 전용 소유 worktree', 'integration', 'feat/{issue-number}-{slug}', 'child branch',
+    'child worktree', '독립 reviewer', 'dependency order', 'cherry-pick', '통합 소유자', '재검증',
   ],
   '실행 예산과 종료 조건': [
     'CI pending timeout', 'SHA별', '최대 수정 1회', '실행당 최대 이슈', '승인 backlog',
-    'blocked', '승인된 다음 이슈', '종료', '무한 루프 금지',
+    'blocked', '승인된 다음 이슈', '종료', '무한 루프 금지', '총 수정 시도 상한', '2회',
+    '총 deadline', '60분', 'SHA가 바뀌어도 누적', '어느 하나', 'pending 20분', 'deadline 내',
   ],
   '워크플로우': [
     '한글 이슈', 'feat/', 'squash merge', 'dev', 'issue API', 'gh issue close',
-    '자동 close', 'blocked', '수동 조치',
+    '자동 close', 'blocked', '수동 조치', 'dev 소유 worktree', 'git fetch origin dev',
+    'git pull --ff-only origin dev', 'feature worktree',
   ],
   '에러 정책': ['1회 재시도', '누락'],
   '런타임 및 통합': ['Node.js 22', 'package.json', '표준 script', '통합 단계'],
 }, 'skills/project-orchestrator/SKILL.md'))
 
 const react = read('skills/react-product-ui/SKILL.md')
-for (const dependency of [
-  'frontend-design-principles',
-  'frontend-design',
-  'composition-patterns',
-  'react-best-practices',
-  'accessible-ui-guidelines',
-  'web-design-guidelines',
-]) {
-  if (!react.includes(dependency)) errors.push(`react-product-ui: ${dependency} 스킬 참조가 없습니다.`)
-}
+errors.push(...validateSectionTokens(react, {
+  '필수 보조 스킬': [
+    'frontend-design-principles',
+    'frontend-design',
+    'composition-patterns',
+    'react-best-practices',
+    'accessible-ui-guidelines',
+    'web-design-guidelines',
+  ],
+}, 'skills/react-product-ui/SKILL.md'))
 
 assert.deepEqual(errors, [], `\n${errors.join('\n')}`)
 console.log('하네스 구조 검증 완료')

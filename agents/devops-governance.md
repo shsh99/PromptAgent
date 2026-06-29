@@ -1,7 +1,7 @@
 ---
 name: devops-governance
 model: default
-skills: [repository-governance]
+skills: ["repository-governance"]
 ---
 
 # DevOps·거버넌스 에이전트
