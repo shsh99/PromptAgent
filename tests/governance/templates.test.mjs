@@ -13,8 +13,11 @@ const read = (path) => {
 const githubPullRequestTemplates = [
   '.github/pull_request_template.md',
   '.github/PULL_REQUEST_TEMPLATE/feature.md',
+  '.github/PULL_REQUEST_TEMPLATE/bugfix.md',
   '.github/PULL_REQUEST_TEMPLATE/fix.md',
   '.github/PULL_REQUEST_TEMPLATE/docs.md',
+  '.github/PULL_REQUEST_TEMPLATE/refactor.md',
+  '.github/PULL_REQUEST_TEMPLATE/infrastructure.md',
 ]
 
 const issueTemplates = [
@@ -82,7 +85,14 @@ test('이슈 템플릿이 한글 제목과 필수 계획 항목을 제공한다'
 
     assert.match(template, /^name: .*[가-힣]/m, `${path} frontmatter에 한글 이름이 필요합니다.`)
     assert.match(template, /^about: .*[가-힣]/m, `${path} frontmatter에 한글 설명이 필요합니다.`)
-    for (const required of ['## 목적 또는 문제', '## 범위', '## 완료 조건', '## 위험 요소']) {
+    for (const required of [
+      '## 목적 또는 문제',
+      '## 범위',
+      '## 완료 조건',
+      '## 위험 요소',
+      '## 테스트 계획 및 결과',
+      '## 문서 영향',
+    ]) {
       assert.ok(template.includes(required), `${path}에 ${required} 섹션이 필요합니다.`)
     }
   }
