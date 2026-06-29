@@ -147,3 +147,89 @@ test('--pr은 비교 범위에 유효한 변경 문서가 있어야 통과한다
     rmSync(cwd, { recursive: true, force: true })
   }
 })
+
+test('--pr은 base가 분기 후 전진해도 merge-base 이후 PR 변경만 검사한다', () => {
+  const cwd = createRepository()
+  try {
+    git(cwd, 'checkout', '-b', 'feat/21-feature-change')
+    writeFileSync(resolve(cwd, 'README.md'), '# 기능 변경\n')
+    git(cwd, 'add', '.')
+    git(cwd, 'commit', '-m', '기능 변경')
+    const head = git(cwd, 'rev-parse', 'HEAD')
+
+    git(cwd, 'checkout', 'main')
+    mkdirSync(resolve(cwd, 'docs/changes'), { recursive: true })
+    writeFileSync(resolve(cwd, 'docs/changes/base-only.md'), validChangeDocument)
+    git(cwd, 'add', '.')
+    git(cwd, 'commit', '-m', '기본 브랜치 변경 문서 추가')
+    const advancedBase = git(cwd, 'rev-parse', 'HEAD')
+    git(cwd, 'checkout', 'feat/21-feature-change')
+
+    const result = runValidator(cwd, '--pr', {
+      BASE_SHA: advancedBase,
+      HEAD_SHA: head,
+    })
+    assert.notEqual(result.status, 0)
+    assert.match(result.stderr, /PR 변경 범위에 .*변경 문서가 없습니다/)
+    assert.doesNotMatch(result.stderr, /base-only\.md/)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('--pr은 PR_TITLE이 없으면 fail-closed로 거부한다', () => {
+  const cwd = createRepository()
+  try {
+    const sha = git(cwd, 'rev-parse', 'HEAD')
+    const result = runValidator(cwd, '--pr', {
+      BASE_SHA: sha,
+      HEAD_SHA: sha,
+      PR_TITLE: undefined,
+    })
+    assert.notEqual(result.status, 0)
+    assert.match(result.stderr, /PR_TITLE.*필요/)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('detached HEAD에서는 GITHUB_HEAD_REF를 소스 브랜치로 사용한다', () => {
+  const cwd = createRepository()
+  try {
+    git(cwd, 'checkout', '--detach', 'HEAD')
+    const result = runValidator(cwd, '--all', {
+      GITHUB_HEAD_REF: 'feat/22-detached-build',
+    })
+    assert.equal(result.status, 0, result.stderr)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('AGENTS.md 읽기 오류를 위반 메시지로 보고하고 스택트레이스를 숨긴다', () => {
+  const cwd = createRepository()
+  try {
+    rmSync(resolve(cwd, 'AGENTS.md'))
+    mkdirSync(resolve(cwd, 'AGENTS.md'))
+    const result = runValidator(cwd, '--all')
+    assert.notEqual(result.status, 0)
+    assert.match(result.stderr, /AGENTS\.md.*읽을 수 없습니다/)
+    assert.doesNotMatch(result.stderr, /node:fs|\n\s+at /)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('변경 문서 디렉터리 조회 오류를 위반 메시지로 보고한다', () => {
+  const cwd = createRepository()
+  try {
+    mkdirSync(resolve(cwd, 'docs'))
+    writeFileSync(resolve(cwd, 'docs/changes'), '디렉터리가 아님')
+    const result = runValidator(cwd, '--all')
+    assert.notEqual(result.status, 0)
+    assert.match(result.stderr, /docs\/changes.*조회할 수 없습니다/)
+    assert.doesNotMatch(result.stderr, /node:fs|\n\s+at /)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})

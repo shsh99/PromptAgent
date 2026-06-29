@@ -26,16 +26,23 @@ const readRequiredFile = (relativePath) => {
   const path = resolve(cwd, relativePath)
   if (!existsSync(path)) {
     errors.push(`${relativePath} 파일이 없습니다.`)
-    return ''
+    return null
   }
-  return readFileSync(path, 'utf8')
+  try {
+    return readFileSync(path, 'utf8')
+  } catch {
+    errors.push(`${relativePath} 파일을 읽을 수 없습니다.`)
+    return null
+  }
 }
 
 const validateCommonRules = () => {
   const agents = readRequiredFile('AGENTS.md')
-  if (agents) errors.push(...validateContextLineCount(agents))
+  if (agents !== null) errors.push(...validateContextLineCount(agents))
 
-  const branch = runGit('branch', '--show-current')
+  const branch = process.env.GITHUB_HEAD_REF
+    || process.env.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+    || runGit('branch', '--show-current')
   if (branch.startsWith('codex/')) {
     errors.push(`codex/ 브랜치는 사용할 수 없습니다: ${branch}`)
   } else if (!isAllowedBranch(branch)) {
@@ -45,20 +52,31 @@ const validateCommonRules = () => {
   if (process.env.PR_TITLE && !hasKorean(process.env.PR_TITLE)) {
     errors.push('PR 제목에는 한글이 포함되어야 합니다.')
   }
+
+  if (mode === '--pr' && !process.env.PR_TITLE?.trim()) {
+    errors.push('--pr 검증에는 PR_TITLE이 필요합니다.')
+  }
 }
 
 const changeDocuments = () => {
   const directory = resolve(cwd, 'docs/changes')
   if (!existsSync(directory)) return []
-  return readdirSync(directory)
-    .filter((name) => name.endsWith('.md'))
-    .map((name) => `docs/changes/${name}`)
+  try {
+    return readdirSync(directory)
+      .filter((name) => name.endsWith('.md'))
+      .map((name) => `docs/changes/${name}`)
+  } catch {
+    errors.push('docs/changes 디렉터리를 조회할 수 없습니다.')
+    return []
+  }
 }
 
 const validateDocuments = (documents) => {
   for (const document of documents) {
     const content = readRequiredFile(document)
-    errors.push(...validateChangeDocument(content).map((error) => `${document}: ${error}`))
+    if (content !== null) {
+      errors.push(...validateChangeDocument(content).map((error) => `${document}: ${error}`))
+    }
   }
 }
 
@@ -72,7 +90,7 @@ if (mode === '--all') {
   if (!base || !head) {
     errors.push('--pr 검증에는 BASE_SHA와 HEAD_SHA가 필요합니다.')
   } else {
-    const changed = runGit('diff', '--name-only', `${base}..${head}`)
+    const changed = runGit('diff', '--name-only', `${base}...${head}`)
       .split(/\r?\n/)
       .filter(Boolean)
     const documents = changed.filter((path) => /^docs\/changes\/[^/]+\.md$/.test(path))
