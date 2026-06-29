@@ -5,6 +5,8 @@
     "dev": "vite",
     "build": "node scripts/build.mjs",
     "test": "node scripts/test.mjs",
+    "test:governance": "node tests/governance/governance.test.mjs",
+    "validate:governance": "node scripts/validate-governance.mjs --all",
     "postbuild": "node scripts/sync-worker.mjs",
     "preview": "wrangler dev",
     "deploy": "npm run build && wrangler pages deploy dist --project-name promptbuilder --branch main --commit-dirty=true",
