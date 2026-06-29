@@ -1,12 +1,16 @@
 {
   "name": "promptbuilder",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build": "node scripts/build.mjs",
     "test": "node scripts/test.mjs",
     "test:templates": "node --test tests/governance/templates.test.mjs",
     "test:governance": "node --test tests/governance",
+    "test:harness": "node tests/harness/validate-harness.mjs",
     "validate:governance": "node scripts/validate-governance.mjs --all",
     "postbuild": "node scripts/sync-worker.mjs",
     "preview": "wrangler dev",
