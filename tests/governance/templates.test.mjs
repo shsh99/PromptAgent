@@ -153,18 +153,19 @@ test('변경 문서 템플릿이 필수 변경 이력을 모두 기록한다', (
   const path = 'docs/changes/CHANGE_TEMPLATE.md'
   const template = read(path)
 
-  assert.match(template, /^# .*[가-힣]/m, `${path}에 한글 제목이 필요합니다.`)
-  for (const required of [
+  const requiredHeaders = [
     '## PR 정보',
     '## 작업 목적',
     '## 변경 내용',
     '## 영향 범위',
     '## 테스트 결과',
-    '## 배포 및 마이그레이션',
+    '## 배포 및 마이그레이션 영향',
     '## 위험 요소와 롤백',
     '## AI 사용',
     '## 관련 문서',
-  ]) {
-    assert.ok(template.includes(required), `${path}에 ${required} 섹션이 필요합니다.`)
-  }
+  ]
+  const actualHeaders = [...template.matchAll(/^## .+$/gm)].map(([header]) => header)
+
+  assert.match(template, /^# .*[가-힣]/m, `${path}에 한글 제목이 필요합니다.`)
+  assert.deepEqual(actualHeaders, requiredHeaders, `${path}의 9개 계약 헤더가 정확하지 않습니다.`)
 })
