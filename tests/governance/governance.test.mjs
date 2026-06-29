@@ -44,12 +44,24 @@ const createRepository = () => {
   return cwd
 }
 
-const runValidator = (cwd, mode, env = {}) =>
-  spawnSync(process.execPath, [validator, mode], {
+const runValidator = (cwd, mode, env = {}) => {
+  const childEnv = {
+    ...process.env,
+    PR_TITLE: '[테스트] 운영 규칙 확인',
+  }
+  delete childEnv.GITHUB_HEAD_REF
+  delete childEnv.CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+  Object.assign(childEnv, env)
+  for (const [name, value] of Object.entries(childEnv)) {
+    if (value === undefined) delete childEnv[name]
+  }
+
+  return spawnSync(process.execPath, [validator, mode], {
     cwd,
     encoding: 'utf8',
-    env: { ...process.env, PR_TITLE: '[테스트] 운영 규칙 확인', ...env },
+    env: childEnv,
   })
+}
 
 test('hasKorean은 한글 포함 여부를 반환한다', () => {
   assert.equal(hasKorean('[기능] 프롬프트 마켓 추가'), true)
