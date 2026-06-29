@@ -1,3 +1,10 @@
 node_modules/
 dist/
 .wrangler/
+backend/.gradle/
+backend/build/
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+.env
+!.env.example
