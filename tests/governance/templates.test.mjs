@@ -146,7 +146,8 @@ test('npm 스크립트가 템플릿 단독 및 전체 거버넌스 테스트를 
   const packageJson = JSON.parse(read('package.json'))
 
   assert.equal(packageJson.scripts['test:templates'], 'node --test tests/governance/templates.test.mjs')
-  assert.equal(packageJson.scripts['test:governance'], 'node --test tests/governance')
+  assert.equal(packageJson.scripts['test:governance'], 'node scripts/run-governance-tests.mjs')
+  assert.ok(read('scripts/run-governance-tests.mjs').includes("endsWith('.test.mjs')"))
 })
 
 test('변경 문서 템플릿이 필수 변경 이력을 모두 기록한다', () => {
