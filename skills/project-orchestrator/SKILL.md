@@ -49,6 +49,10 @@ description: Use when starting or continuing project delivery, including Korean 
 
 상충 결과는 삭제하지 말고 출처와 선택 근거를 병기한다. 외부 권한·비밀·보호 규칙이 막으면 우회하지 않는다. 각 실패는 1회 재시도 후 누락 또는 차단으로 보고한다.
 
+## 이전 산출물 개선
+
+부분 재실행에서는 관련 `_workspace/` 산출물과 사용자 피드백을 읽고 요청된 계약만 갱신한다. 새 실행에서는 기존 결과를 `_workspace_prev/{timestamp}/`에 보존하고, 재사용한 결정과 폐기한 결정의 이유를 새 산출물에 기록한다.
+
 ## 검증
 
 - 브랜치가 이슈 번호를 포함하고 PR 대상이 `dev`인지 확인한다.

@@ -20,11 +20,14 @@ description: Use when issues, branches, Korean commits, pull requests, repositor
 3. 로컬과 CI가 같은 결정적 명령을 실행하도록 한다.
 4. workflow 권한을 최소화하고 비밀은 값이 아닌 이름·회전 절차만 문서화한다.
 5. 필수 checks, 리뷰, 롤백 가능성을 확인한 후에만 병합 가능 상태를 보고한다.
-6. 이전 실패 산출물이 있으면 해당 gate만 재실행하고 로그를 보존한다.
 
 ## 출력
 
 정책·자동화 변경과 `_workspace/04_devops-governance_result.md`에 브랜치·PR, 권한, checks, 배포·롤백 영향, 차단 요소를 기록한다.
+
+## 이전 산출물 개선
+
+이전 실패 로그와 gate 상태를 읽고 영향받은 검증만 재실행한다. 과거 로그를 삭제하거나 성공으로 덮어쓰지 말고, 시도별 SHA·명령·결과를 보존한다.
 
 ## 검증
 

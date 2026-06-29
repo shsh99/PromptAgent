@@ -27,6 +27,57 @@ const agentSections = [
   '팀 통신 프로토콜',
   '이전 산출물 처리',
 ]
+const skillSections = [
+  '입력',
+  '워크플로우',
+  '출력',
+  '검증',
+  '테스트 시나리오',
+  '이전 산출물 개선',
+]
+
+export const validateRequiredSections = (content, sections, path) => {
+  const lines = String(content || '').split(/\r?\n/)
+  const sectionErrors = []
+
+  for (const section of sections) {
+    const heading = `## ${section}`
+    const start = lines.findIndex((line) => line.trim() === heading)
+    if (start === -1) {
+      sectionErrors.push(`${path}: ${heading} 섹션이 없습니다.`)
+      continue
+    }
+
+    const relativeEnd = lines
+      .slice(start + 1)
+      .findIndex((line) => /^#{1,2}\s+/.test(line.trim()))
+    const end = relativeEnd === -1 ? lines.length : start + 1 + relativeEnd
+    const body = lines
+      .slice(start + 1, end)
+      .join('\n')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/^#{1,6}\s+.*$/gm, '')
+      .trim()
+    if (!body) sectionErrors.push(`${path}: ${heading} 섹션의 본문이 비어 있습니다.`)
+  }
+
+  return sectionErrors
+}
+
+const missingSectionFixture = '# Fixture\n\n## 출력\n\n결과를 기록한다.\n'
+const emptySectionFixture = '# Fixture\n\n## 입력\n\n## 출력\n\n결과를 기록한다.\n'
+assert.match(
+  validateRequiredSections(missingSectionFixture, ['입력'], 'fixture.md').join('\n'),
+  /## 입력 섹션이 없습니다/,
+)
+assert.match(
+  validateRequiredSections(emptySectionFixture, ['입력'], 'fixture.md').join('\n'),
+  /## 입력 섹션의 본문이 비어 있습니다/,
+)
+assert.deepEqual(
+  validateRequiredSections('## 입력\n\n계약을 읽는다.\n', ['입력'], 'fixture.md'),
+  [],
+)
 
 const errors = []
 const read = (path) => {
@@ -41,11 +92,7 @@ const read = (path) => {
 for (const name of agentNames) {
   const path = `agents/${name}.md`
   const content = read(path)
-  for (const section of agentSections) {
-    if (!new RegExp(`^## ${section}$`, 'm').test(content)) {
-      errors.push(`${path}: ## ${section} 섹션이 없습니다.`)
-    }
-  }
+  errors.push(...validateRequiredSections(content, agentSections, path))
 }
 
 for (const name of skillNames) {
@@ -66,11 +113,7 @@ for (const name of skillNames) {
   for (const phrase of ['재실행', '업데이트', '수정']) {
     if (!description.includes(phrase)) errors.push(`${path}: description에 ${phrase} 트리거가 없습니다.`)
   }
-  for (const section of ['워크플로우', '출력', '검증', '테스트 시나리오']) {
-    if (!new RegExp(`^## ${section}$`, 'm').test(content)) {
-      errors.push(`${path}: ## ${section} 섹션이 없습니다.`)
-    }
-  }
+  errors.push(...validateRequiredSections(content, skillSections, path))
   if (!/정상 흐름/.test(content) || !/오류 흐름/.test(content)) {
     errors.push(`${path}: 정상 흐름과 오류 흐름 테스트 시나리오가 필요합니다.`)
   }

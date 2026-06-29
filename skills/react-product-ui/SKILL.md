@@ -33,11 +33,14 @@ description: Use when React product screens, components, hooks, interactions, re
 3. 기능 단위로 component/hook/model/page 책임을 나누고 합성 가능한 API를 사용한다.
 4. 키보드, 포커스, 레이블, 대비, reduced motion, 터치 목표를 구현한다.
 5. 불필요한 waterfall·재렌더·큰 번들을 피하고 실제 사용자 경로를 테스트한다.
-6. 이전 산출물과 피드백이 있으면 요청 상태만 개선하고 나머지는 회귀 검증한다.
 
 ## 출력
 
 UI 코드·테스트와 `_workspace/03_react-ui_result.md`에 상태표, API 매핑, 접근성·반응형·성능 검증, 시각 위험을 기록한다.
+
+## 이전 산출물 개선
+
+기존 상태표·사용자 피드백·시각 위험을 먼저 읽는다. 요청된 화면 상태와 관련 테스트만 개선하고, 나머지 접근성·반응형 상태는 회귀 기준으로 유지한다.
 
 ## 검증
 
