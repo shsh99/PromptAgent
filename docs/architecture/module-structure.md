@@ -18,11 +18,15 @@ Spring과 React의 기능 경계 및 의존 방향을 정의한다.
 
 `templatemarket`, `promptgenerator`, `agentrecommendation`, `intent`, `knowledge`, `websearch`, `aigateway`, `historyfeedback`, `adminobservability` 기능 모듈을 둔다. 각 모듈은 `api/application/domain/infrastructure` 계층을 가진다.
 
+현재 기반은 `backend/` Gradle 프로젝트와 `com.promptagent` 루트 패키지로 시작한다. `system/api`는 공개 health 계약을, `system/infrastructure`는 OpenAPI 같은 기술 구성을 소유한다. 새 기능은 `system`에 추가하지 않고 위 기능 모듈 아래에 생성한다.
+
 의존성은 `api -> application -> domain` 방향이며 `infrastructure`는 application/domain이 정의한 포트를 구현한다. 다른 모듈의 저장소나 내부 패키지를 직접 참조하지 않고 공개 애플리케이션 서비스와 DTO를 사용한다. `shared`에는 안정된 기술 공통 요소만 둔다.
 
 ## 프론트엔드
 
 `src/features/<feature>/` 아래 `api/components/hooks/model/pages`를 둔다. 기능 간 직접 내부 import를 금지하고 공개 진입점 또는 `shared` 계약을 사용한다. `app`은 라우팅·전역 제공자·부트스트랩만 담당한다.
+
+현재 기반은 `frontend/`의 React 19·TypeScript·Vite 애플리케이션이다. `features/system`이 backend health 계약을 캡슐화하고 `app`은 세 제품 기능의 진입 셸만 구성한다. 기존 `webapp/`은 기능 이관이 끝날 때까지 레거시로 유지한다.
 
 ## 변경 원칙
 

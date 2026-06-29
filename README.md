@@ -65,11 +65,24 @@ wrangler d1 migrations apply DB --remote --config wrangler.toml
 
 기능 작업은 `dev`에서 `feat/<이슈번호>-<slug>` 브랜치를 만들고, 한글 커밋·PR과 `docs/changes/` 변경 문서를 함께 작성합니다.
 
+신규 Spring·React 기반은 Java 21과 Node.js 22 이상을 사용합니다. 로컬 PostgreSQL/pgvector를 시작한 뒤 backend와 frontend를 각각 실행합니다.
+
+```bash
+cp .env.example .env
+docker compose up -d postgres
+./backend/gradlew -p backend bootRun
+npm --prefix frontend ci
+npm --prefix frontend run dev
+```
+
+Backend API는 `http://localhost:8080`, Swagger UI는 `http://localhost:8080/swagger-ui.html`, React 개발 서버는 `http://localhost:5173`을 사용합니다.
+
 ```bash
 npm install
 npm run validate:governance
 npm run test:governance
 npm run test:harness
+npm run test:foundation
 npm test
 npm run build
 npm run dev
