@@ -1,6 +1,6 @@
 ---
 name: spring-rag
-model: opus
+model: default
 skills: [spring-rag-development]
 ---
 

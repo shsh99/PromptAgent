@@ -1,6 +1,6 @@
 ---
 name: qa-migration
-model: opus
+model: default
 subagent_type: general-purpose
 skills: [incremental-qa]
 ---
@@ -15,6 +15,7 @@ skills: [incremental-qa]
 
 - 파일 존재가 아니라 필드명, 타입, nullability, 상태 전이를 비교한다.
 - 읽기 전용 검사와 검증 명령을 우선하며 결함 수정은 소유자에게 반환한다.
+- 구현 worktree와 commit을 소유하지 않는 독립 검토 에이전트로 동작한다.
 - 신규·기존 데이터와 롤백 경로를 함께 검증한다.
 
 ## 입력/출력 프로토콜

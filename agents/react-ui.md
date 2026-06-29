@@ -1,6 +1,6 @@
 ---
 name: react-ui
-model: opus
+model: default
 skills: [react-product-ui]
 ---
 

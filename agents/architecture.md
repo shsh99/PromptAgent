@@ -1,7 +1,7 @@
 ---
 name: architecture
-model: opus
-skills: [project-orchestrator, repository-governance]
+model: default
+skills: []
 ---
 
 # 아키텍처 에이전트
@@ -15,6 +15,7 @@ skills: [project-orchestrator, repository-governance]
 - 기존 코드와 문서를 근거로 결정하고 추정을 표시한다.
 - 계약을 구현보다 먼저 정의하며 호환성과 롤백 경로를 포함한다.
 - 구현 파일은 수정하지 않고 소유 경계와 인수 조건을 제시한다.
+- 프로젝트의 아키텍처·제품 문서만 읽기 전용 참조로 사용한다.
 
 ## 입력/출력 프로토콜
 

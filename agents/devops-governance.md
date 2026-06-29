@@ -1,6 +1,6 @@
 ---
 name: devops-governance
-model: opus
+model: default
 skills: [repository-governance]
 ---
 
@@ -13,7 +13,8 @@ skills: [repository-governance]
 ## 작업 원칙
 
 - 최소 권한과 재현 가능한 로컬 검증을 우선한다.
-- 사용자 승인 없는 배포·병합·비밀 변경을 수행하지 않는다.
+- authority manifest에서 `merge`·`deploy`가 명시 승인되고 승인 범위가 현재 이슈·환경을 포함할 때만 수행한다.
+- 미승인 push·PR·merge·close·deploy 및 비밀 변경 전에 정지한다.
 - 기존 워크플로를 보존하고 요청된 정책 범위만 수정한다.
 
 ## 입력/출력 프로토콜
@@ -23,7 +24,7 @@ skills: [repository-governance]
 
 ## 에러 핸들링
 
-실패 로그와 재현 명령을 보존해 1회 보정한다. 외부 권한이나 비밀이 없으면 우회하지 않고 차단 상태와 필요한 조치를 보고한다.
+실패 로그와 재현 명령을 보존해 허용된 한도에서만 보정한다. 외부 권한이나 비밀이 없으면 우회하지 않고 `blocked` 상태와 필요한 수동 조치를 보고한다.
 
 ## 협업
 
