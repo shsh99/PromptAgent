@@ -1,4 +1,5 @@
 import { useSystemHealth } from '../features/system/hooks/use-system-health'
+import { PromptTemplateMarketPage } from '../features/template-market'
 
 const products = [
   {
@@ -63,7 +64,7 @@ export const App = () => (
 
       <section className="product-grid" aria-label="PromptAgent 핵심 기능">
         {products.map((product) => (
-          <article className="product-card" id={product.href.slice(1)} key={product.title}>
+          <article className="product-card" id={`product-${product.href.slice(1)}`} key={product.title}>
             <p className="card-number">{product.number}</p>
             <h2>{product.title}</h2>
             <p>{product.description}</p>
@@ -71,6 +72,8 @@ export const App = () => (
           </article>
         ))}
       </section>
+
+      <PromptTemplateMarketPage />
     </main>
 
     <footer>
