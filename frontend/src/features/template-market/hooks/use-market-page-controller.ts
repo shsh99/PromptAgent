@@ -12,7 +12,6 @@ export const useMarketPageController = () => {
   const openerRef = useRef<HTMLButtonElement | undefined>(undefined)
   const { state: list, retry } = useTemplateList(filters)
   const detail = useTemplateDetail(selectedId)
-
   useEffect(() => {
     const restore = () => {
       const next = readFilters()
@@ -52,6 +51,5 @@ export const useMarketPageController = () => {
     setFilters(next)
     setSelectedId(undefined)
   }
-
   return { draft, setDraft, list, retry, detail, applyFilters, resetFilters, openDetail, closeDetail, changePage }
 }

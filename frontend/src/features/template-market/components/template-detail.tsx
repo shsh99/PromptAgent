@@ -28,7 +28,7 @@ export const TemplateDetail = ({ template, onClose }: TemplateDetailProps) => {
   useEffect(() => headingRef.current?.focus(), [])
 
   return (
-  <section className="template-detail" role="dialog" aria-labelledby="template-detail-title">
+  <section className="template-detail" role="region" aria-labelledby="template-detail-title">
     <header className="template-detail__header">
       <div>
         <p className="eyebrow">PROMPT BLUEPRINT · {template.version}</p>
