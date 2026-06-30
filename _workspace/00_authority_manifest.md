@@ -1,6 +1,6 @@
 # 이슈 #13 실행 권한 매니페스트
 
-- 상태: running
+- 상태: blocked
 - 시작: 2026-06-30T21:18:59+09:00
 - deadline: 2026-06-30T22:18:59+09:00
 - 기준 dev SHA: fc2e304dc71f462c725842b9d40c08ebba0ec24c
@@ -32,3 +32,11 @@
 
 - 1회차: Task 1 품질 검토에서 `.github/CODEOWNERS`의 레거시 `/skills/` 경로를 발견했다. canonical 경로와 stale-reference 검사 범위를 수정한 뒤 재검토한다.
 - 2회차: Task 2 품질 검토에서 Git에 고정된 Seed의 재잠금 우회, CLI 통합 테스트 누락, UI metadata·해시 행 경계를 발견했다. 마지막 수정 예산으로 보완하고 재검토한다.
+
+## 차단 상태
+
+- 차단 원인: Windows 대소문자 비구분 경로에서 Git canonical path를 사용하지 않아 잠긴 Seed 재잠금 방어를 우회할 수 있다.
+- 마지막 검토 SHA: `ab0d7bf91b2c53e31118ddd399c0cefba44d5835`
+- 통합 여부: Task 2 commit은 integration branch에 반영하지 않았다.
+- 필요한 승인: 수정 예산을 초기화하는 새 실행 승인.
+- 재개 조건: Git index의 canonical tracked path를 조회하고 HEAD blob 조회 실패를 fail-closed로 처리하는 실패 테스트부터 새 실행한다.
