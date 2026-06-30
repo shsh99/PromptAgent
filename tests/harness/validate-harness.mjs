@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '../..')
+const projectSkillRoot = '.agents/skills'
 console.log(`[하네스 진단] Node.js ${process.versions.node} 감지; 검증 기준은 Node.js 22.x입니다.`)
 const agentNames = [
   'orchestrator',
@@ -169,7 +170,7 @@ export const validateFrontmatterSchema = (content, options) => {
   if (Array.isArray(fields.skills)) {
     for (const reference of fields.skills) {
       if (!knownSkills.has(reference)) {
-        schemaErrors.push(`${path}: 참조 스킬 파일이 없습니다: skills/${reference}/SKILL.md`)
+        schemaErrors.push(`${path}: 참조 스킬 파일이 없습니다: ${projectSkillRoot}/${reference}/SKILL.md`)
       }
     }
   }
@@ -248,8 +249,11 @@ assert.match(
 
 const errors = []
 const knownSkills = new Set(
-  skillNames.filter((name) => existsSync(resolve(root, `skills/${name}/SKILL.md`))),
+  skillNames.filter((name) => existsSync(resolve(root, `${projectSkillRoot}/${name}/SKILL.md`))),
 )
+if (existsSync(resolve(root, 'skills'))) {
+  errors.push('레거시 skills/ 디렉터리를 제거하고 .agents/skills/만 사용해야 합니다.')
+}
 const read = (path) => {
   try {
     return readFileSync(resolve(root, path), 'utf8')
@@ -269,7 +273,7 @@ for (const name of agentNames) {
 }
 
 for (const name of skillNames) {
-  const path = `skills/${name}/SKILL.md`
+  const path = `${projectSkillRoot}/${name}/SKILL.md`
   const content = read(path)
   errors.push(...validateFrontmatterSchema(content, {
     kind: 'skill', path, expectedName: name, knownSkills,
@@ -284,11 +288,12 @@ for (const name of skillNames) {
   }
 }
 
-const orchestrator = read('skills/project-orchestrator/SKILL.md')
+const orchestratorPath = `${projectSkillRoot}/project-orchestrator/SKILL.md`
+const orchestrator = read(orchestratorPath)
 errors.push(...validateRequiredSections(
   orchestrator,
   orchestratorSections,
-  'skills/project-orchestrator/SKILL.md',
+  orchestratorPath,
 ))
 errors.push(...validateSectionTokens(orchestrator, {
   '실행 모드': ['초기 실행', '새 실행', '부분 재실행', '_workspace/'],
@@ -314,9 +319,10 @@ errors.push(...validateSectionTokens(orchestrator, {
   ],
   '에러 정책': ['1회 재시도', '누락'],
   '런타임 및 통합': ['Node.js 22', 'package.json', '표준 script', '통합 단계'],
-}, 'skills/project-orchestrator/SKILL.md'))
+}, orchestratorPath))
 
-const react = read('skills/react-product-ui/SKILL.md')
+const reactPath = `${projectSkillRoot}/react-product-ui/SKILL.md`
+const react = read(reactPath)
 errors.push(...validateSectionTokens(react, {
   '필수 보조 스킬': [
     'frontend-design-principles',
@@ -326,7 +332,7 @@ errors.push(...validateSectionTokens(react, {
     'accessible-ui-guidelines',
     'web-design-guidelines',
   ],
-}, 'skills/react-product-ui/SKILL.md'))
+}, reactPath))
 
 assert.deepEqual(errors, [], `\n${errors.join('\n')}`)
 console.log('하네스 구조 검증 완료')
