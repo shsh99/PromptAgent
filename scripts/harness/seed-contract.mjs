@@ -1,12 +1,16 @@
 import { createHash, randomUUID } from 'node:crypto'
+import { execFile } from 'node:child_process'
 import { readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
-import { basename, dirname, resolve } from 'node:path'
+import { basename, dirname, isAbsolute, relative, resolve, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { promisify } from 'node:util'
 
-const HASH_LINE = /^(- 계약 해시:\s*sha256:)(PENDING|[a-f0-9]{64})[ \t]*$/gm
+const execFileAsync = promisify(execFile)
+const HASH_LINE = /^(- 계약 해시:[ \t]*sha256:)(PENDING|[a-f0-9]{64})[ \t]*$/gm
+const normalizeNewlines = (content) => String(content).replaceAll('\r\n', '\n')
 
 const inspectSeed = (content) => {
-  const normalized = String(content).replaceAll('\r\n', '\n')
+  const normalized = normalizeNewlines(content)
   const matches = [...normalized.matchAll(HASH_LINE)]
   if (matches.length !== 1) {
     throw new Error('Seed에는 계약 해시 행이 정확히 하나 있어야 합니다.')
@@ -56,16 +60,66 @@ const writeAtomically = async (path, content) => {
   }
 }
 
+const readHeadSeed = async (target) => {
+  let root
+  try {
+    const result = await execFileAsync('git', ['-C', dirname(target), 'rev-parse', '--show-toplevel'], {
+      encoding: 'utf8',
+      shell: false,
+      windowsHide: true,
+    })
+    root = result.stdout.trim()
+  } catch {
+    return undefined
+  }
+
+  const relativePath = relative(root, target)
+  if (!relativePath || relativePath.startsWith(`..${sep}`) || isAbsolute(relativePath)) {
+    return undefined
+  }
+
+  try {
+    const result = await execFileAsync('git', [
+      '-C', root, 'show', `HEAD:${relativePath.split(sep).join('/')}`,
+    ], {
+      encoding: 'utf8',
+      shell: false,
+      windowsHide: true,
+      maxBuffer: 1024 * 1024,
+    })
+    return result.stdout
+  } catch {
+    return undefined
+  }
+}
+
+const assertTrackedSeedUnchanged = async (target, content) => {
+  const headContent = await readHeadSeed(target)
+  if (headContent === undefined) return
+
+  let headIsValid = false
+  try {
+    headIsValid = verifySeedContent(headContent)
+  } catch {
+    return
+  }
+  if (headIsValid && normalizeNewlines(headContent) !== normalizeNewlines(content)) {
+    throw new Error('Git HEAD의 잠긴 Seed는 변경하거나 재잠금할 수 없습니다. amendment를 사용하세요.')
+  }
+}
+
 const runCli = async (args) => {
   const [command, path] = args
   if (args.length !== 2 || !['lock', 'verify'].includes(command) || !path) {
     throw new Error('사용법: seed-contract.mjs <lock|verify> <path>')
   }
 
-  const content = await readFile(resolve(path), 'utf8')
+  const target = resolve(path)
+  const content = await readFile(target, 'utf8')
   if (command === 'lock') {
+    await assertTrackedSeedUnchanged(target, content)
     const locked = lockSeedContent(content)
-    if (locked !== content) await writeAtomically(path, locked)
+    if (locked !== content) await writeAtomically(target, locked)
     console.log('Seed 계약 잠금 완료')
     return
   }

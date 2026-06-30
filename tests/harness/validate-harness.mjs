@@ -191,6 +191,29 @@ export const validateSectionTokens = (content, contracts, path) => {
   return contractErrors
 }
 
+export const validateOpenAiMetadata = (content, skillName, path) => {
+  const metadataErrors = []
+  const fields = {}
+  for (const line of String(content || '').split(/\r?\n/)) {
+    const match = line.match(/^  (display_name|short_description|default_prompt):\s*(".*")$/)
+    if (!match) continue
+    try {
+      fields[match[1]] = JSON.parse(match[2])
+    } catch {
+      metadataErrors.push(`${path}: ${match[1]} 값은 유효한 큰따옴표 문자열이어야 합니다.`)
+    }
+  }
+
+  const shortDescriptionLength = [...(fields.short_description ?? '')].length
+  if (shortDescriptionLength < 25 || shortDescriptionLength > 64) {
+    metadataErrors.push(`${path}: short_description 길이는 25~64자여야 합니다.`)
+  }
+  if (!(fields.default_prompt ?? '').includes(`$${skillName}`)) {
+    metadataErrors.push(`${path}: default_prompt에 $${skillName} 명시 호출이 필요합니다.`)
+  }
+  return metadataErrors
+}
+
 const missingSectionFixture = '# Fixture\n\n## 출력\n\n결과를 기록한다.\n'
 const emptySectionFixture = '# Fixture\n\n## 입력\n\n## 출력\n\n결과를 기록한다.\n'
 assert.match(
@@ -247,6 +270,19 @@ assert.match(
   }, 'fixture.md').join('\n'),
   /## 권한.*push/,
 )
+const invalidMetadataErrors = validateOpenAiMetadata(
+  'interface:\n  short_description: "짧음"\n  default_prompt: "명세를 고정해줘"\n',
+  'fixture',
+  'agents/openai.yaml',
+).join('\n')
+assert.match(invalidMetadataErrors, /25~64자/)
+assert.match(invalidMetadataErrors, /\$fixture 명시 호출/)
+assert.deepEqual(validateOpenAiMetadata(
+  'interface:\n  short_description: "승인된 실행 계약을 해시로 고정하고 변경 이력을 안전하게 추적"\n'
+    + '  default_prompt: "$fixture 승인된 요구사항을 결정화해줘"\n',
+  'fixture',
+  'agents/openai.yaml',
+), [])
 
 const errors = []
 const knownSkills = new Set(
@@ -286,6 +322,13 @@ for (const name of skillNames) {
   errors.push(...validateRequiredSections(content, skillSections, path))
   if (!/정상 흐름/.test(content) || !/오류 흐름/.test(content)) {
     errors.push(`${path}: 정상 흐름과 오류 흐름 테스트 시나리오가 필요합니다.`)
+  }
+
+  const metadataPath = `${projectSkillRoot}/${name}/agents/openai.yaml`
+  if (existsSync(resolve(root, metadataPath))) {
+    errors.push(...validateOpenAiMetadata(read(metadataPath), name, metadataPath))
+  } else if (name === 'spec-crystallization') {
+    errors.push(`필수 파일이 없습니다: ${metadataPath}`)
   }
 }
 
