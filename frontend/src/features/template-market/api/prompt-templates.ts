@@ -33,7 +33,7 @@ export const fetchPromptTemplates = async (filters: TemplateFilters, signal?: Ab
   if (filters.category) params.set('category', filters.category)
   if (filters.difficulty) params.set('difficulty', filters.difficulty)
   if (filters.query?.trim()) params.set('query', filters.query.trim())
-  params.set('page', '0')
+  params.set('page', String(filters.page ?? 0))
   params.set('size', '20')
   const response = await fetch(`/api/v1/prompt-templates?${params.toString()}`, {
     headers: { Accept: 'application/json' }, signal,

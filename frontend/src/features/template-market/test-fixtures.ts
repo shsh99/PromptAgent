@@ -16,3 +16,18 @@ export const detailFixture = {
   },
   copyablePrompt: '## 역할\n업무 커뮤니케이션 전문가',
 } as const
+
+export const secondSummaryFixture = {
+  ...summaryFixture,
+  id: 'report-executive-summary',
+  title: '경영진 보고서 요약',
+  category: 'REPORT_WRITING',
+  categoryLabel: '보고서 작성',
+} as const
+
+export const secondDetailFixture = {
+  ...detailFixture,
+  ...secondSummaryFixture,
+  requiredSections: { ...detailFixture.requiredSections, objective: '경영진 보고서 요약 작성' },
+  copyablePrompt: '## 역할\n보고서 편집 전문가',
+} as const

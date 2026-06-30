@@ -98,6 +98,10 @@
 
 .market-results__summary p { margin: 0; font-variant-numeric: tabular-nums; }
 .market-results__summary button { border: 0; background: transparent; color: inherit; text-decoration: underline; }
+.market-pagination { display: flex; min-height: 72px; align-items: center; justify-content: center; gap: 24px; border-bottom: 1px solid var(--rule); }
+.market-pagination p { margin: 0; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.market-pagination button { min-height: 44px; padding: 8px 14px; border: 1px solid var(--rule); background: transparent; color: var(--ink); font: inherit; }
+.market-pagination button:disabled { cursor: not-allowed; opacity: 0.45; }
 
 .template-grid {
   display: grid;
@@ -171,7 +175,11 @@
 .prompt-blueprint article:nth-child(3n) { border-right: 0; }
 .prompt-blueprint article > span { color: var(--ink-muted); font-size: 0.7rem; font-variant-numeric: tabular-nums; }
 .prompt-blueprint h4 { margin: 0 0 14px; font-size: 1rem; }
-.prompt-blueprint p { margin: 0; color: var(--ink-muted); line-height: 1.65; word-break: keep-all; }
+.prompt-blueprint dl,
+.prompt-blueprint dd { margin: 0; }
+.prompt-blueprint dl { display: grid; gap: 16px; }
+.prompt-blueprint dt { margin-bottom: 5px; color: var(--ink-muted); font-size: 0.72rem; font-weight: 750; letter-spacing: 0.04em; }
+.prompt-blueprint dd { line-height: 1.65; word-break: keep-all; }
 .copy-workbench { display: grid; grid-template-columns: 1fr auto; gap: 22px; padding: 34px 0; }
 .copy-workbench h4 { margin: 0; font-size: 1.5rem; }
 .copy-workbench textarea { grid-column: 1 / -1; width: 100%; min-height: 220px; resize: vertical; padding: 20px; border: 1px solid var(--rule); border-radius: 0; background: var(--paper-deep); color: var(--ink); font: 0.92rem/1.7 ui-monospace, monospace; }
@@ -217,6 +225,7 @@
   .copy-workbench textarea { grid-column: auto; font-size: 1rem; }
   .filter-field input,
   .filter-field select { min-height: 44px; font-size: 1rem; }
+  .market-results__summary button { min-height: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

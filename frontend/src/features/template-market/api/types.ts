@@ -57,4 +57,5 @@ export interface TemplateFilters {
   category?: PromptCategory
   difficulty?: PromptDifficulty
   query?: string
+  page?: number
 }
