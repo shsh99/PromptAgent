@@ -5,7 +5,7 @@
 - deadline: 2026-06-30T22:18:59+09:00
 - 기준 dev SHA: fc2e304dc71f462c725842b9d40c08ebba0ec24c
 - 현재 integration branch: `feat/13-harness-evolution`
-- 누적 수정 시도: 1 / 2
+- 누적 수정 시도: 2 / 2
 - 실행당 이슈: #13 한 개
 - 이전 실행: `_workspace_prev/20260630-211859/`
 
@@ -31,3 +31,4 @@
 ## 수정 기록
 
 - 1회차: Task 1 품질 검토에서 `.github/CODEOWNERS`의 레거시 `/skills/` 경로를 발견했다. canonical 경로와 stale-reference 검사 범위를 수정한 뒤 재검토한다.
+- 2회차: Task 2 품질 검토에서 Git에 고정된 Seed의 재잠금 우회, CLI 통합 테스트 누락, UI metadata·해시 행 경계를 발견했다. 마지막 수정 예산으로 보완하고 재검토한다.
