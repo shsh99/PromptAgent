@@ -1,12 +1,12 @@
 # 이슈 #11 재실행 권한 매니페스트
 
-- 상태: running
+- 상태: integration_verified
 - 시작: 2026-06-30T15:30:06+09:00
 - deadline: 2026-06-30T16:30:06+09:00
-- 현재 integration SHA: 18672d6
+- 현재 integration SHA: 99281fd
 - 승인 backend SHA: 7a74b14484d6dcb5a36074d5711595846bcc6fa5
-- 수정 대상 frontend SHA: 352cd7df51ad53638cfded1dbb278496e143563d
-- 누적 수정 시도: 0 / 2
+- 승인 frontend SHA: b2d2d058ad3326f6d07d3eef1fdf9fec3f260726
+- 누적 수정 시도: 2 / 2
 - 실행당 이슈: #11 한 개
 - 이전 실행: `_workspace_prev/20260630-153006/`
 
@@ -28,3 +28,10 @@
 - 같은 SHA 수정은 최대 1회, 전체 수정은 최대 2회다.
 - CI pending은 최대 20분이며 전체 deadline을 넘지 않는다.
 - 승인된 다음 이슈는 없으므로 #11 종료 후 실행을 종료한다.
+
+## 통합 검증 기록
+
+- Backend: 전체 테스트와 실행 JAR 생성 성공
+- Frontend: 6개 파일 23개 테스트, 타입 검사, 프로덕션 빌드 성공
+- Browser: API 연결, 검색, 상세 6개 그룹·9개 항목, Clipboard 복사, 390px 반응형 확인
+- 추가 코드 수정은 허용하지 않으며 문서·PR·CI·병합 단계만 진행한다.
