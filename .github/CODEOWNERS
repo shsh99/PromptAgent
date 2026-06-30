@@ -8,7 +8,7 @@
 
 # 프로젝트 하네스
 /agents/ @shsh99
-/skills/ @shsh99
+/.agents/skills/ @shsh99
 
 # 아키텍처와 운영 문서
 /docs/architecture/ @shsh99
