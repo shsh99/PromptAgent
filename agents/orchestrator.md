@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 model: default
-skills: ["project-orchestrator"]
+skills: ["project-orchestrator", "spec-crystallization"]
 ---
 
 # 프로젝트 오케스트레이터

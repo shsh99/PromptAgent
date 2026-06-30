@@ -15,6 +15,7 @@ const agentNames = [
 ]
 const skillNames = [
   'project-orchestrator',
+  'spec-crystallization',
   'spring-rag-development',
   'react-product-ui',
   'repository-governance',
