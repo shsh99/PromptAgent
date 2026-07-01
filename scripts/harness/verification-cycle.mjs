@@ -45,6 +45,7 @@ export const scenarioAllowance = (input) => {
   assertNonNegativeSafeInteger(input.cycle, 'cycle')
   assertNonNegativeSafeInteger(input.existingCount, 'existingCount')
 
-  const cycleLimit = input.cycle === 1 ? 10 : input.cycle === 2 ? 15 : 0
-  return Math.max(0, cycleLimit - input.existingCount)
+  if (input.cycle === 1) return Math.max(0, 10 - input.existingCount)
+  if (input.cycle === 2) return Math.max(0, Math.min(5, 15 - input.existingCount))
+  return 0
 }

@@ -101,6 +101,10 @@ test('둘째 cycle은 누적 10개에서 5개를 추가 허용한다', () => {
   assert.equal(scenarioAllowance({ cycle: 2, existingCount: 10 }), 5)
 })
 
+test('둘째 cycle은 기존 시나리오가 없어도 신규 시나리오를 5개만 허용한다', () => {
+  assert.equal(scenarioAllowance({ cycle: 2, existingCount: 0 }), 5)
+})
+
 test('둘째 cycle은 누적 14개에서 누적 상한까지 1개만 허용한다', () => {
   assert.equal(scenarioAllowance({ cycle: 2, existingCount: 14 }), 1)
 })
