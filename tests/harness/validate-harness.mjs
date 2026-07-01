@@ -12,6 +12,10 @@ const agentNames = [
   'react-ui',
   'devops-governance',
   'qa-migration',
+  'verification-attacker',
+  'evidence-guardian',
+  'solution-challenger',
+  'verification-judge',
 ]
 const skillNames = [
   'project-orchestrator',
@@ -20,6 +24,7 @@ const skillNames = [
   'react-product-ui',
   'repository-governance',
   'incremental-qa',
+  'adversarial-verification',
 ]
 const agentSections = [
   '핵심 역할',
@@ -44,6 +49,7 @@ const orchestratorSections = [
   '실행 예산과 종료 조건',
   '런타임 및 통합',
 ]
+const triggerFixturePath = 'tests/harness/skill-trigger-fixtures.json'
 
 const sectionBody = (content, section) => {
   const lines = String(content || '').split(/\r?\n/)
@@ -329,6 +335,17 @@ for (const name of skillNames) {
     errors.push(...validateOpenAiMetadata(read(metadataPath), name, metadataPath))
   } else if (name === 'spec-crystallization') {
     errors.push(`필수 파일이 없습니다: ${metadataPath}`)
+  }
+}
+
+const triggerFixture = JSON.parse(read(triggerFixturePath) || '{}')
+for (const name of ['spec-crystallization', 'adversarial-verification']) {
+  const corpus = triggerFixture[name] ?? {}
+  for (const key of ['shouldTrigger', 'shouldNotTrigger']) {
+    const entries = corpus[key]
+    if (!Array.isArray(entries) || entries.length !== 8) {
+      errors.push(`${triggerFixturePath}: ${name}.${key}는 정확히 8개여야 합니다.`)
+    }
   }
 }
 
