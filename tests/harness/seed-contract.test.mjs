@@ -150,3 +150,32 @@ test('CLI는 HEAD의 잠긴 Seed 변경을 재잠금하지 않는다', () => {
     rmSync(directory, { recursive: true, force: true })
   }
 })
+
+test('CLI는 다른 casing으로 지정한 HEAD의 잠긴 Seed 변경도 재잠금하지 않는다', () => {
+  const directory = mkdtempSync(resolve(tmpdir(), 'seed-contract-git-casing-'))
+  const canonicalPath = resolve(directory, 'seed.md')
+  const alternatePath = resolve(directory, 'SEED.md')
+
+  try {
+    runGit(['init'], directory)
+    runGit(['config', 'user.name', 'PromptAgent Test'], directory)
+    runGit(['config', 'user.email', 'prompt-agent@example.invalid'], directory)
+
+    writeFileSync(canonicalPath, lockSeedContent(pendingSeed), 'utf8')
+    const committedLockedSeed = readFileSync(canonicalPath, 'utf8')
+    runGit(['add', 'seed.md'], directory)
+    runGit(['commit', '-m', 'Seed 잠금'], directory)
+
+    const changedPendingSeed = committedLockedSeed
+      .replace(/sha256:[a-f0-9]{64}/, 'sha256:PENDING')
+      .replace('승인된 변경만', '승인 없이 변경한다')
+    writeFileSync(canonicalPath, changedPendingSeed, 'utf8')
+
+    const relockChangedSeed = runCli(['lock', alternatePath], directory)
+    assert.notEqual(relockChangedSeed.status, 0)
+    assert.equal(readFileSync(canonicalPath, 'utf8'), changedPendingSeed)
+    assert.doesNotMatch(relockChangedSeed.stderr, /승인 없이 변경한다/)
+  } finally {
+    rmSync(directory, { recursive: true, force: true })
+  }
+})

@@ -78,9 +78,27 @@ const readHeadSeed = async (target) => {
     return undefined
   }
 
+  const requestedPath = relativePath.split(sep).join('/')
+  let trackedPaths
+  try {
+    const result = await execFileAsync('git', ['-C', root, 'ls-files', '-z'], {
+      encoding: 'utf8',
+      shell: false,
+      windowsHide: true,
+      maxBuffer: 10 * 1024 * 1024,
+    })
+    trackedPaths = result.stdout.split('\0').filter(Boolean)
+  } catch {
+    throw new Error('Git index에서 Seed 경로를 확인할 수 없습니다.')
+  }
+
+  const canonicalPath = trackedPaths.find((path) => path === requestedPath)
+    ?? trackedPaths.find((path) => path.toLowerCase() === requestedPath.toLowerCase())
+  if (!canonicalPath) return undefined
+
   try {
     const result = await execFileAsync('git', [
-      '-C', root, 'show', `HEAD:${relativePath.split(sep).join('/')}`,
+      '-C', root, 'show', `HEAD:${canonicalPath}`,
     ], {
       encoding: 'utf8',
       shell: false,
@@ -89,7 +107,7 @@ const readHeadSeed = async (target) => {
     })
     return result.stdout
   } catch {
-    return undefined
+    throw new Error('Git HEAD에서 추적 중인 Seed를 읽을 수 없습니다.')
   }
 }
 
