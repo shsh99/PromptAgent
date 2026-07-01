@@ -83,5 +83,6 @@ test('CODEOWNERS covers repository and automation-sensitive paths', async () => 
   assert.match(codeowners, /^\/\.github\/\s+@shsh99/m);
   assert.match(codeowners, /^\/scripts\/\s+@shsh99/m);
   assert.match(codeowners, /^\/agents\/\s+@shsh99/m);
-  assert.match(codeowners, /^\/skills\/\s+@shsh99/m);
+  assert.match(codeowners, /^\/\.agents\/skills\/\s+@shsh99/m);
+  assert.doesNotMatch(codeowners, /^\/skills\/\s+/m);
 });
