@@ -179,3 +179,37 @@ test('CLI는 다른 casing으로 지정한 HEAD의 잠긴 Seed 변경도 재잠�
     rmSync(directory, { recursive: true, force: true })
   }
 })
+
+test('CLI는 exact match 없는 Git casing 후보가 여러 개면 재잠금하지 않는다', () => {
+  const directory = mkdtempSync(resolve(tmpdir(), 'seed-contract-git-ambiguous-'))
+  const workingPath = resolve(directory, 'seed.md')
+  const alternatePath = resolve(directory, 'SeEd.md')
+  const pendingBlobPath = resolve(directory, 'pending.txt')
+  const lockedBlobPath = resolve(directory, 'locked.txt')
+
+  try {
+    runGit(['init'], directory)
+    runGit(['config', 'user.name', 'PromptAgent Test'], directory)
+    runGit(['config', 'user.email', 'prompt-agent@example.invalid'], directory)
+
+    writeFileSync(pendingBlobPath, pendingSeed, 'utf8')
+    writeFileSync(lockedBlobPath, lockSeedContent(pendingSeed), 'utf8')
+    const pendingBlob = runGit(['hash-object', '-w', pendingBlobPath], directory).stdout.trim()
+    const lockedBlob = runGit(['hash-object', '-w', lockedBlobPath], directory).stdout.trim()
+    runGit(['update-index', '--add', '--cacheinfo', '100644', pendingBlob, 'SEED.md'], directory)
+    runGit(['update-index', '--add', '--cacheinfo', '100644', lockedBlob, 'seed.md'], directory)
+    const tree = runGit(['write-tree'], directory).stdout.trim()
+    const commit = runGit(['commit-tree', tree, '-m', 'Seed casing 후보'], directory).stdout.trim()
+    runGit(['update-ref', 'HEAD', commit], directory)
+
+    const changedPendingSeed = pendingSeed.replace('승인된 변경만', '승인 없이 변경한다')
+    writeFileSync(workingPath, changedPendingSeed, 'utf8')
+    const relockChangedSeed = runCli(['lock', alternatePath], directory)
+
+    assert.notEqual(relockChangedSeed.status, 0)
+    assert.equal(readFileSync(workingPath, 'utf8'), changedPendingSeed)
+    assert.doesNotMatch(relockChangedSeed.stderr, /SEED\.md|seed\.md|승인 없이 변경한다/)
+  } finally {
+    rmSync(directory, { recursive: true, force: true })
+  }
+})

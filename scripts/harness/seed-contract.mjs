@@ -92,9 +92,15 @@ const readHeadSeed = async (target) => {
     throw new Error('Git index에서 Seed 경로를 확인할 수 없습니다.')
   }
 
-  const canonicalPath = trackedPaths.find((path) => path === requestedPath)
-    ?? trackedPaths.find((path) => path.toLowerCase() === requestedPath.toLowerCase())
-  if (!canonicalPath) return undefined
+  const exactPath = trackedPaths.find((path) => path === requestedPath)
+  const caseInsensitivePaths = exactPath
+    ? []
+    : trackedPaths.filter((path) => path.toLowerCase() === requestedPath.toLowerCase())
+  if (!exactPath && caseInsensitivePaths.length === 0) return undefined
+  if (caseInsensitivePaths.length > 1) {
+    throw new Error('Git index에서 Seed 경로를 하나로 결정할 수 없습니다.')
+  }
+  const canonicalPath = exactPath ?? caseInsensitivePaths[0]
 
   try {
     const result = await execFileAsync('git', [
