@@ -5,7 +5,7 @@
 - deadline: 2026-07-01T22:55:23+09:00
 - 현재 integration SHA: `b0a72774aae939a59a53c943fa2a5afa5575321b`
 - 수정 대상 child SHA: `ab0d7bf91b2c53e31118ddd399c0cefba44d5835`
-- 누적 수정 시도: 0 / 2
+- 누적 수정 시도: 1 / 2
 - 실행당 이슈: #13 한 개
 - 이전 실행: `_workspace_prev/20260701-215523/`
 
@@ -28,3 +28,7 @@
 - 같은 SHA 수정은 최대 1회, 전체 수정은 최대 2회다.
 - CI pending은 최대 20분이며 전체 deadline을 넘지 않는다.
 - 승인된 다음 이슈는 없으므로 #13 종료 후 실행을 종료한다.
+
+## 수정 기록
+
+- 1회차: `ab0d7bf`의 Windows casing fail-open을 재현했다. Git index canonical path 조회와 tracked HEAD 조회 fail-closed를 TDD로 수정한다.
