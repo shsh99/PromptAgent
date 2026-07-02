@@ -378,6 +378,7 @@ errors.push(...validateSectionTokens(orchestrator, {
     '한글 이슈', 'feat/', 'squash merge', 'dev', 'issue API', 'gh issue close',
     '자동 close', 'blocked', '수동 조치', 'dev 소유 worktree', 'git fetch origin dev',
     'git pull --ff-only origin dev', 'feature worktree', 'spec-crystallization',
+    'adversarial-verification',
     '_workspace/01_seed_contract.md', '승인', '해시', 'architecture', '비중첩',
     'incremental QA', '기계 검증', 'verification-attacker', 'evidence-guardian',
     'solution-challenger', '병렬', '불일치', 'verification-judge',
