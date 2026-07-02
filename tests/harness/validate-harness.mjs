@@ -381,7 +381,7 @@ errors.push(...validateSectionTokens(orchestrator, {
     'adversarial-verification',
     '_workspace/01_seed_contract.md', '승인', '해시', 'architecture', '비중첩',
     'incremental QA', '기계 검증', 'verification-attacker', 'evidence-guardian',
-    'solution-challenger', '병렬', '불일치', 'verification-judge',
+    'solution-challenger', '서로의 결론을 보지 않고', '병렬', '불일치', 'verification-judge',
   ],
   '에러 정책': ['1회 재시도', '누락'],
   '런타임 및 통합': ['Node.js 22', 'package.json', '표준 script', '통합 단계'],
