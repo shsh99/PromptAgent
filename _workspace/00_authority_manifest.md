@@ -1,13 +1,13 @@
 # 권한 및 실행 매니페스트
 
-- 상태: `running`
+- 상태: `completed`
 - 실행 모드: 새 실행
 - 이슈: `#13 [기능] Codex 네이티브 하네스와 제한형 검증 루프 구축`
 - 통합 브랜치: `feat/13-harness-evolution`
 - 시작 SHA: `078130abf50fb73efa45633e50302e59a6f08ba8`
 - 시작 시각: `2026-07-02T14:24:52.8470165+09:00`
 - deadline: `2026-07-02T15:24:52.8470165+09:00`
-- 누적 수정 시도: `1/2`
+- 누적 수정 시도: `2/2`
 - 같은 SHA 수정 상한: `1회`
 - 실행당 이슈: `1/1`
 
@@ -31,9 +31,16 @@
 ## 수정 시도 기록
 
 1. `9d8813c` 재검토에서 독립 입력 회귀 token 누락을 확인해 원 child branch에 반환
+2. 전체 PR diff 검사에서 현재 authority manifest의 EOF 빈 줄을 확인해 최종 증적 작성과 함께 제거
 
 ## 보존 근거
 
 - 직전 실행: `_workspace_prev/20260702-142452/`
 - Task 5 commits: `a33b5297b8dc2b243a2a8fa05dc314487a95fb84`, `9d8813c3d11caa19a7e159bb9ebe047eda4f966a`
 
+## 완료 근거
+
+- Node.js `24.18.0` governance `31/31`, harness·foundation `39/39` 통과
+- root 테스트·빌드, Spring `clean test bootJar`, React `23/23`·TypeScript·Vite build 통과
+- Task 5·6 독립 명세 및 품질 검토 `APPROVED`
+- PR 전 push·PR·CI·merge 절차는 본 완료 commit 이후 authority 범위에서 수행
