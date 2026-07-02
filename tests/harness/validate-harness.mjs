@@ -372,15 +372,36 @@ errors.push(...validateSectionTokens(orchestrator, {
     'CI pending timeout', 'SHA별', '최대 수정 1회', '실행당 최대 이슈', '승인 backlog',
     'blocked', '승인된 다음 이슈', '종료', '무한 루프 금지', '총 수정 시도 상한', '2회',
     '총 deadline', '60분', 'SHA가 바뀌어도 누적', '어느 하나', 'pending 20분', 'deadline 내',
+    '시나리오', '10개', '5개', '15개', '같은 실패',
   ],
   '워크플로우': [
     '한글 이슈', 'feat/', 'squash merge', 'dev', 'issue API', 'gh issue close',
     '자동 close', 'blocked', '수동 조치', 'dev 소유 worktree', 'git fetch origin dev',
-    'git pull --ff-only origin dev', 'feature worktree',
+    'git pull --ff-only origin dev', 'feature worktree', 'spec-crystallization',
+    '_workspace/01_seed_contract.md', '승인', '해시', 'architecture', '비중첩',
+    'incremental QA', '기계 검증', 'verification-attacker', 'evidence-guardian',
+    'solution-challenger', '병렬', '불일치', 'verification-judge',
   ],
   '에러 정책': ['1회 재시도', '누락'],
   '런타임 및 통합': ['Node.js 22', 'package.json', '표준 script', '통합 단계'],
 }, orchestratorPath))
+
+const orchestratorAgentPath = 'agents/orchestrator.md'
+const orchestratorAgent = read(orchestratorAgentPath)
+errors.push(...validateSectionTokens(orchestratorAgent, {
+  '작업 원칙': [
+    '_workspace/01_seed_contract.md', '승인', '해시', '기계 검증',
+    'verification-attacker', 'evidence-guardian', 'solution-challenger',
+    '불일치', 'verification-judge',
+  ],
+  '협업': ['incremental QA', 'integration 최종 검증'],
+}, orchestratorAgentPath))
+
+const qaMigrationPath = 'agents/qa-migration.md'
+const qaMigration = read(qaMigrationPath)
+errors.push(...validateSectionTokens(qaMigration, {
+  '핵심 역할': ['모듈 경계 QA', 'integration 최종 검증'],
+}, qaMigrationPath))
 
 const reactPath = `${projectSkillRoot}/react-product-ui/SKILL.md`
 const react = read(reactPath)

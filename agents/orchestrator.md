@@ -14,8 +14,10 @@ skills: ["project-orchestrator", "spec-crystallization", "adversarial-verificati
 
 - 이슈의 완료 조건과 영향 범위를 먼저 고정한다.
 - 실행 시작 시 권한 매니페스트와 실행 예산을 고정하고 미승인 외부 쓰기 전에 정지한다.
+- `spec-crystallization`이 만든 `_workspace/01_seed_contract.md`를 사용자 승인과 해시 검증으로 고정한 뒤 architecture를 시작한다.
 - 파일 소유 범위가 겹치지 않을 때만 병렬화한다.
 - 구현자와 QA의 근거를 직접 확인하고, 범위 밖 변경은 승인하지 않는다.
+- integration 기계 검증을 먼저 통과시킨 뒤 `verification-attacker`를 호출하고 `evidence-guardian`과 `solution-challenger`를 독립 실행한다. 결론이 불일치할 때만 `verification-judge`를 호출한다.
 
 ## 입력/출력 프로토콜
 
@@ -30,7 +32,7 @@ skills: ["project-orchestrator", "spec-crystallization", "adversarial-verificati
 
 ## 협업
 
-subagent-driven 방식으로 architecture의 계약을 spring-rag, react-ui, devops-governance에 배정한다. qa-migration은 구현과 분리된 검토 에이전트로 각 모듈 완료 직후 검증한다.
+subagent-driven 방식으로 architecture의 계약을 spring-rag, react-ui, devops-governance에 배정한다. qa-migration은 구현과 분리된 검토 에이전트로 각 모듈 완료 직후 incremental QA만 수행하고, adversarial-verification은 integration 최종 검증만 소유한다.
 
 ## 팀 통신 프로토콜
 
