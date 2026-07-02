@@ -1,23 +1,21 @@
 # 새 실행 재개 계약
 
-## 재사용하는 결정
+## 재사용 범위
 
-- 이슈 #13의 승인 설계와 구현 계획을 유지한다.
-- Codex 네이티브 `.agents/skills/`, 승인 Seed, 제한형 검증 cycle 구조를 유지한다.
-- 기존 Task 1·2의 승인 commit과 GREEN 검증 근거를 재사용한다.
+- 승인된 설계와 구현 계획, Task 1~3 통합 결과를 유지한다.
+- Task 4 후보의 구조·corpus·agent 독립성·validator 통과 결과를 재사용한다.
+- 수정은 독립 검토에서 확인된 상태 전이 2건으로 제한한다.
 
-## 수정할 확인된 결함
+## 확인된 원인
 
-1. `tests/governance/workflows.test.mjs`가 이전 `/skills/` CODEOWNERS 경로를 기대한다.
-2. `scenarioAllowance({ cycle: 2, existingCount: 0 })`가 15를 반환하지만 cycle 2 신규 상한은 5다.
+1. 적대적 검증 스킬 문구가 기계 실패를 `UNVERIFIED`로 종료해 결정 모듈의 `RETURN_TO_OWNER`와 충돌한다.
+2. judge 입력 오류를 `UNVERIFIED`로만 반환해 설계의 판정자 실패 `blocked` 전이를 보장하지 않는다.
 
-두 항목은 서로 다른 child branch와 독립 검토로 처리한다. 각 수정은 매니페스트의 총 수정 시도 한도를 1회씩 소비한다. 이후 새 결함이 확인되면 추가 수정하지 않고 `blocked`로 전환한다.
+두 결함은 문서·agent 계약을 validator가 직접 검사하지 않아 구조 테스트가 통과한 채 남았다. 새 validator 회귀를 먼저 실패시킨 뒤 최소 문구 수정으로 통과시킨다.
 
 ## 검증 순서
 
-1. 실패 재현과 최근 변경 비교
-2. 회귀 테스트 RED 확인
-3. 최소 수정과 전용 테스트 GREEN
-4. 하네스·diff 검증
-5. 구현자와 분리된 명세 검토, 품질 검토
-6. 승인 commit만 통합 브랜치에 cherry-pick
+1. 후보 commit에서 두 계약 누락을 재현한다.
+2. validator에 상태 전이 token 계약을 추가해 RED를 확인한다.
+3. 스킬과 judge 정의를 최소 수정해 GREEN을 확인한다.
+4. 독립 명세 검토와 품질 검토를 모두 통과한 commit만 integration에 반영한다.
