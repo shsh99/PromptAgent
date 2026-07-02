@@ -1,6 +1,6 @@
 # 권한 및 실행 매니페스트
 
-- 상태: `running`
+- 상태: `blocked`
 - 실행 모드: 새 실행
 - 이슈: `#13 [기능] Codex 네이티브 하네스와 제한형 검증 루프 구축`
 - 통합 브랜치: `feat/13-harness-evolution`
@@ -38,3 +38,11 @@
 
 1. `6a9cabd` 명세 검토의 상태 전이 결함 2건을 원 child branch에 반환
 2. `a33b529` 명세 검토의 `adversarial-verification` workflow 회귀 token 누락을 원 child branch에 반환
+
+## 차단 상태
+
+- 마지막 통합 구현 SHA: `51e7d0f`
+- 차단 시각: `2026-07-02T14:04:00+09:00`
+- 원인: Task 5 보정 후 독립 입력 회귀 token 누락이 남았고 총 수정 시도 `2/2`, 같은 SHA 보정 `1/1` 소진
+- 미통합 child commits: `a33b5297b8dc2b243a2a8fa05dc314487a95fb84`, `9d8813c3d11caa19a7e159bb9ebe047eda4f966a`
+- 재개 조건: 사용자가 새 실행을 승인하고 새 수정 예산·deadline을 발급한다.
