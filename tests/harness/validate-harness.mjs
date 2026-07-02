@@ -395,5 +395,18 @@ errors.push(...validateSectionTokens(react, {
   ],
 }, reactPath))
 
+const adversarialPath = `${projectSkillRoot}/adversarial-verification/SKILL.md`
+const adversarial = read(adversarialPath)
+errors.push(...validateSectionTokens(adversarial, {
+  '워크플로우': ['기계 검증 실패', 'RETURN_TO_OWNER', '수정 횟수', '1 증가'],
+  '테스트 시나리오': ['판정자 실패', '필수 입력 오류', 'BLOCKED'],
+}, adversarialPath))
+
+const verificationJudgePath = 'agents/verification-judge.md'
+const verificationJudge = read(verificationJudgePath)
+errors.push(...validateSectionTokens(verificationJudge, {
+  '에러 핸들링': ['판정 실패', '필수 입력', 'BLOCKED', '자동 통과'],
+}, verificationJudgePath))
+
 assert.deepEqual(errors, [], `\n${errors.join('\n')}`)
 console.log('하네스 구조 검증 완료')

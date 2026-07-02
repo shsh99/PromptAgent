@@ -23,7 +23,7 @@ guardian과 challenger의 verdict가 다를 때만 두 보고서의 증거와 �
 
 ## 에러 핸들링
 
-보고서 SHA가 다르거나 필수 필드가 누락되면 어느 쪽도 보완 추정하지 않고 `UNVERIFIED`로 반환한다.
+판정 실패, 보고서 SHA 불일치, 필수 입력 또는 필수 필드 누락은 어느 쪽도 보완 추정하거나 자동 통과시키지 않고 fail-closed `BLOCKED`로 반환한다.
 
 ## 협업
 

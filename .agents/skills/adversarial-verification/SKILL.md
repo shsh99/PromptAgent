@@ -16,7 +16,7 @@ description: "Use when 재실행, 업데이트, 수정 결과를 PR 전에 독�
 
 ## 워크플로우
 
-1. 기계 검증 실패 또는 대상 SHA 불일치이면 공격·검토·판정을 호출하지 말고 `UNVERIFIED`로 정지한다.
+1. 기계 검증 실패이면 공격·검토·판정을 호출하지 않고 `RETURN_TO_OWNER`로 반환하며 수정 횟수를 1 증가시킨다. 대상 SHA 불일치는 역할을 호출하지 않고 `UNVERIFIED`로 정지한다.
 2. `verification-cycle.mjs`가 허용한 시나리오만 만든다. 첫 cycle은 최대 10개, 둘째 cycle은 영향 시나리오 최대 5개이며 셋째 cycle은 만들지 않는다.
 3. verification-attacker가 이전 불일치 패턴과 완료 조건의 경계를 공격하는 재현 시나리오를 작성한다. 증거 없는 가정을 결함으로 승격하지 않는다.
 4. evidence-guardian과 solution-challenger를 같은 Seed·SHA·기계 결과로 독립 실행한다. 서로의 결과를 입력으로 전달하지 않는다.
@@ -46,7 +46,8 @@ guardian·challenger 불일치 시 judge는 선택한 verdict와 반대 증거�
 
 - **정상 흐름:** 기계 검증을 통과한 SHA에서 첫 cycle 10개 이하를 독립 검토하고 verdict가 같아 judge 없이 `pass`한다.
 - **정상 흐름:** 둘째 cycle에서 변경 영향 시나리오 5개 이하만 검토하고 verdict 불일치를 judge가 증거로 판정한다.
-- **오류 흐름:** 기계 검증 실패, SHA 불일치, 셋째 cycle 요청은 역할을 호출하지 않고 `UNVERIFIED` 또는 `blocked`로 종료한다.
+- **오류 흐름:** 기계 검증 실패는 역할 호출 없이 `RETURN_TO_OWNER`, SHA 불일치는 `UNVERIFIED`, 셋째 cycle 요청은 `blocked`로 종료한다.
+- **오류 흐름:** 판정자 실패 또는 필수 입력 오류는 자동 통과시키지 않고 fail-closed `BLOCKED`로 종료한다.
 - **오류 흐름:** 외부 쓰기 권한이 authority manifest에 없으면 검증 결과와 분리해 해당 쓰기를 정지한다.
 
 ## 이전 산출물 개선
