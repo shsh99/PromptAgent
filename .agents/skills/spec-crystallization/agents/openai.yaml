@@ -1,0 +1,4 @@
+interface:
+  display_name: "명세 결정화"
+  short_description: "승인된 실행 계약을 해시로 고정하고 변경 이력을 안전하게 추적"
+  default_prompt: "$spec-crystallization 승인된 요구사항을 실행 Seed로 결정화하고 해시를 검증해줘"

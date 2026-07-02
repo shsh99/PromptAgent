@@ -9,8 +9,10 @@ PromptAgent는 Spring Boot, React, PostgreSQL/pgvector 기반 프롬프트 플�
 1. 이 문서와 작업 영역의 상세 문서를 읽는다.
 2. 한글 이슈를 만들고 `feat/<이슈번호>-<slug>` 등 허용 브랜치를 만든다.
 3. 프로젝트 오케스트레이터 하네스로 의존성, 담당 에이전트, 검증 순서를 정한다.
-4. 테스트를 먼저 실패시킨 뒤 최소 구현과 문서를 함께 변경한다.
-5. 한글 커밋과 변경 문서를 작성하고 `dev` 대상 PR을 연다.
+4. 구현 전 `.agents/skills/spec-crystallization`으로 승인 Seed를 고정한다.
+5. 테스트를 먼저 실패시킨 뒤 최소 구현과 문서를 함께 변경한다.
+6. integration 최종 검증은 `.agents/skills/adversarial-verification`의 제한과 기존 수정 예산을 따른다.
+7. 한글 커밋과 변경 문서를 작성하고 `dev` 대상 PR을 연다.
 
 하네스는 기능 구현, 리팩터링, 마이그레이션, CI/CD 변경을 시작할 때 사용한다. 오케스트레이터는 이슈 생성, 작업 배분, 병렬화, 검토, CI, squash merge, `dev` 최신화를 관리한다.
 

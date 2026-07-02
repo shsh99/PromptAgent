@@ -36,9 +36,11 @@ devops-governance는 이 매니페스트에서 현재 작업과 환경에 대한
 
 | 역할 | 입력 | 출력 | 의존성 |
 |------|------|------|--------|
-| architecture | 이슈·제품 문서 | 계약·작업 경계 | 없음 |
+| spec-crystallization | 이슈·제품 문서·권한 매니페스트 | 승인·해시 고정 Seed 계약 | 권한 매니페스트 |
+| architecture | 승인된 Seed 계약 | 계약·작업 경계 | spec-crystallization |
 | spring-rag / react-ui / devops-governance | 계약·허용 경로·검증 명령 | 독립 commit·결과 산출물 | architecture, 필요 시 선행 계약 |
 | qa-migration 검토 에이전트 | 계약·구현 diff·테스트 결과 | 독립 검토 보고서 | 해당 구현 완료 |
+| 적대적 검증 역할 | Seed·integration diff·기계 증거 | 공격 시나리오·독립 결론·조건부 판정 | integration 기계 검증 |
 
 fan-in 소유 구조는 다음과 같다.
 
@@ -58,24 +60,28 @@ fan-in 소유 구조는 다음과 같다.
 - **실행당 최대 이슈** 수는 1개다. 추가 요청은 사용자가 승인한 **승인 backlog**에만 기록한다.
 - 상태는 `running`, `blocked`, `completed` 중 하나로 기록한다. `blocked`에는 원인, 마지막 SHA, 필요한 승인·수동 조치, 재개 조건을 포함한다.
 - 현재 이슈 종료 후 **승인된 다음 이슈**가 없으면 실행을 종료한다. 승인 backlog를 임의 확장하거나 자동 재귀 호출하지 않는다. **무한 루프 금지**가 모든 재시도·다음 작업 규칙보다 우선한다.
+- 첫 검증 cycle은 공격 **시나리오 최대 10개**, 둘째 cycle은 신규·영향 시나리오를 **최대 5개** 추가하며 실행 전체는 **15개**를 넘기지 않는다. **같은 실패**가 두 cycle 연속 반복되면 남은 예산과 관계없이 조기 중단한다.
 
 ## 워크플로우
 
 1. 권한 매니페스트와 실행 예산을 기록한다. 외부 쓰기는 해당 권한이 허용된 경우에만 수행한다.
 2. 완료 조건, 범위, 위험을 담은 **한글 이슈**를 생성하거나 확인한다.
 3. dev 소유 worktree에서 최신 `dev`를 확인하고 integration `feat/{issue-number}-{slug}` branch와 전용 worktree를 만든다.
-4. architecture에 계약을 맡기고 결과를 `_workspace/01_architecture_contract.md`에 받는다.
-5. 파일·계약 소유가 **비중첩**인 작업만 child branch·worktree에서 병렬 실행한다.
-6. 각 child commit을 분리된 qa-migration이 검토하고 승인 SHA를 기록한다.
-7. 오케스트레이터가 승인 commit을 dependency order로 integration에 cherry-pick한다. 충돌은 통합 소유자만 해결하고 재검증한다.
-8. 리뷰 결함을 원 commit 소유자에게 반환한다. 모든 수정 시도를 SHA별·총 상한에 누적한다.
-9. integration에서 범위, 테스트, `git diff --check`를 확인하고 로컬 child branch·worktree를 정리한 뒤 승인된 경우에만 branch를 push한다.
-10. 한글 제목·본문과 이슈 연결로 승인된 `dev` 대상 PR을 만든다.
-11. 필수 checks를 CI pending timeout과 총 deadline 안에서 확인한다. 실패·pending 한도를 넘으면 `blocked`로 정지한다.
-12. `merge`가 승인된 PR만 **squash merge**한다.
-13. feature worktree가 아닌 **dev 소유 worktree**에서 `git fetch origin dev` 후 `git pull --ff-only origin dev`로 동기화한다.
-14. `dev`는 기본 브랜치가 아닐 수 있으므로 PR 문구의 **자동 close**에 의존하지 않는다. 승인된 `close` 권한으로 issue API 또는 `gh issue close`를 호출해 명시적으로 닫고 상태를 재조회한다. 실패하면 `blocked`와 수동 조치를 기록한다.
-15. 현재 이슈를 정리하고 승인된 다음 이슈가 있을 때만 새 실행을 시작한다. 없으면 종료한다.
+4. `spec-crystallization`으로 `_workspace/01_seed_contract.md`를 작성하고 사용자 **승인** 후 계약 **해시**를 고정·검증한다. 승인·해시 검증 전에는 architecture나 구현을 시작하지 않는다.
+5. architecture에 승인된 Seed를 맡기고 결과를 `_workspace/01_architecture_contract.md`에 받는다.
+6. 파일·계약 소유가 **비중첩**인 작업만 child branch·worktree에서 병렬 실행한다.
+7. 각 모듈 완료 직후 분리된 qa-migration이 모듈 경계 **incremental QA**를 수행하고 승인 SHA를 기록한다.
+8. 오케스트레이터가 승인 commit을 dependency order로 integration에 cherry-pick한다. 충돌은 통합 소유자만 해결하고 재검증한다.
+9. integration에서 테스트·빌드·정적 규칙·`git diff --check` **기계 검증**을 먼저 실행한다. 실패하면 에이전트 토론 없이 소유자에게 반환하고 수정 횟수를 누적한다.
+10. 기계 검증 통과 후 `adversarial-verification`으로 `verification-attacker`가 시나리오를 만들고 `evidence-guardian`과 `solution-challenger`가 서로의 결론을 보지 않고 **병렬** 검토한다. 결론이 **불일치**할 때만 `verification-judge`가 판정한다.
+11. 리뷰 결함을 원 commit 소유자에게 반환한다. 모든 수정 시도를 SHA별·총 상한에 누적한다.
+12. integration 최종 검증이 통과하면 로컬 child branch·worktree를 정리한 뒤 승인된 경우에만 branch를 push한다.
+13. 한글 제목·본문과 이슈 연결로 승인된 `dev` 대상 PR을 만든다.
+14. 필수 checks를 CI pending timeout과 총 deadline 안에서 확인한다. 실패·pending 한도를 넘으면 `blocked`로 정지한다.
+15. `merge`가 승인된 PR만 **squash merge**한다.
+16. feature worktree가 아닌 **dev 소유 worktree**에서 `git fetch origin dev` 후 `git pull --ff-only origin dev`로 동기화한다.
+17. `dev`는 기본 브랜치가 아닐 수 있으므로 PR 문구의 **자동 close**에 의존하지 않는다. 승인된 `close` 권한으로 issue API 또는 `gh issue close`를 호출해 명시적으로 닫고 상태를 재조회한다. 실패하면 `blocked`와 수동 조치를 기록한다.
+18. 현재 이슈를 정리하고 승인된 다음 이슈가 있을 때만 새 실행을 시작한다. 없으면 종료한다.
 
 ## 출력
 

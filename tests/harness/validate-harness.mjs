@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '../..')
+const projectSkillRoot = '.agents/skills'
 console.log(`[하네스 진단] Node.js ${process.versions.node} 감지; 검증 기준은 Node.js 22.x입니다.`)
 const agentNames = [
   'orchestrator',
@@ -11,13 +12,19 @@ const agentNames = [
   'react-ui',
   'devops-governance',
   'qa-migration',
+  'verification-attacker',
+  'evidence-guardian',
+  'solution-challenger',
+  'verification-judge',
 ]
 const skillNames = [
   'project-orchestrator',
+  'spec-crystallization',
   'spring-rag-development',
   'react-product-ui',
   'repository-governance',
   'incremental-qa',
+  'adversarial-verification',
 ]
 const agentSections = [
   '핵심 역할',
@@ -42,6 +49,7 @@ const orchestratorSections = [
   '실행 예산과 종료 조건',
   '런타임 및 통합',
 ]
+const triggerFixturePath = 'tests/harness/skill-trigger-fixtures.json'
 
 const sectionBody = (content, section) => {
   const lines = String(content || '').split(/\r?\n/)
@@ -169,7 +177,7 @@ export const validateFrontmatterSchema = (content, options) => {
   if (Array.isArray(fields.skills)) {
     for (const reference of fields.skills) {
       if (!knownSkills.has(reference)) {
-        schemaErrors.push(`${path}: 참조 스킬 파일이 없습니다: skills/${reference}/SKILL.md`)
+        schemaErrors.push(`${path}: 참조 스킬 파일이 없습니다: ${projectSkillRoot}/${reference}/SKILL.md`)
       }
     }
   }
@@ -187,6 +195,29 @@ export const validateSectionTokens = (content, contracts, path) => {
     }
   }
   return contractErrors
+}
+
+export const validateOpenAiMetadata = (content, skillName, path) => {
+  const metadataErrors = []
+  const fields = {}
+  for (const line of String(content || '').split(/\r?\n/)) {
+    const match = line.match(/^  (display_name|short_description|default_prompt):\s*(".*")$/)
+    if (!match) continue
+    try {
+      fields[match[1]] = JSON.parse(match[2])
+    } catch {
+      metadataErrors.push(`${path}: ${match[1]} 값은 유효한 큰따옴표 문자열이어야 합니다.`)
+    }
+  }
+
+  const shortDescriptionLength = [...(fields.short_description ?? '')].length
+  if (shortDescriptionLength < 25 || shortDescriptionLength > 64) {
+    metadataErrors.push(`${path}: short_description 길이는 25~64자여야 합니다.`)
+  }
+  if (!(fields.default_prompt ?? '').includes(`$${skillName}`)) {
+    metadataErrors.push(`${path}: default_prompt에 $${skillName} 명시 호출이 필요합니다.`)
+  }
+  return metadataErrors
 }
 
 const missingSectionFixture = '# Fixture\n\n## 출력\n\n결과를 기록한다.\n'
@@ -245,11 +276,27 @@ assert.match(
   }, 'fixture.md').join('\n'),
   /## 권한.*push/,
 )
+const invalidMetadataErrors = validateOpenAiMetadata(
+  'interface:\n  short_description: "짧음"\n  default_prompt: "명세를 고정해줘"\n',
+  'fixture',
+  'agents/openai.yaml',
+).join('\n')
+assert.match(invalidMetadataErrors, /25~64자/)
+assert.match(invalidMetadataErrors, /\$fixture 명시 호출/)
+assert.deepEqual(validateOpenAiMetadata(
+  'interface:\n  short_description: "승인된 실행 계약을 해시로 고정하고 변경 이력을 안전하게 추적"\n'
+    + '  default_prompt: "$fixture 승인된 요구사항을 결정화해줘"\n',
+  'fixture',
+  'agents/openai.yaml',
+), [])
 
 const errors = []
 const knownSkills = new Set(
-  skillNames.filter((name) => existsSync(resolve(root, `skills/${name}/SKILL.md`))),
+  skillNames.filter((name) => existsSync(resolve(root, `${projectSkillRoot}/${name}/SKILL.md`))),
 )
+if (existsSync(resolve(root, 'skills'))) {
+  errors.push('레거시 skills/ 디렉터리를 제거하고 .agents/skills/만 사용해야 합니다.')
+}
 const read = (path) => {
   try {
     return readFileSync(resolve(root, path), 'utf8')
@@ -269,7 +316,7 @@ for (const name of agentNames) {
 }
 
 for (const name of skillNames) {
-  const path = `skills/${name}/SKILL.md`
+  const path = `${projectSkillRoot}/${name}/SKILL.md`
   const content = read(path)
   errors.push(...validateFrontmatterSchema(content, {
     kind: 'skill', path, expectedName: name, knownSkills,
@@ -282,13 +329,32 @@ for (const name of skillNames) {
   if (!/정상 흐름/.test(content) || !/오류 흐름/.test(content)) {
     errors.push(`${path}: 정상 흐름과 오류 흐름 테스트 시나리오가 필요합니다.`)
   }
+
+  const metadataPath = `${projectSkillRoot}/${name}/agents/openai.yaml`
+  if (existsSync(resolve(root, metadataPath))) {
+    errors.push(...validateOpenAiMetadata(read(metadataPath), name, metadataPath))
+  } else if (name === 'spec-crystallization') {
+    errors.push(`필수 파일이 없습니다: ${metadataPath}`)
+  }
 }
 
-const orchestrator = read('skills/project-orchestrator/SKILL.md')
+const triggerFixture = JSON.parse(read(triggerFixturePath) || '{}')
+for (const name of ['spec-crystallization', 'adversarial-verification']) {
+  const corpus = triggerFixture[name] ?? {}
+  for (const key of ['shouldTrigger', 'shouldNotTrigger']) {
+    const entries = corpus[key]
+    if (!Array.isArray(entries) || entries.length !== 8) {
+      errors.push(`${triggerFixturePath}: ${name}.${key}는 정확히 8개여야 합니다.`)
+    }
+  }
+}
+
+const orchestratorPath = `${projectSkillRoot}/project-orchestrator/SKILL.md`
+const orchestrator = read(orchestratorPath)
 errors.push(...validateRequiredSections(
   orchestrator,
   orchestratorSections,
-  'skills/project-orchestrator/SKILL.md',
+  orchestratorPath,
 ))
 errors.push(...validateSectionTokens(orchestrator, {
   '실행 모드': ['초기 실행', '새 실행', '부분 재실행', '_workspace/'],
@@ -306,17 +372,40 @@ errors.push(...validateSectionTokens(orchestrator, {
     'CI pending timeout', 'SHA별', '최대 수정 1회', '실행당 최대 이슈', '승인 backlog',
     'blocked', '승인된 다음 이슈', '종료', '무한 루프 금지', '총 수정 시도 상한', '2회',
     '총 deadline', '60분', 'SHA가 바뀌어도 누적', '어느 하나', 'pending 20분', 'deadline 내',
+    '시나리오', '10개', '5개', '15개', '같은 실패',
   ],
   '워크플로우': [
     '한글 이슈', 'feat/', 'squash merge', 'dev', 'issue API', 'gh issue close',
     '자동 close', 'blocked', '수동 조치', 'dev 소유 worktree', 'git fetch origin dev',
-    'git pull --ff-only origin dev', 'feature worktree',
+    'git pull --ff-only origin dev', 'feature worktree', 'spec-crystallization',
+    'adversarial-verification',
+    '_workspace/01_seed_contract.md', '승인', '해시', 'architecture', '비중첩',
+    'incremental QA', '기계 검증', 'verification-attacker', 'evidence-guardian',
+    'solution-challenger', '서로의 결론을 보지 않고', '병렬', '불일치', 'verification-judge',
   ],
   '에러 정책': ['1회 재시도', '누락'],
   '런타임 및 통합': ['Node.js 22', 'package.json', '표준 script', '통합 단계'],
-}, 'skills/project-orchestrator/SKILL.md'))
+}, orchestratorPath))
 
-const react = read('skills/react-product-ui/SKILL.md')
+const orchestratorAgentPath = 'agents/orchestrator.md'
+const orchestratorAgent = read(orchestratorAgentPath)
+errors.push(...validateSectionTokens(orchestratorAgent, {
+  '작업 원칙': [
+    '_workspace/01_seed_contract.md', '승인', '해시', '기계 검증',
+    'verification-attacker', 'evidence-guardian', 'solution-challenger',
+    '불일치', 'verification-judge',
+  ],
+  '협업': ['incremental QA', 'integration 최종 검증'],
+}, orchestratorAgentPath))
+
+const qaMigrationPath = 'agents/qa-migration.md'
+const qaMigration = read(qaMigrationPath)
+errors.push(...validateSectionTokens(qaMigration, {
+  '핵심 역할': ['모듈 경계 QA', 'integration 최종 검증'],
+}, qaMigrationPath))
+
+const reactPath = `${projectSkillRoot}/react-product-ui/SKILL.md`
+const react = read(reactPath)
 errors.push(...validateSectionTokens(react, {
   '필수 보조 스킬': [
     'frontend-design-principles',
@@ -326,7 +415,20 @@ errors.push(...validateSectionTokens(react, {
     'accessible-ui-guidelines',
     'web-design-guidelines',
   ],
-}, 'skills/react-product-ui/SKILL.md'))
+}, reactPath))
+
+const adversarialPath = `${projectSkillRoot}/adversarial-verification/SKILL.md`
+const adversarial = read(adversarialPath)
+errors.push(...validateSectionTokens(adversarial, {
+  '워크플로우': ['기계 검증 실패', 'RETURN_TO_OWNER', '수정 횟수', '1 증가'],
+  '테스트 시나리오': ['판정자 실패', '필수 입력 오류', 'BLOCKED'],
+}, adversarialPath))
+
+const verificationJudgePath = 'agents/verification-judge.md'
+const verificationJudge = read(verificationJudgePath)
+errors.push(...validateSectionTokens(verificationJudge, {
+  '에러 핸들링': ['판정 실패', '필수 입력', 'BLOCKED', '자동 통과'],
+}, verificationJudgePath))
 
 assert.deepEqual(errors, [], `\n${errors.join('\n')}`)
 console.log('하네스 구조 검증 완료')

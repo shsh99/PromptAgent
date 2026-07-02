@@ -29,4 +29,28 @@ API, 프론트엔드, DB, AI 모델, 웹 검색, CI/CD 장애에 적용한다.
 - 배포 장애: 스모크 테스트를 중단하고 이전 커밋 SHA 이미지로 트래픽을 복귀한다.
 - CI 장애: 최초 실패를 로컬 재현하고 간헐 실패는 이슈·소유자·기한과 함께 격리한다.
 
+## 개발 하네스 장애 대응
+
+### 승인 Seed 변조
+
+1. `node scripts/harness/seed-contract.mjs verify _workspace/01_seed_contract.md`로 변조를 재현한다.
+2. 구현·검토·외부 쓰기를 즉시 중단하고 authority manifest를 `blocked`로 기록한다. Seed 원문이나 민감한 프롬프트는 로그에 출력하지 않는다.
+3. Git의 승인 시점 Seed와 현재 파일을 비교해 변경 주체와 영향받은 commit을 확인한다.
+4. 단순 변조이면 승인본을 복원한다. 요구사항 변경이면 원본을 덮어쓰지 않고 `_workspace/01_seed_amendment-{n}.md`를 작성해 사용자 재승인과 새 해시를 받는다.
+
+### 판정자 실패
+
+guardian과 challenger의 verdict가 다른데 judge 보고서가 없거나 형식·증거 검증에 실패하면 통과로 간주하지 않는다. 해당 SHA를 `blocked`로 유지하고 판정 실패 원인, 두 독립 보고서, 재현 명령을 보존한다. 남은 총 수정 예산과 deadline 안에서만 판정자를 한 번 재호출하며, 재실패하거나 한도를 넘으면 새 실행 승인을 받기 전까지 PR을 만들지 않는다.
+
+### 같은 실패 반복
+
+동일한 완료 조건, 재현 명령, 관찰 결과로 식별되는 실패가 두 cycle 연속 발생하면 남은 시나리오나 수정 예산과 관계없이 조기 중단한다. `_workspace`에 최초·반복 SHA와 증거를 모두 남기고 원 commit 소유자, 필요한 설계 결정, 재개 조건을 명시한다. 표현만 바꾼 같은 결함을 신규 실패로 계산하지 않는다.
+
+### 롤백
+
+1. 외부 push 전이면 승인되지 않은 child commit을 integration에 반영하지 않고 child worktree를 보존한다. 이미 cherry-pick했다면 통합 소유자가 해당 commit만 `git revert`하고 영향 테스트를 실행한다.
+2. PR 병합 전이면 PR을 중단하고 마지막 승인 integration SHA로 branch를 복구한다. 강제 push나 `git reset --hard`는 사용하지 않는다.
+3. squash merge 후이면 배포 여부를 확인하고 squash SHA를 되돌리는 새 한글 이슈와 revert PR을 만든다. 데이터·설정 변경이 있으면 해당 변경 문서의 역마이그레이션 절차를 먼저 검증한다.
+4. 롤백 후 Seed 검증, 기계 검증, 영향받은 사용자 흐름을 다시 확인하고 authority manifest와 실행 요약에 결과를 기록한다.
+
 복구 후 데이터 정합성과 핵심 사용자 흐름을 검증한다. 회고에는 원인, 탐지 지연, 영향, 타임라인, 교정 작업과 소유자를 기록하며 관련 아키텍처·운영 문서를 갱신한다.

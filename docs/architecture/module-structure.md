@@ -28,6 +28,10 @@ Spring과 React의 기능 경계 및 의존 방향을 정의한다.
 
 현재 기반은 `frontend/`의 React 19·TypeScript·Vite 애플리케이션이다. `features/system`이 backend health 계약을 캡슐화하고 `app`은 세 제품 기능의 진입 셸만 구성한다. 기존 `webapp/`은 기능 이관이 끝날 때까지 레거시로 유지한다.
 
+## 프로젝트 하네스
+
+`.agents/skills/`는 Codex가 자동 탐색하는 프로젝트 워크플로의 단일 canonical 위치다. `agents/`는 프로젝트 오케스트레이터가 작업에 배정하는 전문가 역할 계약을 소유하며, 각 역할은 frontmatter의 스킬 이름으로 `.agents/skills/<name>/SKILL.md`를 참조한다. 저장소 루트에 별도 `skills/` 디렉터리를 두지 않는다.
+
 ## 변경 원칙
 
 모듈 공개 계약 변경은 OpenAPI, 소비자 테스트, 관련 제품 문서를 같은 PR에서 갱신한다. 순환 의존이 생기면 공통 모듈을 확대하기보다 업무 흐름의 소유권을 다시 정한다.
