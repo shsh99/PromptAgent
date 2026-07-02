@@ -14,6 +14,22 @@ pipeline {
             }
         }
 
+        stage('Runtime') {
+            steps {
+                sh '''
+                    set -eu
+                    NODE_VERSION="$(node --version)"
+                    NODE_MAJOR="${NODE_VERSION#v}"
+                    NODE_MAJOR="${NODE_MAJOR%%.*}"
+                    printf 'Node.js runtime: %s\n' "$NODE_VERSION"
+                    if [ "$NODE_MAJOR" -ne 22 ]; then
+                        printf 'Node.js 22 is required; found %s.\n' "$NODE_VERSION" >&2
+                        exit 1
+                    fi
+                '''
+            }
+        }
+
         stage('Governance') {
             steps {
                 sh 'npm ci'

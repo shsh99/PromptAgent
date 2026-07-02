@@ -6,6 +6,22 @@ import { fileURLToPath } from 'node:url';
 
 const read = (path) => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 
+test('Node.js 22 is the shared local, package, and Actions runtime contract', async () => {
+  const [nvmrc, rootPackage, frontendPackage, governance, deployment] = await Promise.all([
+    read('.nvmrc'),
+    read('package.json').then(JSON.parse),
+    read('frontend/package.json').then(JSON.parse),
+    read('.github/workflows/governance.yml'),
+    read('.github/workflows/deploy-pages.yml'),
+  ]);
+
+  assert.equal(nvmrc.trim(), '22');
+  assert.equal(rootPackage.engines?.node, '>=22');
+  assert.equal(frontendPackage.engines?.node, '>=22');
+  assert.match(governance, /node-version:\s*22/);
+  assert.match(deployment, /node-version:\s*22/);
+});
+
 test('governance workflow gates pull requests to dev and main with least privilege', async () => {
   const workflow = await read('.github/workflows/governance.yml');
 

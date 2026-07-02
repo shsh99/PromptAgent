@@ -1,34 +1,33 @@
-# 이슈 #13 실행 요약
+# 이슈 #7 실행 요약
 
 ## 계약
 
-- 승인 Seed hash: `sha256:a39edf87c667ce2738b1f6fa303f212fd0727bf0cae3536500b3382b2818f23f`
-- integration branch: `feat/13-harness-evolution`
-- target branch: `dev`
-- 수정 예산: `2/2`
+- Seed: `sha256:e351de2677a8fa3e5fc387b16f2d8c9cc6c593275fd6790b80f8d35c019b81a5`
+- branch: `fix/7-node-dependency-security`
+- target: `dev`
+- 수정 예산: `1/2`
 
-## fan-in 승인 commit
+## fan-in commit
 
-| 작업 | 승인된 integration commit |
+| 작업 | commit |
 |---|---|
-| Codex 스킬 canonical 경로 | `86de5d8`, `759c5d6` |
-| Seed 결정화·불변성 | `091e0f9`, `211d0ab`, `c45d707`, `868498a` |
-| 검증 상태 결정 | `ea374d7`, `5752e0c` |
-| 적대적 검증 역할·스킬 | `d095f83`, `51e7d0f` |
-| 오케스트레이터 통합 | `db2c010`, `af85bc9`, `3764d35` |
-| 운영 문서 | `5492263` |
+| 의존성 안전 패치 | `ce1a2ba` |
+| Node 22 환경 계약 | `b36f78d` |
+| Jenkins 순서 회귀 보강 | `ba24f5f` |
+| 변경 문서·공격 시나리오 | `3e065a2` |
 
-## 검증 판정
+## 보안 결과
 
-- 기계 검증: root 테스트·빌드, Spring `clean test bootJar`, React 23개 테스트·TypeScript·Vite 빌드 통과
-- 하네스: Seed·verification-cycle·trigger 36개와 구조 validator 통과
-- 독립 검토: 명세 `PASS`, 품질 `PASS`
-- evidence guardian: `PASS`
-- solution challenger: `PASS`
-- verification judge: 호출하지 않음 — verdict 일치
-- 외부 런타임: Ouroboros·OMC 전체 설치 없음
+- audit: 높음 6·보통 2·낮음 1 → `0`
+- direct: Hono `4.12.27`, Vite `6.4.3`, Wrangler `4.106.0`
+- 주요 전이: Miniflare `4.20260630.0`, Undici `7.28.0`, ws `8.21.0`, Wrangler esbuild `0.28.1`, Hono Node Server `1.19.14`, PostCSS `8.5.16`
+- force·major·overrides·배포: 없음
 
-## 남은 위험
+## 검증 결과
 
-- 트리거 corpus는 정적 계약 검사이며 실제 모델 라우팅 정확도는 후속 실제 이슈 3개에서 측정한다.
-- root npm audit 9건은 기존 이슈 #7 범위로 분리한다.
+- Node `22.23.1` + npm CLI clean install: 엔진 경고 없음
+- root audit·테스트·빌드: 통과
+- governance `34/34`, harness: 통과
+- Spring `clean test bootJar`: 통과
+- React `23/23`, TypeScript, Vite build: 통과
+- 적대적 검증: judge 최종 `PASS`

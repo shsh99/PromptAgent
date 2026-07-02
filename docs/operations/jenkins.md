@@ -26,7 +26,9 @@ credential은 `withCredentials` 안에서만 주입한다. 셸은 Groovy 작은�
 
 ## 단계와 배포 조건
 
-Declarative Pipeline은 Checkout, Governance, Test, Build, Integration, Image, Staging, Smoke, Production Approval, Production 순서로 실행한다. 현재 루트 npm 앱을 검증하고 `backend/gradlew`와 `frontend/package.json`이 생기면 각 모듈을 조건부 검증한다.
+Declarative Pipeline은 Checkout, Runtime, Governance, Test, Build, Integration, Image, Staging, Smoke, Production Approval, Production 순서로 실행한다. 현재 루트 npm 앱을 검증하고 `backend/gradlew`와 `frontend/package.json`이 생기면 각 모듈을 조건부 검증한다.
+
+Checkout 직후 Runtime 단계가 `node --version`을 진단 출력하고 major 버전이 22가 아니면 의존성 설치 전에 즉시 실패한다. Jenkins agent의 Node 설치를 바꿀 때는 `.nvmrc`와 GitHub Actions의 버전 계약도 함께 확인한다.
 
 - 모든 브랜치는 Checkout부터 Integration까지 수행한다.
 - `dev`만 Image, Staging, Smoke를 실행한다.

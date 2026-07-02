@@ -4,6 +4,21 @@ import { test } from 'node:test';
 
 const read = (path) => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 
+const assertRuntimePrecedesInstall = (pipeline) => {
+  assert.match(pipeline, /stage\('Runtime'\)/);
+  assert.match(pipeline, /stage\('Governance'\)/);
+  assert.match(pipeline, /npm ci/);
+
+  const runtimeIndex = pipeline.indexOf("stage('Runtime')");
+  const governanceIndex = pipeline.indexOf("stage('Governance')");
+  const firstInstallIndex = pipeline.indexOf('npm ci');
+
+  assert.ok(
+    runtimeIndex < governanceIndex && runtimeIndex < firstInstallIndex,
+    'Runtime must precede Governance and npm ci',
+  );
+};
+
 test('AI 리뷰는 dev와 main 대상 PR에서 읽기 전용으로 실행된다', async () => {
   const workflow = await read('.github/workflows/ai-review.yml');
 
@@ -67,6 +82,32 @@ test('Jenkins는 현재 앱과 미래 모듈을 조건부 검증하고 dev와 ma
   assert.match(pipeline, /input\s+message:/);
   assert.match(pipeline, /withCredentials\(/);
   assert.match(pipeline, /credentialsId:/);
+});
+
+test('Jenkins는 Node.js 22를 진단하고 다른 major 버전을 즉시 거부한다', async () => {
+  const pipeline = await read('Jenkinsfile');
+
+  assertRuntimePrecedesInstall(pipeline);
+  assert.match(pipeline, /node --version/);
+  assert.match(pipeline, /NODE_MAJOR/);
+  assert.match(pipeline, /NODE_MAJOR[^\n]*-ne 22/);
+  assert.match(pipeline, /exit 1/);
+});
+
+test('Jenkins는 Node 검사보다 먼저 Governance 또는 npm ci를 실행할 수 없다', () => {
+  const invalidPipeline = `
+    stage('Governance') {
+      steps { sh 'npm ci' }
+    }
+    stage('Runtime') {
+      steps { sh 'node --version' }
+    }
+  `;
+
+  assert.throws(
+    () => assertRuntimePrecedesInstall(invalidPipeline),
+    /Runtime.*Governance.*npm ci/,
+  );
 });
 
 test('운영 문서는 권한, 비밀 회전, 복구와 재실행 절차를 설명한다', async () => {
