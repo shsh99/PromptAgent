@@ -69,6 +69,16 @@ test('Jenkins는 현재 앱과 미래 모듈을 조건부 검증하고 dev와 ma
   assert.match(pipeline, /credentialsId:/);
 });
 
+test('Jenkins는 Node.js 22를 진단하고 다른 major 버전을 즉시 거부한다', async () => {
+  const pipeline = await read('Jenkinsfile');
+
+  assert.match(pipeline, /stage\('Runtime'\)/);
+  assert.match(pipeline, /node --version/);
+  assert.match(pipeline, /NODE_MAJOR/);
+  assert.match(pipeline, /NODE_MAJOR[^\n]*-ne 22/);
+  assert.match(pipeline, /exit 1/);
+});
+
 test('운영 문서는 권한, 비밀 회전, 복구와 재실행 절차를 설명한다', async () => {
   const [aiReview, jenkins] = await Promise.all([
     read('docs/operations/ai-review.md'),
